@@ -1,0 +1,71 @@
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Confirm deployment (pushes live code to the server)
+        required: true
+        type: choice
+        default: 'no'
+        options:
+          - 'no'
+          - 'yes'
+
+name: Manual deploy
+
+run-name: deploy main → main environment
+
+concurrency:
+  group: manual-ftp-main
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm deployment
+        if: github.event.inputs.confirmation != 'yes'
+        run: |
+          echo "::error::Deployment not started. Select yes in the confirmation dropdown."
+          exit 1
+
+  web-deploy:
+    name: deploy main → main environment
+    needs: gate
+    if: github.event.inputs.confirmation == 'yes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: main
+    steps:
+      - name: Get latest code on main
+        uses: actions/checkout@v6
+        with:
+          ref: refs/heads/main
+          fetch-depth: 0
+
+      - name: Build Vue app
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+        env:
+          VITE_API_BASE_URL: https://wms.servicore.io/backend
+          VITE_APP_URL: https://wms.servicore.io
+
+      - name: Sync build to main
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          security: loose
+          log-level: verbose
+          timeout: 600000
+          local-dir: ./dist/
+          server-dir: /
+          exclude: |
+            backend/**
+          dangerous-clean-slate: false

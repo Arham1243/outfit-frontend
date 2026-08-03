@@ -1,0 +1,307 @@
+// Primevue overrides
+.p-paginator {
+    justify-content: flex-end!important;
+    padding: 1rem !important;
+}
+.p-datatable-header{
+    padding-inline: 0 !important;
+}
+.permission-matrix-table-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.permission-matrix-table {
+    --permission-matrix-action-col-width: 7.5rem;
+    --permission-matrix-label-gap: 2.5rem;
+
+    width: 100%;
+    max-width: 100%;
+
+    .p-datatable-table-container {
+        max-height: 800px;
+        overflow-y: auto;
+    }
+
+    .p-datatable-table {
+        width: auto !important;
+        table-layout: auto;
+    }
+
+    .p-datatable-tbody > tr > td,
+    .p-datatable-thead > tr > th {
+        padding: 0.4rem 0.875rem;
+    }
+
+    .p-datatable-thead > tr > th:first-child,
+    .p-datatable-tbody > tr > td:first-child {
+        width: 1%;
+        white-space: nowrap;
+        padding-right: var(--permission-matrix-label-gap);
+    }
+
+    .p-datatable-thead > tr > th:not(:first-child),
+    .p-datatable-tbody > tr > td:not(:first-child) {
+        width: var(--permission-matrix-action-col-width);
+        min-width: var(--permission-matrix-action-col-width);
+        max-width: var(--permission-matrix-action-col-width);
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .p-datatable-thead > tr > th:not(:first-child)
+        .p-datatable-column-header-content {
+        justify-content: center;
+    }
+
+    .permission-matrix-checkbox-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.25rem;
+        width: 100%;
+
+        .input-field-wrap {
+            width: auto;
+            display: inline-flex;
+            justify-content: center;
+        }
+    }
+
+    .permission-matrix-group-header > td:not(:first-child) {
+        overflow: visible;
+    }
+
+    .permission-matrix-group-header > td:last-child {
+        position: relative;
+    }
+
+    .permission-matrix-section-presets {
+        position: absolute;
+        right: 0.875rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 1.5rem;
+        white-space: nowrap;
+        z-index: 1;
+    }
+}
+.global-breadcrumbs nav.p-breadcrumb.p-component {
+    padding: 0 !important;
+    background: transparent !important;
+}
+.p-breadcrumb-item-link {
+    white-space: nowrap;
+}
+.p-button .p-badge {
+    --p-button-badge-size: 1.27rem;
+    height: 1.22rem !important   ;
+}
+.unhighlight-row-table .p-datatable-selectable-row.p-datatable-row-selected:not(.highlight-row){
+    background: #fff !important;
+    color: #000 !important;
+}
+.highlight-disabled-checkbox.p-checkbox.p-checkbox-checked.p-disabled .p-checkbox-box {
+    color: #fff !important;
+    opacity: 0.8 !important;
+    border-color: var(--p-checkbox-checked-border-color) !important;
+    background: var(--p-checkbox-checked-background) !important;
+}
+.highlight-disabled-checkbox.p-checkbox.p-checkbox-checked.p-disabled .p-checkbox-icon {
+    color: var(--p-checkbox-icon-checked-color) !important;
+}
+.remove-datatable-header-padding .p-datatable-header {
+    padding: 0 !important;
+}
+
+// p-togglebutton
+.p-selectbutton {
+    border-radius: 100px;
+    overflow: hidden;
+}
+.p-togglebutton .p-togglebutton-content{
+    border-radius: 100px;
+    overflow: hidden;
+    padding: 0.5rem 1.75rem !important;
+    background: transparent !important;
+}
+.p-togglebutton.p-togglebutton-checked .p-togglebutton-content{
+    color: #fff !important;
+    background: var(--p-primary-color) !important;
+}
+.p-togglebutton.p-togglebutton-checked {
+    pointer-events: none;
+}
+.layout-sidebar .layout-menu-container::-webkit-scrollbar {
+    width: 8px;
+}
+.layout-sidebar .layout-menu-container::-webkit-scrollbar-thumb {
+    background:#ffffffce; 
+    border-radius: 100px;
+}
+.layout-sidebar .layout-menu-container::-webkit-scrollbar-thumb:hover {
+    background: #ffffffe7; 
+}
+th.amount-column .p-datatable-column-header-content{
+    display: flex;
+    justify-content: flex-end;
+    text-align: right;
+}
+td.amount-column{
+    text-align: right !important;
+}
+.layout-topbar .topbar-menu li.topbar-profile button {
+    border: 1px solid var(--p-primary-color);
+}
+.hide-select-all-checkbox .p-datatable-column-header-content .p-checkbox {
+    display: none;
+}
+.layout-sidebar .layout-menu li.active-menuitem > ul{
+    max-height: initial !important;
+}
+th.header-center{
+    padding: 0 0.75rem !important;
+}
+th.header-center .p-datatable-column-header-content{
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+/* Ticket detail: section titles + message sender — same typography as admin */
+.ticket-panel-heading {
+    min-width: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--p-text-color);
+    margin: 0;
+}
+
+h2.ticket-panel-heading--description {
+    margin-bottom: 0.75rem;
+}
+
+/* Timeline messages, internal note bodies, ticket description — identical size/color */
+.ticket-conversation-body-text {
+    margin: 0;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    color: var(--p-text-color);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+/* Muted metadata (timestamps, header line, hints) */
+.ticket-text-meta {
+    color: var(--p-text-muted-color);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+[class*='app-dark'] textarea.ticket-surface-textarea {
+    background: var(--p-surface-900) !important;
+    border-color: var(--p-surface-600) !important;
+    color: var(--p-text-color) !important;
+}
+
+/*
+ * Ticket timeline + sidebar: PrimeVue 4 Message paints severity bg on .p-message-content.
+ * Scoped styles on the root alone stay opaque — use global dark rules + transparent innards.
+ */
+html[class*='app-dark'] .p-message.ticket-msg__system--status {
+    background: rgba(147, 197, 253, 0.14) !important;
+    color: #bfdbfe !important;
+    border: 1px solid rgba(147, 197, 253, 0.22) !important;
+}
+html[class*='app-dark'] .p-message.ticket-msg__system--status .p-message-content,
+html[class*='app-dark'] .p-message.ticket-msg__system--status .p-message-text {
+    background: transparent !important;
+    color: inherit !important;
+    box-shadow: none !important;
+}
+html[class*='app-dark']
+    .p-message.ticket-msg__system--status
+    .ticket-msg__system-time {
+    color: rgba(191, 219, 254, 0.68) !important;
+}
+
+html[class*='app-dark'] .p-message.ticket-msg__system--priority {
+    background: rgba(216, 180, 254, 0.14) !important;
+    color: #e9d5ff !important;
+    border: 1px solid rgba(216, 180, 254, 0.22) !important;
+}
+html[class*='app-dark'] .p-message.ticket-msg__system--priority .p-message-content,
+html[class*='app-dark'] .p-message.ticket-msg__system--priority .p-message-text {
+    background: transparent !important;
+    color: inherit !important;
+    box-shadow: none !important;
+}
+html[class*='app-dark']
+    .p-message.ticket-msg__system--priority
+    .ticket-msg__system-time {
+    color: rgba(233, 213, 255, 0.68) !important;
+}
+
+html[class*='app-dark']
+    .p-message.ticket-msg__closed-notice.ticket-msg__system {
+    background: rgba(147, 197, 253, 0.14) !important;
+    color: #bfdbfe !important;
+    border: 1px solid rgba(147, 197, 253, 0.22) !important;
+}
+html[class*='app-dark']
+    .p-message.ticket-msg__closed-notice.ticket-msg__system
+    .p-message-content,
+html[class*='app-dark']
+    .p-message.ticket-msg__closed-notice.ticket-msg__system
+    .p-message-text {
+    background: transparent !important;
+    color: inherit !important;
+    box-shadow: none !important;
+}
+html[class*='app-dark']
+    .p-message.ticket-msg__closed-notice
+    .ticket-msg__closed-text {
+    color: inherit !important;
+}
+
+/* One scrollbar: lock page behind topbar Drawer / profile overlay */
+html.layout-topbar-scroll-lock,
+html.layout-topbar-scroll-lock body {
+    overflow: hidden !important;
+}
+
+/* Validation error state (InputField, ApiDropdown) */
+$field-error-color: #e24c4c;
+
+.input-field-wrap--invalid {
+    .p-select,
+    .p-multiselect {
+        border-color: $field-error-color !important;
+        --p-select-border-color: #{$field-error-color};
+        --p-select-hover-border-color: #{$field-error-color};
+        --p-select-focus-border-color: #{$field-error-color};
+        --p-multiselect-border-color: #{$field-error-color};
+        --p-multiselect-hover-border-color: #{$field-error-color};
+        --p-multiselect-focus-border-color: #{$field-error-color};
+    }
+
+    .p-select-label,
+    .p-select-label.p-placeholder,
+    .p-multiselect-label,
+    .p-multiselect-label.p-placeholder {
+        color: $field-error-color !important;
+    }
+
+    .p-select-dropdown-icon,
+    .p-multiselect-dropdown-icon {
+        color: $field-error-color !important;
+    }
+}

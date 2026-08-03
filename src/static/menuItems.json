@@ -1,0 +1,26 @@
+[
+    {
+        "key": "core.wardrobe",
+        "label": "menu.wardrobe",
+        "to": "/wardrobe",
+        "icon": "pi pi-fw pi-images",
+        "order": 10,
+        "permissions": ["core.wardrobe.view"]
+    },
+    {
+        "key": "core.users",
+        "label": "menu.user_management",
+        "to": "/users",
+        "icon": "pi pi-fw pi-users",
+        "order": 20,
+        "permissions": ["core.users.view"]
+    },
+    {
+        "key": "core.roles",
+        "label": "menu.user_roles",
+        "to": "/roles",
+        "icon": "pi pi-fw pi-shield",
+        "order": 30,
+        "permissions": ["core.roles.view"]
+    }
+]

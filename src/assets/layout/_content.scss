@@ -1,0 +1,25 @@
+.layout-content-wrapper {
+    padding: 2rem;
+}
+
+.layout-content-wrapper.layout-content-wrapper--fill {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+
+    > .layout-topbar,
+    > .content-breadcrumb {
+        flex-shrink: 0;
+    }
+}
+
+.layout-content.layout-content--fill {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}

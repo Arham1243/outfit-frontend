@@ -1,0 +1,37 @@
+:root {
+    --primary-color: var(--p-primary-color);
+    --primary-color-text: var(--p-primary-contrast-color);
+    --text-color: var(--p-text-color);
+    --text-color-secondary: var(--p-text-muted-color);
+    --surface-border: var(--p-content-border-color);
+    --surface-card: var(--p-content-background);
+    --surface-hover: var(--p-content-hover-background);
+    --surface-overlay: var(--p-overlay-popover-background);
+    --panel-surface-bg: color-mix(
+        in srgb,
+        var(--p-content-background) 92%,
+        rgb(148 163 184) 8%
+    );
+    --panel-surface-border: var(--p-content-border-color, rgb(226 232 240));
+    --panel-surface-radius: 0.75rem;
+    --panel-surface-hover-bg: color-mix(
+        in srgb,
+        var(--primary-color) 6%,
+        var(--p-content-background)
+    );
+    --panel-surface-selected-bg: color-mix(
+        in srgb,
+        var(--primary-color) 10%,
+        var(--p-content-background)
+    );
+    --panel-surface-selected-ring: color-mix(
+        in srgb,
+        var(--primary-color) 25%,
+        transparent
+    );
+    --transition-duration: var(--p-transition-duration);
+    --maskbg: var(--p-mask-background);
+    --border-radius: var(--p-content-border-radius);
+    --layout-section-transition-duration: 0.2s;
+    --focus-ring-shadow: var(--p-focus-ring-shadow);
+}

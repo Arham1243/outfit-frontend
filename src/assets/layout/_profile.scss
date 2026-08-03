@@ -1,0 +1,12 @@
+.layout-profile-sidebar {
+    &.p-sidebar,
+    &.p-drawer {
+        width: 25rem;
+
+        .p-sidebar-content,
+        .p-drawer-content {
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+    }
+}

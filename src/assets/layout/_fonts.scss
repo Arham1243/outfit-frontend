@@ -1,0 +1,75 @@
+/* inter-regular - latin */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/inter/inter-400.woff2') format('woff2'),
+        url('@/assets/layout/fonts/inter/inter-400.woff') format('woff');
+}
+
+/* inter-500 - latin */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/inter/inter-500.woff2') format('woff2'),
+        url('@/assets/layout/fonts/inter/inter-500.woff') format('woff');
+}
+
+/* inter-600 - latin */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/inter/inter-600.woff2') format('woff2'),
+        url('@/assets/layout/fonts/inter/inter-600.woff') format('woff');
+}
+
+/* inter-700 - latin */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/inter/inter-700.woff2') format('woff2'),
+        url('@/assets/layout/fonts/inter/inter-700.woff') format('woff');
+}
+
+/* inter-800 - latin */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 800;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/inter/inter-800.woff2') format('woff2'),
+        url('@/assets/layout/fonts/inter/inter-800.woff') format('woff');
+}
+
+/* Noto Nastaliq Urdu - Variable Font */
+@font-face {
+    font-family: 'Noto Nastaliq Urdu';
+    font-style: normal;
+    font-weight: 100 900;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/urdu/NotoNastaliqUrdu-VariableFont_wght.ttf') format('truetype');
+}
+
+/* Noto Naskh Arabic - Variable Font */
+@font-face {
+    font-family: 'Noto Naskh Arabic';
+    font-style: normal;
+    font-weight: 100 900;
+    src:
+        local(''),
+        url('@/assets/layout/fonts/arabic/NotoNaskhArabic-VariableFont_wght.ttf') format('truetype');
+}
+

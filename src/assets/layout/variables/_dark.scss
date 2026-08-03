@@ -1,0 +1,15 @@
+:root[class*='app-dark'] {
+    --surface-ground: #080809;
+    --surface-card: #18181b;
+    --surface-overlay: #202123;
+    --surface-hover: #252529;
+    --surface-border: #2f3037;
+    --sidebar-shadow: none;
+    --sidebar-border: 1px solid #303036;
+    --card-shadow: none;
+    --panel-surface-bg: #18181b;
+    --panel-surface-border: #2f3037;
+    --panel-surface-hover-bg: #222225;
+    --panel-surface-selected-bg: #303030;
+    --panel-surface-selected-ring: rgba(255, 255, 255, 0.1);
+}

@@ -1,0 +1,205 @@
+.primary-bg{
+    background-color: var(--primary-color);
+}
+.primary-text{
+    color: var(--primary-color);
+}
+.left-loading .p-button-loading-icon {
+    position: absolute !important;
+    left: 1rem !important;
+}
+p {
+    margin: 0 0 1rem;
+    line-height: 1.5;
+}
+label.required::after {
+    content: "*";
+    color: red;
+    margin-left: 4px;
+}
+th {
+    white-space: nowrap;
+}
+.cursor-pointer-rows tbody tr{
+    cursor: pointer;
+}
+.tabs-card .p-card-body{
+    padding-top: 0.85rem;
+}
+.row-pointers tbody tr{
+    cursor: pointer;
+}
+.layout-sidebar .layout-menu ul a.active-route {
+    background: #fff;
+    color: var(--primary-color);
+}
+
+.layout-sidebar .layout-menu ul a.active-route i {
+    color: var(--primary-color);
+}
+.bg-custom-gray{
+    background: #e9e9eb !important;
+}
+
+/* vue-datepicker: theme tokens + fallbacks (PrimeVue 4 dropped many --p-inputtext-* vars) */
+.mx-input {
+    box-sizing: border-box !important;
+    min-height: 2.5rem !important;
+    height: auto !important;
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+    padding-left: var(--p-form-field-padding-x, 0.75rem) !important;
+    padding-right: 30px !important;
+    font-size: 1rem;
+    line-height: 1.25rem !important;
+    color: var(--p-inputtext-color) !important;
+    background: var(--p-content-background, #ffffff) !important;
+    border: 1px solid var(--p-select-border-color);
+    border-radius: var(--p-content-border-radius, 0.375rem) !important;
+    box-shadow: var(--p-select-shadow);
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease !important;
+}
+.mx-input::placeholder{
+    color: var(--p-multiselect-placeholder-color);
+}
+.mx-input:hover,
+.mx-input:focus {
+    border-color: var(--p-select-hover-border-color);
+}
+.mx-calendar-content .cell.active {
+    background: var(--primary-color) !important;
+}
+.mx-input:disabled,
+.mx-input.disabled {
+    background: var(
+        --p-form-field-disabled-background,
+        var(--p-content-hover-background, #f3f4f6)
+    ) !important;
+    color: var(--p-text-muted-color, #9ca3af) !important;
+    border-color: var(--p-content-border-color, #e5e7eb) !important;
+}
+.timesheet-range-picker {
+    width: auto;
+    flex-shrink: 0;
+}
+.mx-calendar-week-mode .mx-date-row .cell.active {
+    color: #fff !important;
+}
+
+.error-message-content {
+    line-height: 1.6;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.error-message-content ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    list-style-type: disc;
+}
+
+.error-message-content li {
+    margin: 0.5rem 0;
+    list-style-type: disc !important;
+}
+
+.error-message-content strong {
+    font-weight: 600;
+    color: #dc2626;
+    font-size: 1.05em;
+}
+
+.error-message-content em {
+    font-style: italic;
+    color: #6b7280;
+    display: block;
+    margin-top: 0.5rem;
+}
+.week-tabs .p-tab-active {
+    border-radius: 0.375rem;
+    background: var(--p-tabs-tab-active-border-color);
+    color: #fff;
+}
+
+.week-tabs .p-tab-active * {
+    color: #fff;
+}
+
+/* Error pages — fixed brand blue shell (AppPreset primary.500), not theme-dependent */
+$error-page-brand-blue: #0f295e;
+
+.error-page-shell {
+    background-color: $error-page-brand-blue !important;
+}
+
+.error-page-card {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-radius: 0.5rem;
+    box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.1),
+        0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.error-page-card .error-page-code,
+.error-page-card .error-page-title {
+    color: #111827 !important;
+}
+
+.error-page-card .error-page-message {
+    color: #4b5563 !important;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+}
+
+.error-page-card .p-button-outlined,
+.error-page-card .p-button-outlined .p-button-label,
+.error-page-card .p-button-outlined .p-button-icon {
+    color: $error-page-brand-blue !important;
+    border-color: $error-page-brand-blue !important;
+}
+
+.app-dark .error-page-card .p-button.p-button-text,
+.app-dark .error-page-card .p-button.p-button-text .p-button-label {
+    color: #4b5563 !important;
+}
+
+/* Apply Urdu font when locale is Urdu */
+html[lang="ur"] {
+    font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif;
+}
+
+html[lang="ur"] body,
+html[lang="ur"] .p-component,
+html[lang="ur"] .p-dropdown-item,
+html[lang="ur"] .p-dropdown-label,
+html[lang="ur"] .p-dropdown-panel .p-dropdown-item {
+    font-family: 'Noto Nastaliq Urdu', 'Inter', sans-serif;
+}
+
+/* Apply Arabic font when locale is Arabic */
+html[lang="ar"] {
+    font-family: 'Noto Naskh Arabic', 'Inter', sans-serif;
+}
+
+html[lang="ar"] body,
+html[lang="ar"] .p-component,
+html[lang="ar"] .p-dropdown-item,
+html[lang="ar"] .p-dropdown-label,
+html[lang="ar"] .p-dropdown-panel .p-dropdown-item {
+    font-family: 'Noto Naskh Arabic', 'Inter', sans-serif;
+}
+label,.mx-input:disabled, .mx-input.disabled, .p-select.p-disabled .p-select-label,.p-inputtext:disabled,.p-textarea:disabled{
+    color: var(--p-text-color) !important;
+}
+
+.text-right-input.p-inputtext,
+.text-right-input.p-inputnumber-input,
+.p-inputnumber.text-right-input .p-inputnumber-input,
+.input-field-wrap .text-right-input.p-inputtext,
+.input-field-wrap .p-inputnumber.text-right-input .p-inputnumber-input {
+    text-align: right;
+}
