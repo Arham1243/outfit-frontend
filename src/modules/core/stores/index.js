@@ -1,6 +1,7 @@
 import { createPinia } from 'pinia';
 
 export * from './Wardrobe';
+export * from './Outfit';
 export * from './Role';
 export * from './User';
 

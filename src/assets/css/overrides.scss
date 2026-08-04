@@ -3,6 +3,25 @@
     justify-content: flex-end!important;
     padding: 1rem !important;
 }
+
+/* Constrain PrimeVue Image preview — fixed 3:4 portrait frame (900×1200 standard) */
+.p-image-mask {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.p-image-original {
+    width: min(90vw, 22.5rem) !important;
+    max-height: calc(85vh - 4rem) !important;
+    height: auto !important;
+    aspect-ratio: 3 / 4;
+    object-fit: contain !important;
+    background: var(--p-surface-100, #f1f5f9);
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.18);
+}
 .p-datatable-header{
     padding-inline: 0 !important;
 }

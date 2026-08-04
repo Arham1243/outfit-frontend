@@ -17,6 +17,7 @@ const ACTIONS_IMPLYING_VIEW = ['create', 'edit', 'delete'];
  */
 export const ENTITY_APPLICABLE_ACTIONS = {
     'core.wardrobe': ['view', 'create', 'edit', 'delete'],
+    'core.outfits': ['view', 'create'],
     'core.users': ['view', 'create', 'edit'],
     'core.roles': ['view', 'create', 'edit', 'delete']
 };
@@ -139,7 +140,8 @@ export function normalizePermissionMatrix(matrix) {
 const ENTITY_LABEL_OVERRIDES = {
     'core.users': 'menu.user_management',
     'core.roles': 'menu.user_roles',
-    'core.wardrobe': 'menu.wardrobe'
+    'core.wardrobe': 'menu.wardrobe',
+    'core.outfits': 'menu.outfits'
 };
 
 /** Maps section heading label → preset toolbar key (inline switches on that header row). */
@@ -152,6 +154,7 @@ export const PERMISSION_MATRIX_SECTIONS = [
         title: 'Core',
         entities: [
             'core.wardrobe',
+            'core.outfits',
             'core.users',
             'core.roles'
         ],

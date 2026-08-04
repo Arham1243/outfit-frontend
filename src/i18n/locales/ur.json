@@ -31,7 +31,8 @@
         "profile": "پروفائل",
         "userRoles": "صارف کردار",
         "users": "صارفین",
-        "wardrobe": "وارڈروب"
+        "wardrobe": "وارڈروب",
+        "outfits": "آؤٹ فٹس بنائیں"
     },
     "by_signing_in_you_accept_the": "سائن ان کر کے آپ قبول کرتے ہیں",
     "cancel": "منسوخ کریں",
@@ -76,6 +77,25 @@
         }
     },
     "confirm_password": "پاس ورڈ کی تصدیق کریں",
+    "generate": "بنائیں",
+    "create_outfits": "آؤٹ فٹس بنائیں",
+    "cm": "سینٹی میٹر",
+    "face_image": "چہرے کی تصویر",
+    "face_image_upload_hint": "PNG, JPG, GIF یا WEBP۔ زیادہ سے زیادہ 500 KB۔ بہتر نتائج کے لیے مربع تصویر استعمال کریں۔",
+    "height": "قد",
+    "outfit_preview": "آؤٹ فٹ پیش نظارہ",
+    "outfit_settings": "آؤٹ فٹ کی ترتیبات",
+    "outfit_complete_settings_first": "بنائیں سے پہلے آؤٹ فٹ کی ترتیبات میں قد اور چہرے کی تصویر شامل کریں۔",
+    "outfit_generate_failed": "بنائیں سے پہلے آؤٹ فٹ کی ترتیبات اور وارڈروب مکمل کریں۔",
+    "outfit_group_bottom": "نیچے (پینٹ، جینز یا شارٹس)",
+    "outfit_group_footwear": "جوتے",
+    "outfit_group_top": "اوپر (شرٹ، ٹی شرٹ یا سویٹر)",
+    "outfit_missing_wardrobe_detail": "آپ کے وارڈروب میں یہ چیزیں نہیں ہیں: {groups}۔ وارڈروب میں اضافہ کریں، یا ڈریس کے ساتھ جوتے استعمال کریں۔",
+    "uncategorized": "غیر درجہ بند",
+    "upload_face_image": "چہرے کی تصویر اپ لوڈ کریں",
+    "wardrobe_summary": "وارڈروب خلاصہ",
+    "wardrobe_total_items": "کل {count} اشیاء",
+    "wardrobe_type_count": "{count} {type}",
     "continue": "جاری رکھیں",
     "core": "انتظامیہ",
     "date_of_birth": "تاریخ پیدائش",
@@ -131,7 +151,8 @@
     "menu": {
         "user_management": "صارف کا انتظام",
         "user_roles": "صارف کے کردار",
-        "wardrobe": "وارڈروب"
+        "wardrobe": "وارڈروب",
+        "outfits": "آؤٹ فٹس بنائیں"
     },
     "my_profile": "میرا پروفائل",
     "new_password": "نیا پاس ورڈ",
@@ -228,6 +249,7 @@
     "wardrobe_updated": "وارڈروب تصویر اپ ڈیٹ ہو گئی",
     "wardrobe_updated_successfully": "وارڈروب تصویر کامیابی سے اپ ڈیٹ ہو گئی",
     "wardrobe_upload_supported_formats": "معاون فارمیٹس: PNG, JPG, JPEG, GIF, WEBP (زیادہ سے زیادہ 5 MB)",
+    "wardrobe_upload_recommended_dimensions": "تجویز کردہ: {width}×{height} px ({ratio} عمودی)",
     "welcome": "خوش آمدید",
     "welcome_email_sent": "خوش آمدید ای میل بھیجی گئی",
     "you_have_unsaved_changes_if_you_continue_those_changes_will_be_lost_do_you_want_to_discard_them": "آپ کے پاس غیر محفوظ تبدیلیاں ہیں۔ اگر آپ جاری رکھتے ہیں تو یہ تبدیلیاں ضائع ہو جائیں گی۔ کیا آپ انہیں ردّ کرنا چاہتے ہیں؟",

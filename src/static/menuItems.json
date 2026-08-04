@@ -8,6 +8,14 @@
         "permissions": ["core.wardrobe.view"]
     },
     {
+        "key": "core.outfits",
+        "label": "menu.outfits",
+        "to": "/outfits",
+        "icon": "pi pi-fw pi-sparkles",
+        "order": 15,
+        "permissions": ["core.outfits.view"]
+    },
+    {
         "key": "core.users",
         "label": "menu.user_management",
         "to": "/users",

@@ -1,8 +1,9 @@
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue';
 import { useWardrobeStore } from '@/modules/core/stores';
+import { WardrobeService } from '@/modules/core/services';
 import { useGlobalStore } from '@/stores';
-import { PaginationOptions, SortFilterOptions } from '@/config';
+import { PaginationOptions, SortFilterOptions, WARDROBE_IMAGE } from '@/config';
 import { useHelpers } from '@/composables';
 import { getValidationErrorMessage } from '@/utils/apiErrors';
 
@@ -13,7 +14,17 @@ const ACCEPTED_MIME_TYPES = [
     'image/gif',
     'image/webp'
 ];
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = WARDROBE_IMAGE.maxFileSizeMb * 1024 * 1024;
+const CLASSIFICATION_POLL_INTERVAL_MS = 3000;
+const CLASSIFICATION_POLL_MAX_MS = 120000;
+
+const uploadDimensionHint = computed(() =>
+    $t('wardrobe_upload_recommended_dimensions', {
+        width: WARDROBE_IMAGE.recommendedWidth,
+        height: WARDROBE_IMAGE.recommendedHeight,
+        ratio: WARDROBE_IMAGE.aspectRatioLabel
+    })
+);
 
 const helpers = useHelpers();
 const { filterFileFields } = helpers;
@@ -41,6 +52,12 @@ const formData = ref({
 });
 /** Pending uploads for multi-create */
 const pendingImages = ref([]);
+let classificationPollTimer = null;
+let classificationPollStartedAt = null;
+
+const hasItemsPendingClassification = computed(() =>
+    items.value.some((item) => !item.type)
+);
 
 const dialogHeader = computed(() =>
     isEditMode.value ? $t('edit_wardrobe_image') : $t('add_new_item')
@@ -63,6 +80,72 @@ const dialogInitialData = computed(() =>
 
 onBeforeMount(async () => {
     await getItems();
+});
+
+onBeforeUnmount(() => {
+    stopClassificationPolling();
+});
+
+const stopClassificationPolling = () => {
+    if (classificationPollTimer) {
+        clearInterval(classificationPollTimer);
+        classificationPollTimer = null;
+    }
+    classificationPollStartedAt = null;
+};
+
+const refreshItemsSilently = async () => {
+    const params = { ...pagination.getPageParams() };
+    const payload = sortFilters.getSortFilters();
+    const res = await WardrobeService.search(payload, params);
+    items.value = res.data.data;
+    totalRecords.value = res.data.meta.total;
+};
+
+const pollClassificationUpdates = async () => {
+    if (!hasItemsPendingClassification.value) {
+        stopClassificationPolling();
+        return;
+    }
+
+    if (
+        classificationPollStartedAt &&
+        Date.now() - classificationPollStartedAt > CLASSIFICATION_POLL_MAX_MS
+    ) {
+        stopClassificationPolling();
+        return;
+    }
+
+    try {
+        await refreshItemsSilently();
+    } catch {
+        // Ignore transient poll failures; next interval will retry.
+    }
+
+    if (!hasItemsPendingClassification.value) {
+        stopClassificationPolling();
+    }
+};
+
+const startClassificationPolling = () => {
+    if (classificationPollTimer || !hasItemsPendingClassification.value) {
+        return;
+    }
+
+    classificationPollStartedAt = Date.now();
+    pollClassificationUpdates();
+    classificationPollTimer = setInterval(
+        pollClassificationUpdates,
+        CLASSIFICATION_POLL_INTERVAL_MS
+    );
+};
+
+watch(hasItemsPendingClassification, (pending) => {
+    if (pending) {
+        startClassificationPolling();
+    } else {
+        stopClassificationPolling();
+    }
 });
 
 const menuItems = computed(() => {
@@ -534,6 +617,7 @@ const deleteItem = async () => {
         :formData="dialogFormData"
         :initialData="dialogInitialData"
         :enableDirtyCheck="true"
+        class="wardrobe-upload-dialog"
         @cancel="closeDialog"
         @confirm="save"
     >
@@ -580,6 +664,38 @@ const deleteItem = async () => {
                     :disabled="busy"
                     @click.stop="clearEditImage"
                 />
+            </div>
+
+            <div
+                v-if="showAddDropzone"
+                class="wardrobe-upload__dropzone"
+                :class="{
+                    'wardrobe-upload__dropzone--compact':
+                        !isEditMode && pendingImages.length > 0,
+                    'wardrobe-upload__dropzone--active': isDragOver,
+                    'wardrobe-upload__dropzone--disabled': busy
+                }"
+                @dragover="onDragOver"
+                @dragleave="onDragLeave"
+                @drop="onDrop"
+                @click="openFilePicker"
+            >
+                <span class="wardrobe-upload__dropzone-icon" aria-hidden="true">
+                    <i class="pi pi-cloud-upload" />
+                </span>
+                <p class="wardrobe-upload__dropzone-title m-0">
+                    {{
+                        !isEditMode && pendingImages.length
+                            ? $t('wardrobe_add_more_images')
+                            : $t('drag_drop_or_browse_file')
+                    }}
+                </p>
+                <p class="wardrobe-upload__dropzone-hint m-0">
+                    {{ $t('wardrobe_upload_supported_formats') }}
+                </p>
+                <p class="wardrobe-upload__dropzone-hint m-0">
+                    {{ uploadDimensionHint }}
+                </p>
             </div>
 
             <div
@@ -630,35 +746,6 @@ const deleteItem = async () => {
                     />
                 </div>
             </div>
-
-            <div
-                v-if="showAddDropzone"
-                class="wardrobe-upload__dropzone"
-                :class="{
-                    'wardrobe-upload__dropzone--compact':
-                        !isEditMode && pendingImages.length > 0,
-                    'wardrobe-upload__dropzone--active': isDragOver,
-                    'wardrobe-upload__dropzone--disabled': busy
-                }"
-                @dragover="onDragOver"
-                @dragleave="onDragLeave"
-                @drop="onDrop"
-                @click="openFilePicker"
-            >
-                <span class="wardrobe-upload__dropzone-icon" aria-hidden="true">
-                    <i class="pi pi-cloud-upload" />
-                </span>
-                <p class="wardrobe-upload__dropzone-title m-0">
-                    {{
-                        !isEditMode && pendingImages.length
-                            ? $t('wardrobe_add_more_images')
-                            : $t('drag_drop_or_browse_file')
-                    }}
-                </p>
-                <p class="wardrobe-upload__dropzone-hint m-0">
-                    {{ $t('wardrobe_upload_supported_formats') }}
-                </p>
-            </div>
         </div>
     </BaseDialog>
 
@@ -685,8 +772,9 @@ const deleteItem = async () => {
 
 .wardrobe-table__thumb :deep(.wardrobe-table__thumb-img),
 .wardrobe-table__thumb :deep(img) {
-    width: 7.5rem;
-    height: 7.5rem;
+    width: 6rem;
+    aspect-ratio: 3 / 4;
+    height: auto;
     object-fit: cover;
     border-radius: 0.75rem;
     cursor: pointer;
@@ -807,9 +895,11 @@ const deleteItem = async () => {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    max-height: 18rem;
+}
+
+:global(.wardrobe-upload-dialog .p-dialog-content) {
+    max-height: min(75vh, 36rem);
     overflow-y: auto;
-    padding-right: 0.125rem;
 }
 
 .wardrobe-upload__file-card {
@@ -845,8 +935,9 @@ const deleteItem = async () => {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 4.5rem;
-    height: 4.5rem;
+    width: 3.375rem;
+    aspect-ratio: 3 / 4;
+    height: auto;
     border-radius: 0.625rem;
     overflow: hidden;
     border: 1px solid var(--p-content-border-color, #e2e8f0);
@@ -856,7 +947,7 @@ const deleteItem = async () => {
 .wardrobe-upload__file-thumb-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .wardrobe-upload__file-details {

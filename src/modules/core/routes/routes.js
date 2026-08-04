@@ -15,6 +15,15 @@ export default [
                 }
             },
             {
+                path: 'outfits',
+                name: 'Outfits',
+                component: () => import('@/modules/core/views/outfits/index.vue'),
+                meta: {
+                    breadcrumb: [{ label: 'breadcrumbs.outfits' }],
+                    permission: ['core.outfits.view']
+                }
+            },
+            {
                 path: 'users',
                 children: [
                     {
