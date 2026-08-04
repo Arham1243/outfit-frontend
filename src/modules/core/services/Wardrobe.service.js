@@ -18,3 +18,9 @@ export const update = (id, payload) => {
 export const deleteItem = (id) => {
     return AxiosService.delete(`${BASE_URL}/wardrobes/${id}`);
 };
+
+export const bulkDelete = (uuids) => {
+    return AxiosService.delete(`${BASE_URL}/wardrobes/bulk`, {
+        data: { uuids }
+    });
+};

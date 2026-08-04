@@ -11,6 +11,7 @@
     "and": "اور",
     "are_you_sure_you_want_to_delete_this_role": "کیا آپ واقعی اس کردار کو حذف کرنا چاہتے ہیں؟",
     "are_you_sure_you_want_to_delete_this_wardrobe_image": "کیا آپ واقعی اس وارڈروب تصویر کو حذف کرنا چاہتے ہیں؟",
+    "are_you_sure_you_want_to_delete_selected_wardrobe_images": "کیا آپ واقعی منتخب {count} وارڈروب تصاویر حذف کرنا چاہتے ہیں؟",
     "are_you_sure_you_want_to_make_this_role_value": "کیا آپ واقعی اس کردار کو {value} کرنا چاہتے ہیں؟",
     "are_you_sure_you_want_to_make_this_user_value": "کیا آپ واقعی اس صارف کو {value} کرنا چاہتے ہیں؟",
     "at_least_8_characters": "کم از کم 8 حروف",
@@ -34,7 +35,13 @@
     },
     "by_signing_in_you_accept_the": "سائن ان کر کے آپ قبول کرتے ہیں",
     "cancel": "منسوخ کریں",
-    "cannot_delete": "حذف نہیں ہو سکتا",
+    "classification_pending": "تجزیہ جاری ہے...",
+    "confidence": "اعتماد",
+    "dominant_color": "غالب رنگ",
+    "remove_image": "تصویر ہٹائیں",
+    "wardrobe_add_more_images": "مزید تصاویر یہاں گھسیٹیں اور چھوڑیں، یا براؤز کرنے کے لیے کلک کریں",
+    "wardrobe_image_preview": "منتخب تصویر",
+    "click_trash_to_replace_image": "نئی تصویر اپ لوڈ کرنے کے لیے اس تصویر کو ہٹائیں",
     "close": "بند کریں",
     "columns": "کالم",
     "common": {
@@ -62,6 +69,10 @@
         "placeholders": {
             "addRecipients": "وصول کنندگان شامل کریں",
             "typeEmailToAdd": "ای میل ٹائپ کریں اور شامل کرنے کے لیے Enter دبائیں"
+        },
+        "table": {
+            "showingEntry": "{count} اندراج میں سے {from} تا {to} دکھایا جا رہا ہے",
+            "showingEntries": "{count} اندراجات میں سے {from} تا {to} دکھائے جا رہے ہیں"
         }
     },
     "confirm_password": "پاس ورڈ کی تصدیق کریں",
@@ -71,6 +82,7 @@
     "delete": "حذف کریں",
     "delete_role": "کردار حذف کریں",
     "delete_wardrobe_image": "وارڈروب تصویر حذف کریں",
+    "delete_wardrobe_images": "وارڈروب تصاویر حذف کریں",
     "didn_t_receive_the_otp": "OTP نہیں ملا؟",
     "discard_changes": "تبدیلیاں ردّ کریں",
     "drag_drop_or_browse_file": "اپنی فائل یہاں گھسیٹیں اور چھوڑیں، یا براؤز کرنے کے لیے کلک کریں",
@@ -143,6 +155,7 @@
     "permissions": "اجازتیں",
     "please_check_your_email_for_the_reset_link": "براہ کرم ری سیٹ لنک کے لیے اپنی ای میل چیک کریں",
     "please_select_an_image": "براہ کرم کم از کم ایک تصویر منتخب کریں۔",
+    "predicted_labels": "لیبلز",
     "preferred_language": "پسندیدہ زبان",
     "primary_email": "بنیادی ای میل",
     "privacy_policy": "رازداری پالیسی",
@@ -204,11 +217,13 @@
     "validation_error": "توثیق کی خرابی",
     "verify": "تصدیق کریں",
     "view_only": "صرف دیکھنے کے لیے",
+    "wardrobe_type": "قسم",
     "wardrobe": "وارڈروب",
     "wardrobe_created": "وارڈروب تصویر اپ لوڈ ہو گئی",
     "wardrobe_created_successfully": "وارڈروب تصویر کامیابی سے اپ لوڈ ہو گئی",
     "wardrobe_deleted": "وارڈروب تصویر حذف ہو گئی",
     "wardrobe_deleted_successfully": "وارڈروب تصویر کامیابی سے حذف ہو گئی",
+    "wardrobe_images_deleted_successfully": "{count} وارڈروب تصاویر کامیابی سے حذف ہو گئیں",
     "wardrobe_images_uploaded_successfully": "{count} وارڈروب تصاویر کامیابی سے اپ لوڈ ہو گئیں",
     "wardrobe_updated": "وارڈروب تصویر اپ ڈیٹ ہو گئی",
     "wardrobe_updated_successfully": "وارڈروب تصویر کامیابی سے اپ ڈیٹ ہو گئی",

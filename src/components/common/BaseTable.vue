@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, useSlots, getCurrentInstance } from 'vue';
 
+defineOptions({ inheritAttrs: false });
+
 const slots = useSlots();
 const slotNames = Object.keys(slots);
 
@@ -18,7 +20,7 @@ const props = defineProps({
         type: Array,
         default: () => [60, 100, 150, 200]
     },
-    scrollHeight: { type: String, default: '600px' },
+    scrollHeight: { type: String, default: '1000px' },
     resizableColumns: { type: Boolean, default: true },
     columnFilters: { type: Boolean, default: false },
     filters: { type: Object, default: undefined }

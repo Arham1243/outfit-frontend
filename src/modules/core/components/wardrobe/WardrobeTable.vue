@@ -25,6 +25,7 @@ const pagination = new PaginationOptions();
 const sortFilters = new SortFilterOptions();
 const menu = ref();
 const selectedItem = ref(null);
+const selectedItems = ref([]);
 const loading = ref(false);
 const items = ref([]);
 const isEditMode = ref(false);
@@ -32,19 +33,22 @@ const busy = ref(false);
 const totalRecords = ref();
 const showDialog = ref(false);
 const deleteDialog = ref(false);
+const isBulkDelete = ref(false);
 const isDragOver = ref(false);
 const fileInputRef = ref(null);
 const formData = ref({
     image: null
 });
-/** Pending base64 images for multi-create */
+/** Pending uploads for multi-create */
 const pendingImages = ref([]);
 
 const dialogHeader = computed(() =>
     isEditMode.value ? $t('edit_wardrobe_image') : $t('add_new_item')
 );
 const dialogFormData = computed(() =>
-    isEditMode.value ? formData.value : { images: pendingImages.value }
+    isEditMode.value
+        ? formData.value
+        : { images: pendingImages.value.map((item) => item.preview) }
 );
 const dialogInitialData = computed(() =>
     isEditMode.value
@@ -116,6 +120,13 @@ const editItem = () => {
 };
 
 const showDeleteDialog = () => {
+    isBulkDelete.value = false;
+    deleteDialog.value = true;
+};
+
+const showBulkDeleteDialog = () => {
+    if (!selectedItems.value.length) return;
+    isBulkDelete.value = true;
     deleteDialog.value = true;
 };
 
@@ -126,8 +137,23 @@ const showActions = (event, item) => {
 
 const onPageChange = (event) => {
     pagination.updatePageParams(event);
+    selectedItems.value = [];
     getItems();
 };
+
+const deleteDialogHeader = computed(() =>
+    isBulkDelete.value
+        ? $t('delete_wardrobe_images')
+        : $t('delete_wardrobe_image')
+);
+
+const deleteDialogContent = computed(() =>
+    isBulkDelete.value
+        ? $t('are_you_sure_you_want_to_delete_selected_wardrobe_images', {
+              count: selectedItems.value.length
+          })
+        : $t('are_you_sure_you_want_to_delete_this_wardrobe_image')
+);
 
 const getItems = async () => {
     try {
@@ -150,6 +176,27 @@ const readFileAsDataUrl = (file) => {
         reader.readAsDataURL(file);
     });
 };
+
+const formatFileSize = (bytes) => {
+    if (!bytes) return '';
+
+    if (bytes < 1024) {
+        return `${bytes} B`;
+    }
+
+    if (bytes < 1024 * 1024) {
+        return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
+const createPendingImage = async (file) => ({
+    id: crypto.randomUUID(),
+    name: file.name,
+    size: file.size,
+    preview: await readFileAsDataUrl(file)
+});
 
 const isAcceptedImage = (file) => {
     if (!file) return false;
@@ -175,7 +222,7 @@ const processFiles = async (fileList) => {
         return;
     }
 
-    const results = await Promise.all(files.map((file) => readFileAsDataUrl(file)));
+    const results = await Promise.all(files.map((file) => createPendingImage(file)));
     pendingImages.value = [...pendingImages.value, ...results];
 };
 
@@ -206,6 +253,52 @@ const removePendingImage = (index) => {
     pendingImages.value.splice(index, 1);
 };
 
+const clearEditImage = () => {
+    formData.value.image = null;
+    if (fileInputRef.value) {
+        fileInputRef.value.value = '';
+    }
+};
+
+const showAddDropzone = computed(
+    () => !isEditMode.value || !formData.value.image
+);
+
+const formatType = (type) => {
+    if (!type) return null;
+    return String(type)
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join('-');
+};
+
+const formatConfidence = (confidence) => {
+    if (confidence === null || confidence === undefined) return null;
+    return `${Math.round(Number(confidence) * 100)}%`;
+};
+
+const getPredictedLabels = (metadata) => {
+    if (!metadata?.predicted_labels?.length) return [];
+    return metadata.predicted_labels;
+};
+
+const getTypeTagClass = (type) => {
+    const normalizedType = String(type || '').toLowerCase();
+    const typeClasses = {
+        't-shirt': 'wardrobe-type--t-shirt',
+        shirt: 'wardrobe-type--shirt',
+        pants: 'wardrobe-type--pants',
+        jeans: 'wardrobe-type--jeans',
+        shoes: 'wardrobe-type--shoes',
+        jacket: 'wardrobe-type--jacket',
+        sweater: 'wardrobe-type--sweater',
+        shorts: 'wardrobe-type--shorts',
+        dress: 'wardrobe-type--dress'
+    };
+
+    return typeClasses[normalizedType] ?? 'wardrobe-type--default';
+};
+
 const save = async () => {
     try {
         busy.value = true;
@@ -224,8 +317,8 @@ const save = async () => {
                 return;
             }
             const silent = pendingImages.value.length > 1;
-            for (const image of pendingImages.value) {
-                await wardrobeStore.create({ image }, { silent });
+            for (const item of pendingImages.value) {
+                await wardrobeStore.create({ image: item.preview }, { silent });
             }
             if (silent) {
                 globalStore.showSuccess(
@@ -250,14 +343,25 @@ const save = async () => {
 const deleteItem = async () => {
     try {
         loading.value = true;
-        if (selectedItem.value) {
+        if (isBulkDelete.value) {
+            const uuids = selectedItems.value.map((item) => item.uuid);
+            if (uuids.length) {
+                await wardrobeStore.bulkDelete(uuids);
+            }
+            selectedItems.value = [];
+        } else if (selectedItem.value) {
             await wardrobeStore.deleteItem(selectedItem.value.uuid);
+            selectedItems.value = selectedItems.value.filter(
+                (item) => item.uuid !== selectedItem.value.uuid
+            );
         }
         deleteDialog.value = false;
+        isBulkDelete.value = false;
         await getItems();
         selectedItem.value = {};
     } catch (error) {
         deleteDialog.value = false;
+        isBulkDelete.value = false;
         globalStore.showError(
             $t('cannot_delete'),
             getValidationErrorMessage(error, $t('something_went_wrong'))
@@ -277,6 +381,16 @@ const deleteItem = async () => {
         </template>
         <template #actions>
             <Button
+                v-if="
+                    $ability.can('core.wardrobe.delete') &&
+                    selectedItems.length
+                "
+                :label="$t('delete')"
+                icon="pi pi-trash"
+                severity="danger"
+                @click="showBulkDeleteDialog"
+            />
+            <Button
                 v-if="$ability.can('core.wardrobe.create')"
                 :label="$t('add_new_item')"
                 icon="pi pi-plus"
@@ -288,6 +402,9 @@ const deleteItem = async () => {
     <Card class="py-3 px-2">
         <template #content>
             <BaseTable
+                v-model:selection="selectedItems"
+                selectionMode="multiple"
+                dataKey="uuid"
                 :reorderableColumns="true"
                 :value="items"
                 :page="pagination.page"
@@ -299,10 +416,16 @@ const deleteItem = async () => {
                 <template #empty>{{ $t('no_wardrobe_images_found') }}</template>
 
                 <Column
+                    v-if="$ability.can('core.wardrobe.delete')"
+                    columnKey="selection"
+                    selectionMode="multiple"
+                    style="width: 3rem"
+                />
+
+                <Column
                     columnKey="image"
                     field="image"
                     :header="$t('image')"
-                    style="width: 12rem"
                 >
                     <template #body="{ data }">
                         <div class="wardrobe-table__thumb">
@@ -315,6 +438,52 @@ const deleteItem = async () => {
                             />
                             <span v-else>-</span>
                         </div>
+                    </template>
+                </Column>
+
+                <Column
+                    columnKey="type"
+                    field="type"
+                    :header="$t('wardrobe_type')"
+                >
+                    <template #body="{ data }">
+                        <Tag
+                            v-if="data.type"
+                            :value="formatType(data.type)"
+                            :class="getTypeTagClass(data.type)"
+                            class="wardrobe-type-tag"
+                            rounded
+                        />
+                        <span v-else class="wardrobe-table__pending">
+                            {{ $t('classification_pending') }}
+                        </span>
+                    </template>
+                </Column>
+
+                <Column
+                    columnKey="predicted_labels"
+                    field="metadata.predicted_labels"
+                    :header="$t('predicted_labels')"
+                >
+                    <template #body="{ data }">
+                        <div
+                            v-if="getPredictedLabels(data.metadata).length"
+                            class="wardrobe-table__labels"
+                        >
+                            <span
+                                v-for="(prediction, index) in getPredictedLabels(
+                                    data.metadata
+                                )"
+                                :key="`${prediction.label}-${index}`"
+                                class="wardrobe-table__label-chip"
+                            >
+                                {{ formatType(prediction.label) }}
+                                ({{
+                                    formatConfidence(prediction.score)
+                                }})
+                            </span>
+                        </div>
+                        <span v-else>-</span>
                     </template>
                 </Column>
 
@@ -368,7 +537,7 @@ const deleteItem = async () => {
         @cancel="closeDialog"
         @confirm="save"
     >
-        <div class="mb-3 col-span-12">
+        <div class="mb-3 col-span-12 wardrobe-upload">
             <input
                 ref="fileInputRef"
                 type="file"
@@ -380,32 +549,94 @@ const deleteItem = async () => {
             />
 
             <div
+                v-if="isEditMode && formData.image"
+                class="wardrobe-upload__file-card"
+            >
+                <div class="wardrobe-upload__file-card-main">
+                    <span class="wardrobe-upload__file-thumb" aria-hidden="true">
+                        <img
+                            :src="formData.image"
+                            alt="Preview"
+                            class="wardrobe-upload__file-thumb-img"
+                        />
+                    </span>
+                    <div class="wardrobe-upload__file-details">
+                        <p class="wardrobe-upload__file-name">
+                            {{ $t('wardrobe_image_preview') }}
+                        </p>
+                        <p class="wardrobe-upload__file-meta">
+                            {{ $t('click_trash_to_replace_image') }}
+                        </p>
+                    </div>
+                </div>
+
+                <Button
+                    size="small"
+                    type="button"
+                    severity="danger"
+                    rounded
+                    icon="pi pi-trash"
+                    :aria-label="$t('remove_image')"
+                    :disabled="busy"
+                    @click.stop="clearEditImage"
+                />
+            </div>
+
+            <div
                 v-if="!isEditMode && pendingImages.length"
-                class="wardrobe-upload__pending mb-3"
+                class="wardrobe-upload__preview-list"
             >
                 <div
-                    v-for="(img, index) in pendingImages"
-                    :key="index"
-                    class="wardrobe-upload__pending-item"
+                    v-for="(item, index) in pendingImages"
+                    :key="item.id"
+                    class="wardrobe-upload__file-card"
                 >
-                    <img :src="img" alt="Preview" />
+                    <div class="wardrobe-upload__file-card-main">
+                        <span
+                            class="wardrobe-upload__file-thumb"
+                            aria-hidden="true"
+                        >
+                            <img
+                                :src="item.preview"
+                                :alt="item.name"
+                                class="wardrobe-upload__file-thumb-img"
+                            />
+                        </span>
+                        <div class="wardrobe-upload__file-details">
+                            <p
+                                class="wardrobe-upload__file-name"
+                                :title="item.name"
+                            >
+                                {{ item.name }}
+                            </p>
+                            <p
+                                v-if="formatFileSize(item.size)"
+                                class="wardrobe-upload__file-meta"
+                            >
+                                {{ formatFileSize(item.size) }}
+                            </p>
+                        </div>
+                    </div>
+
                     <Button
-                        icon="pi pi-times"
+                        size="small"
+                        type="button"
                         severity="danger"
                         rounded
-                        text
-                        size="small"
-                        class="wardrobe-upload__pending-remove"
+                        icon="pi pi-trash"
+                        :aria-label="$t('remove_image')"
                         :disabled="busy"
-                        @click="removePendingImage(index)"
+                        @click.stop="removePendingImage(index)"
                     />
                 </div>
             </div>
 
             <div
+                v-if="showAddDropzone"
                 class="wardrobe-upload__dropzone"
                 :class="{
-                    'wardrobe-upload__dropzone--edit': isEditMode,
+                    'wardrobe-upload__dropzone--compact':
+                        !isEditMode && pendingImages.length > 0,
                     'wardrobe-upload__dropzone--active': isDragOver,
                     'wardrobe-upload__dropzone--disabled': busy
                 }"
@@ -414,21 +645,15 @@ const deleteItem = async () => {
                 @drop="onDrop"
                 @click="openFilePicker"
             >
-                <div
-                    v-if="isEditMode && formData.image"
-                    class="wardrobe-upload__current"
-                >
-                    <img
-                        :src="formData.image"
-                        alt="Preview"
-                        class="wardrobe-upload__current-img"
-                    />
-                </div>
                 <span class="wardrobe-upload__dropzone-icon" aria-hidden="true">
                     <i class="pi pi-cloud-upload" />
                 </span>
                 <p class="wardrobe-upload__dropzone-title m-0">
-                    {{ $t('drag_drop_or_browse_file') }}
+                    {{
+                        !isEditMode && pendingImages.length
+                            ? $t('wardrobe_add_more_images')
+                            : $t('drag_drop_or_browse_file')
+                    }}
                 </p>
                 <p class="wardrobe-upload__dropzone-hint m-0">
                     {{ $t('wardrobe_upload_supported_formats') }}
@@ -441,8 +666,8 @@ const deleteItem = async () => {
         v-if="$ability.can('core.wardrobe.delete')"
         v-model="deleteDialog"
         variant="danger"
-        :header="$t('delete_wardrobe_image')"
-        :content="$t('are_you_sure_you_want_to_delete_this_wardrobe_image')"
+        :header="deleteDialogHeader"
+        :content="deleteDialogContent"
         @confirm="deleteItem"
     />
 </template>
@@ -466,6 +691,194 @@ const deleteItem = async () => {
     border-radius: 0.75rem;
     cursor: pointer;
     border: 1px solid var(--p-content-border-color, #e2e8f0);
+}
+
+.wardrobe-table__pending {
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color, #64748b);
+    font-style: italic;
+}
+
+.wardrobe-type-tag:deep(.p-tag),
+:deep(.wardrobe-type-tag.p-tag) {
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.wardrobe-type-tag.wardrobe-type--t-shirt:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--t-shirt.p-tag) {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}
+
+.wardrobe-type-tag.wardrobe-type--shirt:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--shirt.p-tag) {
+    background: #e0e7ff;
+    color: #4338ca;
+    border-color: #a5b4fc;
+}
+
+.wardrobe-type-tag.wardrobe-type--pants:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--pants.p-tag) {
+    background: #e2e8f0;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.wardrobe-type-tag.wardrobe-type--jeans:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--jeans.p-tag) {
+    background: #dbeafe;
+    color: #1e40af;
+    border-color: #60a5fa;
+}
+
+.wardrobe-type-tag.wardrobe-type--shoes:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--shoes.p-tag) {
+    background: #ffedd5;
+    color: #c2410c;
+    border-color: #fdba74;
+}
+
+.wardrobe-type-tag.wardrobe-type--jacket:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--jacket.p-tag) {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+.wardrobe-type-tag.wardrobe-type--sweater:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--sweater.p-tag) {
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #86efac;
+}
+
+.wardrobe-type-tag.wardrobe-type--shorts:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--shorts.p-tag) {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fcd34d;
+}
+
+.wardrobe-type-tag.wardrobe-type--dress:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--dress.p-tag) {
+    background: #fce7f3;
+    color: #be185d;
+    border-color: #f9a8d4;
+}
+
+.wardrobe-type-tag.wardrobe-type--default:deep(.p-tag),
+:deep(.wardrobe-type-tag.wardrobe-type--default.p-tag) {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+.wardrobe-table__labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.wardrobe-table__label-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    background: color-mix(
+        in srgb,
+        var(--p-primary-color, #2563eb) 10%,
+        var(--p-content-background, #fff)
+    );
+    color: var(--p-text-color, #334155);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+}
+
+.wardrobe-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.wardrobe-upload__preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    padding-right: 0.125rem;
+}
+
+.wardrobe-upload__file-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--p-primary-color, #2563eb) 18%,
+            var(--p-content-border-color, #e2e8f0)
+        );
+    border-radius: 0.75rem;
+    background: color-mix(
+        in srgb,
+        var(--p-primary-color, #2563eb) 4%,
+        var(--p-content-background, #fff)
+    );
+}
+
+.wardrobe-upload__file-card-main {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.wardrobe-upload__file-thumb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 0.625rem;
+    overflow: hidden;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    background: var(--p-content-background, #fff);
+}
+
+.wardrobe-upload__file-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.wardrobe-upload__file-details {
+    min-width: 0;
+}
+
+.wardrobe-upload__file-name {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--p-text-color, #334155);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wardrobe-upload__file-meta {
+    margin: 0.125rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--p-text-muted-color, #64748b);
 }
 
 .wardrobe-upload__dropzone {
@@ -495,6 +908,21 @@ const deleteItem = async () => {
     );
     box-shadow: 0 0 0 3px
         color-mix(in srgb, var(--p-primary-color, #2563eb) 10%, transparent);
+}
+
+.wardrobe-upload__dropzone--compact {
+    min-height: 7.5rem;
+    padding: 1rem 1.25rem;
+}
+
+.wardrobe-upload__dropzone--compact .wardrobe-upload__dropzone-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.wardrobe-upload__dropzone--compact .wardrobe-upload__dropzone-icon i {
+    font-size: 1.25rem;
 }
 
 .wardrobe-upload__dropzone--disabled {
@@ -536,66 +964,23 @@ const deleteItem = async () => {
     color: var(--p-text-muted-color, #64748b);
 }
 
-.wardrobe-upload__pending {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
-}
-
-.wardrobe-upload__pending-item {
-    position: relative;
-}
-
-.wardrobe-upload__pending-item img {
-    height: 6rem;
-    width: 100%;
-    object-fit: cover;
-    border-radius: 0.625rem;
-}
-
-.wardrobe-upload__pending-remove {
-    position: absolute !important;
-    top: 0;
-    right: 0;
-}
-
-.wardrobe-upload__dropzone--edit {
-    min-height: 19rem;
-    border-style: solid;
-    background: color-mix(
-        in srgb,
-        var(--p-surface-50, #f8fafc) 92%,
-        var(--p-content-background, #fff)
-    );
-}
-
-.wardrobe-upload__current {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: min(100%, 18rem);
-    height: 12rem;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border: 1px solid var(--p-content-border-color, #e2e8f0);
-    border-radius: 0.625rem;
-    background: var(--p-content-background, #fff);
-}
-
-.wardrobe-upload__current-img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 0.375rem;
-}
-
 :global(.app-dark) .wardrobe-upload__dropzone {
     border-color: #3f3f46;
     background: #18181b;
 }
 
-:global(.app-dark) .wardrobe-upload__dropzone--edit {
+:global(.app-dark) .wardrobe-upload__file-card {
+    border-color: #334155;
+    background: #18181b;
+}
+
+:global(.app-dark) .wardrobe-upload__file-thumb {
+    border-color: #3f3f46;
     background: #111113;
+}
+
+:global(.app-dark) .wardrobe-upload__file-name {
+    color: #f4f4f5;
 }
 
 :global(.app-dark) .wardrobe-upload__dropzone--active,
@@ -604,11 +989,6 @@ const deleteItem = async () => {
     border-color: #52525b;
     background: #18181b;
     box-shadow: 0 0 0 1px #303036;
-}
-
-:global(.app-dark) .wardrobe-upload__current {
-    border-color: #2f3037;
-    background: #202123;
 }
 
 :global(.app-dark) .wardrobe-upload__dropzone-icon {
@@ -622,5 +1002,75 @@ const deleteItem = async () => {
 
 :global(.app-dark) .wardrobe-upload__dropzone-hint {
     color: #a1a1aa;
+}
+
+:global(.app-dark) .wardrobe-table__color-swatch {
+    border-color: #3f3f46;
+}
+
+:global(.app-dark) .wardrobe-table__label-chip {
+    background: #27272a;
+    border-color: #3f3f46;
+    color: #f4f4f5;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--t-shirt.p-tag) {
+    background: #1e3a5f;
+    color: #93c5fd;
+    border-color: #2563eb;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--shirt.p-tag) {
+    background: #312e81;
+    color: #c7d2fe;
+    border-color: #4f46e5;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--pants.p-tag) {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #64748b;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--jeans.p-tag) {
+    background: #1e3a8a;
+    color: #bfdbfe;
+    border-color: #3b82f6;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--shoes.p-tag) {
+    background: #7c2d12;
+    color: #fed7aa;
+    border-color: #ea580c;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--jacket.p-tag) {
+    background: #111827;
+    color: #f3f4f6;
+    border-color: #374151;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--sweater.p-tag) {
+    background: #14532d;
+    color: #bbf7d0;
+    border-color: #22c55e;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--shorts.p-tag) {
+    background: #78350f;
+    color: #fde68a;
+    border-color: #d97706;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--dress.p-tag) {
+    background: #831843;
+    color: #fbcfe8;
+    border-color: #db2777;
+}
+
+:global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--default.p-tag) {
+    background: #27272a;
+    color: #d4d4d8;
+    border-color: #52525b;
 }
 </style>

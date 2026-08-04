@@ -47,10 +47,23 @@ export const useWardrobeStore = defineStore('WardrobeStore', () => {
         });
     };
 
+    const bulkDelete = async (uuids) => {
+        return globalStore.actionWrapper(async () => {
+            const res = await WardrobeService.bulkDelete(uuids);
+            const count = res.data?.deleted ?? uuids.length;
+            globalStore.showSuccess(
+                $t('wardrobe_deleted'),
+                $t('wardrobe_images_deleted_successfully', { count })
+            );
+            return res.data;
+        });
+    };
+
     return {
         search,
         create,
         update,
-        deleteItem
+        deleteItem,
+        bulkDelete
     };
 });
