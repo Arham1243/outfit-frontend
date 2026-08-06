@@ -46,17 +46,18 @@ export function getMissingWardrobeGroups(typeCounts = {}) {
     return missing;
 }
 
-export function isProfileReadyForOutfits({ height, face_image: faceImage }) {
+export function isProfileReadyForOutfits({ height, gender }) {
     const normalizedHeight =
         height === null || height === undefined || height === ''
             ? null
             : Number(height);
 
-    return (
-        Number.isFinite(normalizedHeight) &&
-        normalizedHeight >= 50 &&
-        Boolean(faceImage)
-    );
+    const hasValidHeight =
+        Number.isFinite(normalizedHeight) && normalizedHeight >= 50;
+
+    const hasValidGender = gender === 'male' || gender === 'female';
+
+    return hasValidHeight && hasValidGender;
 }
 
 export function formatMissingWardrobeGroups(missingGroups, t) {

@@ -19,6 +19,20 @@ export const useOutfitStore = defineStore('OutfitStore', () => {
         });
     };
 
+    const getBatch = (batchId) => {
+        return globalStore.actionWrapper(async () => {
+            const res = await OutfitService.getBatch(batchId);
+            return res.data;
+        });
+    };
+
+    const getLatestBatch = () => {
+        return globalStore.actionWrapper(async () => {
+            const res = await OutfitService.getLatestBatch();
+            return res.data;
+        });
+    };
+
     const getTypeCounts = () => {
         return globalStore.actionWrapper(async () => {
             const res = await OutfitService.getTypeCounts();
@@ -29,6 +43,8 @@ export const useOutfitStore = defineStore('OutfitStore', () => {
     return {
         list,
         generate,
+        getBatch,
+        getLatestBatch,
         getTypeCounts
     };
 });

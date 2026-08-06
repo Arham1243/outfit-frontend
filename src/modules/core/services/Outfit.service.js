@@ -9,6 +9,14 @@ export const generate = (params) => {
     return AxiosService.post(`${BASE_URL}/outfits/generate`, null, { params });
 };
 
+export const getBatch = (batchId) => {
+    return AxiosService.get(`${BASE_URL}/outfits/generated/${batchId}`);
+};
+
+export const getLatestBatch = () => {
+    return AxiosService.get(`${BASE_URL}/outfits/latest-batch`);
+};
+
 export const getTypeCounts = () => {
     return AxiosService.get(`${BASE_URL}/outfits/wardrobe-type-counts`);
 };

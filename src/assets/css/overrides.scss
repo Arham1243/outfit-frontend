@@ -22,6 +22,14 @@
     border-radius: 0.5rem;
     box-shadow: 0 8px 32px rgba(15, 23, 42, 0.18);
 }
+
+/* Full-body generated outfits — use most of the viewport in preview */
+.p-image-original.outfit-image-preview {
+    width: auto !important;
+    max-width: min(92vw, 42rem) !important;
+    max-height: calc(92vh - 5rem) !important;
+    aspect-ratio: auto;
+}
 .p-datatable-header{
     padding-inline: 0 !important;
 }

@@ -1,50 +1,53 @@
 <script setup>
-import { computed, nextTick, onBeforeMount, onBeforeUnmount, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useOutfitStore } from '@/modules/core/stores';
 import { useGlobalStore, useProfileStore, useSessionStore } from '@/stores';
-import { useHelpers } from '@/composables';
 import { getValidationErrorMessage } from '@/utils/apiErrors';
-import PlaceholderImage from '@/assets/images/image_not_available.png';
+import { formatMissingWardrobeGroups } from '@/config/outfitRequirements';
 import {
-    formatMissingWardrobeGroups,
-    getMissingWardrobeGroups,
-    isProfileReadyForOutfits
-} from '@/config/outfitRequirements';
+    cmToFeetInchesInput,
+    feetInchesInputToCm,
+    parseFeetInchesInput
+} from '@/utils/heightConversion';
 
-const FACE_IMAGE_MAX_SIZE = 500 * 1024;
-const PAGE_LIMIT = 12;
+const GALLERY_LIMIT = 50;
+const GALLERY_POLL_INTERVAL_MS = 3000;
+const GALLERY_POLL_MAX_ATTEMPTS = 40;
 
 const outfitStore = useOutfitStore();
 const profileStore = useProfileStore();
 const sessionStore = useSessionStore();
 const globalStore = useGlobalStore();
 const router = useRouter();
-const { filterFileFields } = useHelpers();
 
 const savingProfile = ref(false);
 const loadingCounts = ref(false);
 const loadingGallery = ref(false);
-const loadingMore = ref(false);
 const showGallery = ref(false);
 const showSettingsDialog = ref(false);
 const typeCounts = ref({});
 const wardrobeTotal = ref(0);
 const galleryItems = ref([]);
-const currentPage = ref(0);
-const lastPage = ref(1);
-const loadMoreRef = ref(null);
-let loadMoreObserver = null;
+let galleryPollTimer = null;
+let galleryPollAttempts = 0;
 
 const formData = ref({
-    height: null,
-    face_image: null
+    gender: null,
+    height: null
 });
 
+const heightFtInput = ref('');
+
 const settingsInitialData = ref({
-    height: null,
-    face_image: null
+    gender: null,
+    height: null
 });
+
+const genderOptions = [
+    { name: $t('male'), code: 'male' },
+    { name: $t('female'), code: 'female' }
+];
 
 const settingsDialogFormData = computed(() => formData.value);
 
@@ -54,8 +57,8 @@ const sortedTypeCounts = computed(() => {
         .sort(([a], [b]) => a.localeCompare(b));
 });
 
-const hasMorePages = computed(
-    () => showGallery.value && currentPage.value < lastPage.value
+const generateButtonLabel = computed(() =>
+    galleryItems.value.length ? $t('generate_more') : $t('generate')
 );
 
 const heightFieldError = computed(() => {
@@ -64,29 +67,43 @@ const heightFieldError = computed(() => {
     return Array.isArray(messages) ? messages[0] : messages;
 });
 
-const faceFieldError = computed(() => {
-    const messages = globalStore.errors?.face_image;
+const genderFieldError = computed(() => {
+    const messages = globalStore.errors?.gender;
     if (!messages) return '';
     return Array.isArray(messages) ? messages[0] : messages;
 });
 
-const normalizeHeight = (value) => {
-    if (value === null || value === undefined || value === '') {
+const heightCmPreview = computed(() => feetInchesInputToCm(heightFtInput.value));
+
+const heightCmPreviewLabel = computed(() => {
+    if (heightCmPreview.value === null) {
+        return '';
+    }
+
+    return $t('height_cm_equivalent', { cm: heightCmPreview.value });
+});
+
+const normalizeHeightFromFeet = (value) => {
+    const cm = feetInchesInputToCm(value);
+
+    if (cm === null) {
         return null;
     }
-    const parsed = Number(value);
-    if (!Number.isFinite(parsed)) {
+
+    if (cm < 50 || cm > 300) {
         return null;
     }
-    return Math.round(parsed);
+
+    return cm;
 };
 
 onBeforeMount(async () => {
-    await Promise.all([loadProfile(), loadTypeCounts()]);
+    await Promise.all([loadProfile(), loadTypeCounts(), loadGallery()]);
+    startGalleryPolling();
 });
 
 onBeforeUnmount(() => {
-    loadMoreObserver?.disconnect();
+    stopGalleryPolling();
 });
 
 const formatType = (type) => {
@@ -115,8 +132,9 @@ const loadProfile = async () => {
 
     await profileStore.getItem(user.uuid);
     const profile = profileStore.currentItem ?? user;
+    formData.value.gender = profile.gender ?? null;
     formData.value.height = profile.height ?? null;
-    formData.value.face_image = profile.face_image ?? null;
+    heightFtInput.value = cmToFeetInchesInput(profile.height);
 };
 
 const loadTypeCounts = async () => {
@@ -130,31 +148,73 @@ const loadTypeCounts = async () => {
     }
 };
 
-const onFaceImageSelect = (event) => {
-    const file = event.files?.[0];
-    if (!file) return;
+const mapGalleryItems = (items) =>
+    (items ?? []).map((item, index) => ({
+        ...item,
+        _key: item.uuid ?? `outfit-${index}`
+    }));
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        formData.value.face_image = e.target.result;
-    };
-    reader.readAsDataURL(file);
+const loadGallery = async () => {
+    const res = await outfitStore.list({ page: 1, limit: GALLERY_LIMIT });
+    if (!res.data?.length) {
+        return false;
+    }
+
+    showGallery.value = true;
+    galleryItems.value = mapGalleryItems(res.data);
+
+    return true;
+};
+
+const hasPendingGalleryItems = () =>
+    galleryItems.value.some((item) => isOutfitPending(item));
+
+const stopGalleryPolling = () => {
+    if (galleryPollTimer) {
+        clearInterval(galleryPollTimer);
+        galleryPollTimer = null;
+    }
+    galleryPollAttempts = 0;
+};
+
+const startGalleryPolling = () => {
+    stopGalleryPolling();
+
+    if (!hasPendingGalleryItems()) {
+        return;
+    }
+
+    galleryPollTimer = setInterval(async () => {
+        galleryPollAttempts += 1;
+
+        try {
+            await loadGallery();
+        } catch {
+            stopGalleryPolling();
+            return;
+        }
+
+        if (!hasPendingGalleryItems() || galleryPollAttempts >= GALLERY_POLL_MAX_ATTEMPTS) {
+            stopGalleryPolling();
+        }
+    }, GALLERY_POLL_INTERVAL_MS);
 };
 
 const openSettingsDialog = async () => {
     await loadProfile();
     settingsInitialData.value = {
-        height: formData.value.height,
-        face_image: formData.value.face_image
+        gender: formData.value.gender,
+        height: formData.value.height
     };
     showSettingsDialog.value = true;
 };
 
 const onSettingsCancel = () => {
     formData.value = {
-        height: settingsInitialData.value.height,
-        face_image: settingsInitialData.value.face_image
+        gender: settingsInitialData.value.gender,
+        height: settingsInitialData.value.height
     };
+    heightFtInput.value = cmToFeetInchesInput(settingsInitialData.value.height);
     globalStore.clearErrors();
 };
 
@@ -162,24 +222,38 @@ const saveProfile = async () => {
     const user = sessionStore.user;
     if (!user?.uuid) return;
 
+    if (!parseFeetInchesInput(heightFtInput.value)) {
+        globalStore.showError(
+            $t('validation_error'),
+            $t('height_ft_invalid')
+        );
+        return;
+    }
+
     try {
         savingProfile.value = true;
         globalStore.clearErrors();
-        const height = normalizeHeight(formData.value.height);
+        const height = normalizeHeightFromFeet(heightFtInput.value);
+
+        if (height === null) {
+            globalStore.showError(
+                $t('validation_error'),
+                $t('height_ft_out_of_range')
+            );
+            return;
+        }
+
         formData.value.height = height;
-        const payload = filterFileFields(
-            {
-                height,
-                face_image: formData.value.face_image
-            },
-            ['face_image']
-        );
-        await profileStore.update(user.uuid, payload);
+        await profileStore.update(user.uuid, {
+            gender: formData.value.gender,
+            height
+        });
         await sessionStore.me();
         settingsInitialData.value = {
-            height: formData.value.height,
-            face_image: formData.value.face_image
+            gender: formData.value.gender,
+            height: formData.value.height
         };
+        heightFtInput.value = cmToFeetInchesInput(formData.value.height);
         showSettingsDialog.value = false;
     } catch (error) {
         globalStore.showError(
@@ -191,21 +265,10 @@ const saveProfile = async () => {
     }
 };
 
-const fetchGalleryPage = async (page, append = false) => {
-    const res = await outfitStore.list({ page, limit: PAGE_LIMIT });
-    applyGalleryResponse(res, page, append);
-};
+const isOutfitPending = (item) =>
+    item?.status === 'pending' || item?.status === 'processing';
 
-const applyGalleryResponse = (res, page, append = false) => {
-    const items = (res.data ?? []).map((item, index) => ({
-        ...item,
-        _key: `${page}-${item.uuid ?? index}`
-    }));
-
-    galleryItems.value = append ? [...galleryItems.value, ...items] : items;
-    currentPage.value = res.meta?.current_page ?? page;
-    lastPage.value = res.meta?.last_page ?? 1;
-};
+const isOutfitFailed = (item) => item?.status === 'failed';
 
 const openSettingsForMissingProfile = async (message) => {
     globalStore.showError($t('validation_error'), message);
@@ -213,40 +276,13 @@ const openSettingsForMissingProfile = async (message) => {
 };
 
 const createOutfits = async () => {
-    await Promise.all([loadProfile(), loadTypeCounts()]);
-
-    if (
-        !isProfileReadyForOutfits({
-            height: formData.value.height,
-            face_image: formData.value.face_image
-        })
-    ) {
-        await openSettingsForMissingProfile($t('outfit_complete_settings_first'));
-        return;
-    }
-
-    const missingGroups = getMissingWardrobeGroups(typeCounts.value);
-    if (missingGroups.length) {
-        globalStore.showError(
-            $t('validation_error'),
-            $t('outfit_missing_wardrobe_detail', {
-                groups: formatMissingWardrobeGroups(missingGroups, $t)
-            })
-        );
-        return;
-    }
-
     try {
         loadingGallery.value = true;
         showGallery.value = true;
-        const res = await outfitStore.generate({ page: 1, limit: PAGE_LIMIT });
-        applyGalleryResponse(res, 1, false);
-        await nextTick();
-        setupLoadMoreObserver();
+        await outfitStore.generate();
+        await loadGallery();
+        startGalleryPolling();
     } catch (error) {
-        showGallery.value = false;
-        galleryItems.value = [];
-
         const responseData = error?.response?.data;
         if (error?.response?.status === 422) {
             if (responseData?.meta?.requires_settings) {
@@ -254,6 +290,30 @@ const createOutfits = async () => {
                     getValidationErrorMessage(
                         error,
                         $t('outfit_complete_settings_first')
+                    )
+                );
+                return;
+            }
+
+            if (responseData?.meta?.missing_wardrobe_groups?.length) {
+                globalStore.showError(
+                    $t('validation_error'),
+                    $t('outfit_missing_wardrobe_detail', {
+                        groups: formatMissingWardrobeGroups(
+                            responseData.meta.missing_wardrobe_groups,
+                            $t
+                        )
+                    })
+                );
+                return;
+            }
+
+            if (responseData?.meta?.all_combinations_exhausted) {
+                globalStore.showError(
+                    $t('validation_error'),
+                    getValidationErrorMessage(
+                        error,
+                        $t('outfit_no_combinations_available')
                     )
                 );
                 return;
@@ -270,35 +330,6 @@ const createOutfits = async () => {
     } finally {
         loadingGallery.value = false;
     }
-};
-
-const loadMoreOutfits = async () => {
-    if (loadingMore.value || loadingGallery.value || !hasMorePages.value) {
-        return;
-    }
-
-    try {
-        loadingMore.value = true;
-        await fetchGalleryPage(currentPage.value + 1, true);
-    } finally {
-        loadingMore.value = false;
-    }
-};
-
-const setupLoadMoreObserver = () => {
-    loadMoreObserver?.disconnect();
-    if (!loadMoreRef.value) return;
-
-    loadMoreObserver = new IntersectionObserver(
-        (entries) => {
-            if (entries.some((entry) => entry.isIntersecting)) {
-                loadMoreOutfits();
-            }
-        },
-        { root: null, rootMargin: '240px 0px', threshold: 0 }
-    );
-
-    loadMoreObserver.observe(loadMoreRef.value);
 };
 </script>
 
@@ -352,7 +383,7 @@ const setupLoadMoreObserver = () => {
             <Button
                 v-if="$ability.can('core.outfits.create')"
                 class="outfits-hero__create"
-                :label="$t('generate')"
+                :label="generateButtonLabel"
                 icon="pi pi-sparkles"
                 :loading="loadingGallery"
                 @click="createOutfits"
@@ -367,22 +398,42 @@ const setupLoadMoreObserver = () => {
                     v-for="item in galleryItems"
                     :key="item._key"
                     class="outfits-gallery__tile"
+                    :class="{
+                        'outfits-gallery__tile--pending': isOutfitPending(item),
+                        'outfits-gallery__tile--failed': isOutfitFailed(item)
+                    }"
                 >
                     <Image
+                        v-if="item.image_url"
                         :src="item.image_url"
                         :alt="$t('outfit_preview')"
                         preview
                         imageClass="outfits-gallery__img"
-                    />
+                    >
+                        <template #preview="slotProps">
+                            <img
+                                :src="item.image_url"
+                                :alt="$t('outfit_preview')"
+                                :class="[slotProps.class, 'outfit-image-preview']"
+                                :style="slotProps.style"
+                                @click="slotProps.previewCallback"
+                            />
+                        </template>
+                    </Image>
+                    <div
+                        v-else-if="isOutfitPending(item)"
+                        class="outfits-gallery__placeholder"
+                    >
+                        <Loader compact />
+                    </div>
+                    <div
+                        v-else-if="isOutfitFailed(item)"
+                        class="outfits-gallery__placeholder outfits-gallery__placeholder--failed"
+                    >
+                        <i class="pi pi-exclamation-triangle" aria-hidden="true" />
+                        <span>{{ $t('outfit_generation_failed') }}</span>
+                    </div>
                 </article>
-            </div>
-
-            <div
-                ref="loadMoreRef"
-                class="outfits-gallery__sentinel"
-                aria-hidden="true"
-            >
-                <Loader v-if="loadingMore" compact />
             </div>
         </section>
     </section>
@@ -398,7 +449,28 @@ const setupLoadMoreObserver = () => {
         @confirm="saveProfile"
         @cancel="onSettingsCancel"
     >
-        <div class="col-span-12">
+        <div class="col-span-12 sm:col-span-6">
+            <label class="outfits-settings__label" for="outfit-gender">
+                {{ $t('gender') }}
+            </label>
+            <InputField
+                id="outfit-gender"
+                v-model="formData.gender"
+                class="w-full"
+                variant="dropdown"
+                optionLabel="name"
+                optionValue="code"
+                :options="genderOptions"
+                :placeholder="$t('select')"
+                :disabled="savingProfile"
+                :invalid="!!genderFieldError"
+            />
+            <small v-if="genderFieldError" class="outfits-settings__error">
+                {{ genderFieldError }}
+            </small>
+        </div>
+
+        <div class="col-span-12 sm:col-span-6">
             <label class="outfits-settings__label" for="outfit-height">
                 {{ $t('height') }}
             </label>
@@ -408,59 +480,24 @@ const setupLoadMoreObserver = () => {
             >
                 <input
                     id="outfit-height"
-                    v-model.number="formData.height"
-                    type="number"
-                    min="50"
-                    max="300"
-                    step="1"
-                    inputmode="numeric"
+                    v-model="heightFtInput"
+                    type="text"
+                    inputmode="decimal"
+                    placeholder="5.8"
                     class="outfits-settings__height-value"
                     :disabled="savingProfile"
                     :aria-invalid="!!heightFieldError"
                 />
-                <span class="outfits-settings__height-unit">{{ $t('cm') }}</span>
+                <span class="outfits-settings__height-unit">{{ $t('ft') }}</span>
             </div>
+            <small
+                v-if="heightCmPreviewLabel"
+                class="outfits-settings__height-hint"
+            >
+                {{ heightCmPreviewLabel }}
+            </small>
             <small v-if="heightFieldError" class="outfits-settings__error">
                 {{ heightFieldError }}
-            </small>
-        </div>
-
-        <div class="col-span-12 md:col-span-4">
-            <label class="outfits-settings__label">
-                {{ $t('face_image') }}
-            </label>
-            <p class="outfits-settings__face-hint">
-                {{ $t('face_image_upload_hint') }}
-            </p>
-            <div class="outfits-settings__face-preview">
-                <img
-                    v-if="formData.face_image"
-                    :src="formData.face_image"
-                    :alt="$t('face_image')"
-                    class="outfits-settings__face-img"
-                />
-                <img
-                    v-else
-                    :src="PlaceholderImage"
-                    :alt="$t('face_image')"
-                    class="outfits-settings__face-placeholder"
-                />
-            </div>
-            <FileUpload
-                name="faceImage"
-                mode="basic"
-                customUpload
-                auto
-                class="outfits-settings__face-upload w-full [&_.p-button]:w-full"
-                :chooseLabel="$t('upload')"
-                chooseIcon="pi pi-upload"
-                :maxFileSize="FACE_IMAGE_MAX_SIZE"
-                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
-                :disabled="savingProfile"
-                @select="onFaceImageSelect"
-            />
-            <small v-if="faceFieldError" class="outfits-settings__error">
-                {{ faceFieldError }}
             </small>
         </div>
     </BaseDialog>
@@ -605,6 +642,14 @@ const setupLoadMoreObserver = () => {
     color: var(--p-text-muted-color, #64748b);
 }
 
+.outfits-settings__height-hint {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--p-text-muted-color, #64748b);
+}
+
 .outfits-settings__error {
     display: block;
     margin-top: 0.35rem;
@@ -620,42 +665,6 @@ const setupLoadMoreObserver = () => {
     color: var(--p-text-color);
 }
 
-.outfits-settings__face-hint {
-    margin: 0 0 0.75rem;
-    font-size: 0.8125rem;
-    line-height: 1.4;
-    color: var(--p-text-muted-color, #64748b);
-}
-
-.outfits-settings__face-preview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    margin-bottom: 0.75rem;
-    padding: 0.75rem;
-    overflow: hidden;
-    border: 2px dashed var(--p-content-border-color, #e2e8f0);
-    border-radius: 0.75rem;
-    background: var(--p-surface-50, #f8fafc);
-}
-
-.outfits-settings__face-img,
-.outfits-settings__face-placeholder {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-.outfits-settings__face-placeholder {
-    opacity: 0.9;
-}
-
-.outfits-settings__face-upload {
-    width: 100%;
-}
-
 .outfits-gallery-section {
     width: 100%;
     padding-bottom: 2rem;
@@ -669,31 +678,54 @@ const setupLoadMoreObserver = () => {
 
 .outfits-gallery__tile {
     position: relative;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 2 / 3;
     overflow: hidden;
     border-radius: 0.35rem;
     background: var(--p-surface-100, #f1f5f9);
 }
 
 .outfits-gallery__tile :deep(.p-image) {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
+}
+
+.outfits-gallery__tile :deep(.p-image-preview) {
+    object-fit: contain;
 }
 
 .outfits-gallery__tile :deep(.outfits-gallery__img),
 .outfits-gallery__tile :deep(img) {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: top center;
     cursor: pointer;
 }
 
-.outfits-gallery__sentinel {
+.outfits-gallery__tile--pending,
+.outfits-gallery__tile--failed {
+    background: var(--p-surface-100, #f1f5f9);
+}
+
+.outfits-gallery__placeholder {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    min-height: 3rem;
-    padding: 1.5rem 0;
+    gap: 0.5rem;
+    width: 100%;
+    height: 100%;
+    padding: 0.75rem;
+    color: var(--p-text-muted-color, #64748b);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.outfits-gallery__placeholder--failed {
+    color: var(--p-red-500, #ef4444);
 }
 
 @media (max-width: 768px) {
