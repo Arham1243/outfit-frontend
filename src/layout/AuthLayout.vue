@@ -15,15 +15,6 @@ import Logo from '@/assets/images/logo.png';
             >
                 <router-view />
             </div>
-            <div class="text-center font-lg text-gray-500 mt-5 leading-6">
-                {{ $t('servicore_by_intelygic') }} <br />
-                <a
-                    href="http://www.intelygic.com"
-                    class="font-semibold primary-text"
-                    target="_blank"
-                    >www.intelygic.com</a
-                >
-            </div>
         </div>
         <Toast />
     </div>

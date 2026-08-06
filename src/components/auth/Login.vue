@@ -4,9 +4,6 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore, useGlobalStore, useSessionStore } from '@/stores';
 import { RecaptchaV2, useRecaptcha } from 'vue3-recaptcha-v2';
 import { getDeviceFingerprint, getDeviceInfo } from '@/utils/deviceFingerprint';
-const MAIN_WEB_URL = (
-    import.meta.env.VITE_MAIN_WEB_URL || 'http://servicore.io'
-).replace(/\/$/, '');
 
 const router = useRouter();
 const route = useRoute();
@@ -21,9 +18,6 @@ const credentials = ref({
     password: '',
     remember_me: false
 });
-
-const showEula = ref(false);
-const showPrivacy = ref(false);
 
 const PASSWORD_SETUP_NOTICES = {
     password_already_set: $t('auth.passwordSetup.passwordAlreadySet'),
@@ -252,59 +246,6 @@ const login = () => {
                 :loading="loading || waitingForRecaptcha"
                 type="submit"
             />
-
-            <div
-                class="text-center text-sm font-base text-gray-500 mt-3 leading-6"
-            >
-                {{ $t('by_signing_in_you_accept_the') }}
-                <span
-                    @click="showEula = true"
-                    class="font-semibold cursor-pointer primary-text"
-                >
-                    {{ $t('end_user_license_agreement') }}
-                </span>
-                {{ $t('and') }}
-                <span
-                    @click="showPrivacy = true"
-                    class="font-semibold cursor-pointer primary-text"
-                >
-                    {{ $t('privacy_policy') }}
-                </span>
-            </div>
         </form>
     </div>
-
-    <!-- EULA Dialog -->
-    <Dialog
-        v-model:visible="showEula"
-        modal
-        :header="$t('end_user_license_agreement')"
-        :style="{ width: '50vw', maxHeight: '80vh' }"
-    >
-        <iframe
-            :src="`${MAIN_WEB_URL}/terms-of-service.html`"
-            class="w-full h-[50vh]"
-            frameborder="0"
-        ></iframe>
-        <template #footer>
-            <Button :label="$t('close')" @click="showEula = false" />
-        </template>
-    </Dialog>
-
-    <!-- Privacy Policy Dialog -->
-    <Dialog
-        v-model:visible="showPrivacy"
-        modal
-        :header="$t('privacy_policy')"
-        :style="{ width: '50vw', maxHeight: '80vh' }"
-    >
-        <iframe
-            :src="`${MAIN_WEB_URL}/privacy-policy.html`"
-            class="w-full h-[50vh]"
-            frameborder="0"
-        ></iframe>
-        <template #footer>
-            <Button :label="$t('close')" @click="showPrivacy = false" />
-        </template>
-    </Dialog>
 </template>
