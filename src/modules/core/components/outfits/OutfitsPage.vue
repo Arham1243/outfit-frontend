@@ -41,7 +41,7 @@ const formData = ref({
     gender: null,
     height: null,
     face_image: null,
-    use_face_for_outfits: false
+    face_mode: 'ai_model'
 });
 
 const heightFtInput = ref('');
@@ -50,13 +50,23 @@ const settingsInitialData = ref({
     gender: null,
     height: null,
     face_image: null,
-    use_face_for_outfits: false
+    face_mode: 'ai_model'
 });
 
 const genderOptions = [
     { name: $t('male'), code: 'male' },
     { name: $t('female'), code: 'female' }
 ];
+
+const faceModeOptions = [
+    { name: $t('outfit_face_mode_ai_model'), code: 'ai_model' },
+    { name: $t('outfit_face_mode_user_face'), code: 'user_face' },
+    { name: $t('outfit_face_mode_user_body_ai_face'), code: 'user_body_ai_face' }
+];
+
+const requiresFaceImage = computed(() =>
+    ['user_face', 'user_body_ai_face'].includes(formData.value.face_mode)
+);
 
 const settingsDialogFormData = computed(() => formData.value);
 
@@ -153,12 +163,12 @@ const loadProfile = async () => {
     const user = sessionStore.user;
     if (!user?.uuid) return;
 
-    await profileStore.getItem(user.uuid);
+    profileStore.getItem(user.uuid);
     const profile = profileStore.currentItem ?? user;
     formData.value.gender = profile.gender ?? null;
     formData.value.height = profile.height ?? null;
     formData.value.face_image = profile.face_image ?? null;
-    formData.value.use_face_for_outfits = Boolean(profile.use_face_for_outfits);
+    formData.value.face_mode = profile.face_mode ?? 'ai_model';
     heightFtInput.value = cmToFeetInchesInput(profile.height);
 };
 
@@ -231,7 +241,7 @@ const openSettingsDialog = async () => {
         gender: formData.value.gender,
         height: formData.value.height,
         face_image: formData.value.face_image,
-        use_face_for_outfits: formData.value.use_face_for_outfits
+        face_mode: formData.value.face_mode
     };
     showSettingsDialog.value = true;
 };
@@ -241,7 +251,7 @@ const onSettingsCancel = () => {
         gender: settingsInitialData.value.gender,
         height: settingsInitialData.value.height,
         face_image: settingsInitialData.value.face_image,
-        use_face_for_outfits: settingsInitialData.value.use_face_for_outfits
+        face_mode: settingsInitialData.value.face_mode
     };
     heightFtInput.value = cmToFeetInchesInput(settingsInitialData.value.height);
     globalStore.clearErrors();
@@ -283,7 +293,7 @@ const saveProfile = async () => {
             return;
         }
 
-        if (formData.value.use_face_for_outfits && !formData.value.face_image) {
+        if (requiresFaceImage.value && !formData.value.face_image) {
             globalStore.showError(
                 $t('validation_error'),
                 $t('outfit_face_image_required')
@@ -296,7 +306,7 @@ const saveProfile = async () => {
             {
                 gender: formData.value.gender,
                 height,
-                use_face_for_outfits: formData.value.use_face_for_outfits,
+                face_mode: formData.value.face_mode,
                 face_image: formData.value.face_image
             },
             ['face_image']
@@ -308,7 +318,7 @@ const saveProfile = async () => {
             gender: formData.value.gender,
             height: formData.value.height,
             face_image: formData.value.face_image,
-            use_face_for_outfits: formData.value.use_face_for_outfits
+            face_mode: formData.value.face_mode
         };
         heightFtInput.value = cmToFeetInchesInput(formData.value.height);
         showSettingsDialog.value = false;
@@ -559,20 +569,26 @@ const createOutfits = async () => {
         </div>
 
         <div class="col-span-12">
-            <div class="outfits-settings__switch-row">
-                <InputField
-                    id="outfit-use-face"
-                    v-model="formData.use_face_for_outfits"
-                    variant="switch"
-                    :disabled="savingProfile"
-                />
-                <label class="outfits-settings__label" for="outfit-use-face">
-                    {{ $t('use_my_face_for_outfits') }}
-                </label>
-            </div>
+            <label class="outfits-settings__label" for="outfit-face-mode">
+                {{ $t('outfit_face_mode') }}
+            </label>
+            <InputField
+                id="outfit-face-mode"
+                v-model="formData.face_mode"
+                class="w-full"
+                variant="dropdown"
+                optionLabel="name"
+                optionValue="code"
+                :options="faceModeOptions"
+                :placeholder="$t('select')"
+                :disabled="savingProfile"
+            />
+            <p class="outfits-settings__face-hint">
+                {{ $t('outfit_face_mode_hint') }}
+            </p>
         </div>
 
-        <div v-if="formData.use_face_for_outfits" class="col-span-12">
+        <div v-if="requiresFaceImage" class="col-span-12">
             <label class="outfits-settings__label">
                 {{ $t('outfit_face_image') }}
             </label>
