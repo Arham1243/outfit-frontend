@@ -4,17 +4,17 @@ import Aura from '@primeuix/themes/aura';
 const AppPreset = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '#e2e8f0',
-            100: '#e2e8f0',
-            200: '#326cde',
-            300: '#1f54bf',
-            400: '#19459c',
-            500: '#14377d',
-            600: '#0f295e',
-            700: '#091a3b',
-            800: '#162f69',
-            900: '#172856',
-            950: '#162144'
+            50: '#fdf2f5',
+            100: '#fce4eb',
+            200: '#f9c9d6',
+            300: '#f49ab1',
+            400: '#e85f82',
+            500: '#B81847',
+            600: '#B01542',
+            700: '#8f1236',
+            800: '#771230',
+            900: '#64132c',
+            950: '#380713'
         },
         formField: {
             padding: {
@@ -39,10 +39,10 @@ const AppPreset = definePreset(Aura, {
                     950: '#0f1012'
                 },
                 primary: {
-                    color: '#3b82f6',
+                    color: '#B81847',
                     contrastColor: '#ffffff',
-                    hoverColor: '#2563eb',
-                    activeColor: '#1d4ed8'
+                    hoverColor: '#B01542',
+                    activeColor: '#8f1236'
                 },
                 highlight: {
                     background: '#303030',

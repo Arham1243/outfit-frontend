@@ -1,8 +1,11 @@
 <script setup>
 import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import PlaceholderImage from '@/assets/images/image_not_available.png';
 import { useOutfitStore } from '@/modules/core/stores';
+import { OUTFIT_FACE_IMAGE } from '@/config';
 import { useGlobalStore, useProfileStore, useSessionStore } from '@/stores';
+import { useHelpers } from '@/composables/useHelpers';
 import { getValidationErrorMessage } from '@/utils/apiErrors';
 import { formatMissingWardrobeGroups } from '@/config/outfitRequirements';
 import {
@@ -10,6 +13,8 @@ import {
     feetInchesInputToCm,
     parseFeetInchesInput
 } from '@/utils/heightConversion';
+
+const { filterFileFields } = useHelpers();
 
 const GALLERY_LIMIT = 50;
 const GALLERY_POLL_INTERVAL_MS = 3000;
@@ -34,14 +39,18 @@ let galleryPollAttempts = 0;
 
 const formData = ref({
     gender: null,
-    height: null
+    height: null,
+    face_image: null,
+    use_face_for_outfits: false
 });
 
 const heightFtInput = ref('');
 
 const settingsInitialData = ref({
     gender: null,
-    height: null
+    height: null,
+    face_image: null,
+    use_face_for_outfits: false
 });
 
 const genderOptions = [
@@ -73,6 +82,12 @@ const genderFieldError = computed(() => {
     return Array.isArray(messages) ? messages[0] : messages;
 });
 
+const faceFieldError = computed(() => {
+    const messages = globalStore.errors?.face_image;
+    if (!messages) return '';
+    return Array.isArray(messages) ? messages[0] : messages;
+});
+
 const heightCmPreview = computed(() => feetInchesInputToCm(heightFtInput.value));
 
 const heightCmPreviewLabel = computed(() => {
@@ -82,6 +97,14 @@ const heightCmPreviewLabel = computed(() => {
 
     return $t('height_cm_equivalent', { cm: heightCmPreview.value });
 });
+
+const faceDimensionHint = computed(() =>
+    $t('wardrobe_upload_recommended_dimensions', {
+        width: OUTFIT_FACE_IMAGE.recommendedWidth,
+        height: OUTFIT_FACE_IMAGE.recommendedHeight,
+        ratio: OUTFIT_FACE_IMAGE.aspectRatioLabel
+    })
+);
 
 const normalizeHeightFromFeet = (value) => {
     const cm = feetInchesInputToCm(value);
@@ -134,6 +157,8 @@ const loadProfile = async () => {
     const profile = profileStore.currentItem ?? user;
     formData.value.gender = profile.gender ?? null;
     formData.value.height = profile.height ?? null;
+    formData.value.face_image = profile.face_image ?? null;
+    formData.value.use_face_for_outfits = Boolean(profile.use_face_for_outfits);
     heightFtInput.value = cmToFeetInchesInput(profile.height);
 };
 
@@ -204,7 +229,9 @@ const openSettingsDialog = async () => {
     await loadProfile();
     settingsInitialData.value = {
         gender: formData.value.gender,
-        height: formData.value.height
+        height: formData.value.height,
+        face_image: formData.value.face_image,
+        use_face_for_outfits: formData.value.use_face_for_outfits
     };
     showSettingsDialog.value = true;
 };
@@ -212,10 +239,23 @@ const openSettingsDialog = async () => {
 const onSettingsCancel = () => {
     formData.value = {
         gender: settingsInitialData.value.gender,
-        height: settingsInitialData.value.height
+        height: settingsInitialData.value.height,
+        face_image: settingsInitialData.value.face_image,
+        use_face_for_outfits: settingsInitialData.value.use_face_for_outfits
     };
     heightFtInput.value = cmToFeetInchesInput(settingsInitialData.value.height);
     globalStore.clearErrors();
+};
+
+const onFaceFileSelect = (event) => {
+    const file = event.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        formData.value.face_image = e.target.result;
+    };
+    reader.readAsDataURL(file);
 };
 
 const saveProfile = async () => {
@@ -243,15 +283,32 @@ const saveProfile = async () => {
             return;
         }
 
+        if (formData.value.use_face_for_outfits && !formData.value.face_image) {
+            globalStore.showError(
+                $t('validation_error'),
+                $t('outfit_face_image_required')
+            );
+            return;
+        }
+
         formData.value.height = height;
-        await profileStore.update(user.uuid, {
-            gender: formData.value.gender,
-            height
-        });
+        const payload = filterFileFields(
+            {
+                gender: formData.value.gender,
+                height,
+                use_face_for_outfits: formData.value.use_face_for_outfits,
+                face_image: formData.value.face_image
+            },
+            ['face_image']
+        );
+        await profileStore.update(user.uuid, payload);
         await sessionStore.me();
+        await loadProfile();
         settingsInitialData.value = {
             gender: formData.value.gender,
-            height: formData.value.height
+            height: formData.value.height,
+            face_image: formData.value.face_image,
+            use_face_for_outfits: formData.value.use_face_for_outfits
         };
         heightFtInput.value = cmToFeetInchesInput(formData.value.height);
         showSettingsDialog.value = false;
@@ -500,6 +557,64 @@ const createOutfits = async () => {
                 {{ heightFieldError }}
             </small>
         </div>
+
+        <div class="col-span-12">
+            <div class="outfits-settings__switch-row">
+                <InputField
+                    id="outfit-use-face"
+                    v-model="formData.use_face_for_outfits"
+                    variant="switch"
+                    :disabled="savingProfile"
+                />
+                <label class="outfits-settings__label" for="outfit-use-face">
+                    {{ $t('use_my_face_for_outfits') }}
+                </label>
+            </div>
+        </div>
+
+        <div v-if="formData.use_face_for_outfits" class="col-span-12">
+            <label class="outfits-settings__label">
+                {{ $t('outfit_face_image') }}
+            </label>
+            <p class="outfits-settings__face-hint">
+                {{ $t('outfit_face_image_hint') }}
+                {{ faceDimensionHint }}
+            </p>
+
+            <div class="outfits-settings__face-upload-block">
+                <div class="outfits-settings__face-preview">
+                <img
+                    v-if="formData.face_image"
+                    :src="formData.face_image"
+                    :alt="$t('outfit_face_image')"
+                    class="outfits-settings__face-img"
+                />
+                <img
+                    v-else
+                    :src="PlaceholderImage"
+                    :alt="$t('outfit_face_image')"
+                    class="outfits-settings__face-img outfits-settings__face-img--placeholder"
+                />
+            </div>
+
+            <FileUpload
+                mode="basic"
+                customUpload
+                auto
+                :chooseLabel="$t('upload')"
+                chooseIcon="pi pi-upload"
+                :maxFileSize="OUTFIT_FACE_IMAGE.maxFileSizeKb * 1024"
+                accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+                class="outfits-settings__face-upload"
+                :disabled="savingProfile"
+                @select="onFaceFileSelect"
+            />
+            </div>
+
+            <small v-if="faceFieldError" class="outfits-settings__error">
+                {{ faceFieldError }}
+            </small>
+        </div>
     </BaseDialog>
 </template>
 
@@ -663,6 +778,59 @@ const createOutfits = async () => {
     font-weight: 500;
     font-size: 0.9375rem;
     color: var(--p-text-color);
+}
+
+.outfits-settings__switch-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.outfits-settings__switch-row .outfits-settings__label {
+    margin-bottom: 0;
+}
+
+.outfits-settings__face-hint {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--p-text-muted-color, #64748b);
+}
+
+.outfits-settings__face-upload-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: fit-content;
+}
+
+.outfits-settings__face-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.5rem;
+    aspect-ratio: 1;
+    margin-bottom: 0.75rem;
+    border: 1px dashed var(--p-content-border-color, #e2e8f0);
+    border-radius: 0.5rem;
+    background: var(--p-surface-50, #f8fafc);
+    overflow: hidden;
+}
+
+.outfits-settings__face-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.outfits-settings__face-img--placeholder {
+    object-fit: contain;
+    padding: 0.5rem;
+}
+
+.outfits-settings__face-upload {
+    width: 5.5rem;
 }
 
 .outfits-gallery-section {
