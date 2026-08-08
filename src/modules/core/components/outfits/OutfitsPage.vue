@@ -49,6 +49,7 @@ const heightFtInput = ref('');
 const settingsInitialData = ref({
     gender: null,
     height: null,
+    height_ft: '',
     face_image: null,
     face_mode: 'ai_model'
 });
@@ -60,15 +61,15 @@ const genderOptions = [
 
 const faceModeOptions = [
     { name: $t('outfit_face_mode_ai_model'), code: 'ai_model' },
-    { name: $t('outfit_face_mode_user_face'), code: 'user_face' },
-    { name: $t('outfit_face_mode_user_body_ai_face'), code: 'user_body_ai_face' }
+    { name: $t('outfit_face_mode_user_face'), code: 'user_face' }
 ];
 
-const requiresFaceImage = computed(() =>
-    ['user_face', 'user_body_ai_face'].includes(formData.value.face_mode)
-);
+const requiresFaceImage = computed(() => formData.value.face_mode === 'user_face');
 
-const settingsDialogFormData = computed(() => formData.value);
+const settingsDialogFormData = computed(() => ({
+    ...formData.value,
+    height_ft: heightFtInput.value
+}));
 
 const sortedTypeCounts = computed(() => {
     return Object.entries(typeCounts.value)
@@ -168,7 +169,9 @@ const loadProfile = async () => {
     formData.value.gender = profile.gender ?? null;
     formData.value.height = profile.height ?? null;
     formData.value.face_image = profile.face_image ?? null;
-    formData.value.face_mode = profile.face_mode ?? 'ai_model';
+    const faceMode = profile.face_mode ?? 'ai_model';
+    formData.value.face_mode =
+        faceMode === 'user_body_ai_face' ? 'user_face' : faceMode;
     heightFtInput.value = cmToFeetInchesInput(profile.height);
 };
 
@@ -240,6 +243,7 @@ const openSettingsDialog = async () => {
     settingsInitialData.value = {
         gender: formData.value.gender,
         height: formData.value.height,
+        height_ft: heightFtInput.value,
         face_image: formData.value.face_image,
         face_mode: formData.value.face_mode
     };
@@ -253,7 +257,8 @@ const onSettingsCancel = () => {
         face_image: settingsInitialData.value.face_image,
         face_mode: settingsInitialData.value.face_mode
     };
-    heightFtInput.value = cmToFeetInchesInput(settingsInitialData.value.height);
+    heightFtInput.value = settingsInitialData.value.height_ft
+        || cmToFeetInchesInput(settingsInitialData.value.height);
     globalStore.clearErrors();
 };
 
@@ -314,13 +319,14 @@ const saveProfile = async () => {
         await profileStore.update(user.uuid, payload);
         await sessionStore.me();
         await loadProfile();
+        heightFtInput.value = cmToFeetInchesInput(formData.value.height);
         settingsInitialData.value = {
             gender: formData.value.gender,
             height: formData.value.height,
+            height_ft: heightFtInput.value,
             face_image: formData.value.face_image,
             face_mode: formData.value.face_mode
         };
-        heightFtInput.value = cmToFeetInchesInput(formData.value.height);
         showSettingsDialog.value = false;
     } catch (error) {
         globalStore.showError(
@@ -512,6 +518,7 @@ const createOutfits = async () => {
         :isEditMode="true"
         :formData="settingsDialogFormData"
         :initialData="settingsInitialData"
+        :excludeDirtyKeys="['height']"
         :confirmLabel="$t('save')"
         @confirm="saveProfile"
         @cancel="onSettingsCancel"
