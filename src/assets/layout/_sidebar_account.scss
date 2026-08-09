@@ -50,6 +50,7 @@
 
         &:hover {
             background: var(--account-menu-hover-bg);
+            color: var(--account-menu-hover-text);
         }
 
         &:focus-visible {
@@ -74,11 +75,8 @@
         var(--p-text-color) 10%,
         var(--p-content-background)
     );
-    --account-menu-hover-bg: color-mix(
-        in srgb,
-        var(--p-text-color) 6%,
-        var(--p-content-background)
-    );
+    --account-menu-hover-bg: var(--p-primary-50);
+    --account-menu-hover-text: var(--p-primary-500);
     --account-menu-shadow:
         0 0 0 1px rgba(15, 23, 42, 0.04),
         0 10px 38px rgba(15, 23, 42, 0.12);
@@ -95,6 +93,7 @@
         var(--p-text-color) 8%,
         var(--p-content-background)
     );
+    --account-menu-hover-text: var(--p-text-color);
     --account-menu-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.05),
         0 12px 40px rgba(0, 0, 0, 0.42);

@@ -175,7 +175,7 @@ async function logout() {
                 </span>
             </span>
             <i
-                class="pi pi-cog sidebar-user-card__icon"
+                class="pi pi-sliders-h sidebar-user-card__icon"
                 aria-hidden="true"
             ></i>
         </button>

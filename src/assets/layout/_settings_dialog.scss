@@ -1,21 +1,35 @@
 @use './_sass_variables' as *;
 
 :root {
-    --settings-dialog-width: 42.5rem;
-    --settings-dialog-height: 30rem;
-    --settings-dialog-sidebar-width: 14.5rem;
-    --settings-dialog-radius: 1rem;
+    --settings-dialog-width: 52rem;
+    --settings-dialog-min-height: 32rem;
+    --settings-dialog-sidebar-width: 17rem;
+    --settings-dialog-radius: 1.125rem;
     --settings-dialog-sidebar-bg: #f7f7f8;
     --settings-dialog-panel-bg: #ffffff;
     --settings-dialog-border: #e5e7eb;
+    --settings-dialog-nav-text: #374151;
+    --settings-dialog-nav-muted: #6b7280;
+    --settings-dialog-nav-hover-bg: var(--p-primary-50);
+    --settings-dialog-nav-hover-text: var(--p-primary-500);
+    --settings-dialog-nav-active-bg: var(--p-primary-50);
+    --settings-dialog-nav-active-text: var(--p-primary-500);
     --settings-dialog-row-border: #ececf1;
+    --settings-dialog-select-bg: #ffffff;
 }
 
 .app-dark {
-    --settings-dialog-sidebar-bg: #212121;
-    --settings-dialog-panel-bg: #303030;
-    --settings-dialog-border: #424242;
+    --settings-dialog-sidebar-bg: #171717;
+    --settings-dialog-panel-bg: #212121;
+    --settings-dialog-border: #3f3f46;
+    --settings-dialog-nav-text: #e4e4e7;
+    --settings-dialog-nav-muted: #a1a1aa;
+    --settings-dialog-nav-hover-bg: rgba(255, 255, 255, 0.06);
+    --settings-dialog-nav-hover-text: #fafafa;
+    --settings-dialog-nav-active-bg: rgba(255, 255, 255, 0.1);
+    --settings-dialog-nav-active-text: #fafafa;
     --settings-dialog-row-border: rgba(255, 255, 255, 0.08);
+    --settings-dialog-select-bg: #212121;
 }
 
 .settings-dialog {
@@ -26,120 +40,137 @@
         border-radius: var(--settings-dialog-radius);
         overflow: hidden;
         box-shadow:
-            0 0 0 1px rgba(15, 23, 42, 0.03),
-            0 24px 48px rgba(15, 23, 42, 0.14);
+            0 0 0 1px rgba(15, 23, 42, 0.04),
+            0 24px 48px rgba(15, 23, 42, 0.16);
     }
-    
+
     .p-dialog-content {
+        display: flex;
+        flex-direction: column;
         padding: 0;
+        min-height: var(--settings-dialog-min-height);
         background: var(--settings-dialog-panel-bg);
         color: var(--p-text-color);
     }
 }
-.p-dialog-close-button{
-    outline: none !important;
-    border: none !important;
-}
+
 .app-dark .settings-dialog.p-dialog {
-    border-color: var(--settings-dialog-border);
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.04),
-        0 24px 80px rgba(0, 0, 0, 0.48);
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 24px 80px rgba(0, 0, 0, 0.55);
 
     .p-dialog-content {
         background: var(--settings-dialog-panel-bg);
-        border: none;
     }
 }
 
-.settings-dialog__shell {
+.settings-dialog__frame {
     position: relative;
-}
-.settings-dialog.p-dialog .p-dialog-header{
-    padding-bottom: 0 !important;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: var(--settings-dialog-min-height);
 }
 
+.settings-dialog.p-dialog .settings-dialog__close {
+    position: absolute !important;
+    top: 0.875rem;
+    left: auto !important;
+    right: 0.875rem !important;
+    z-index: 2;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+
+    .p-button-icon {
+        font-size: 1rem;
+    }
+}
 
 .settings-dialog__layout {
     display: grid;
     grid-template-columns: var(--settings-dialog-sidebar-width) minmax(0, 1fr);
-    min-height: var(--settings-dialog-height);
-    height: var(--settings-dialog-height);
+    flex: 1;
+    align-items: stretch;
+    min-height: var(--settings-dialog-min-height);
+    height: 100%;
 }
 
 .settings-dialog__sidebar {
-    padding: 1rem 0.75rem 1rem 0.875rem;
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    min-height: 100%;
+    padding: 1rem 0.875rem 1.5rem 1rem;
     background: var(--settings-dialog-sidebar-bg);
+    border-right: 1px solid var(--settings-dialog-border);
 }
 
 .settings-dialog__nav {
-    ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.settings-dialog__nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    width: 100%;
+    min-height: 2.875rem;
+    padding: 0.625rem 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    background: transparent;
+    color: var(--settings-dialog-nav-text);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.3;
+    text-align: start;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+
+    &:hover {
+        background: var(--settings-dialog-nav-hover-bg);
+        color: var(--settings-dialog-nav-hover-text);
+
+        .settings-dialog__nav-icon {
+            color: var(--settings-dialog-nav-hover-text);
+        }
     }
 
-    .layout-root-menuitem > .layout-menuitem-root-text {
-        display: none;
-    }
-
-    ul button.sidebar-nav-link {
-        width: 100%;
-        margin: 0.125rem 0;
-        padding: 0.625rem 0.75rem;
-        border: none;
-        border-radius: 0.75rem;
-        background: transparent;
-        color: var(--sidebar-muted);
-        font-size: 0.875rem;
+    &--active {
+        background: var(--settings-dialog-nav-active-bg);
+        color: var(--settings-dialog-nav-active-text);
         font-weight: 500;
-        line-height: 1.25;
-        text-align: start;
-        cursor: pointer;
-        transition:
-            background-color var(--layout-section-transition-duration),
-            color var(--layout-section-transition-duration),
-            box-shadow var(--layout-section-transition-duration);
-
-        .layout-menuitem-icon {
-            color: inherit;
-            font-size: 1.125rem;
-            width: 1.25rem;
-            min-width: 1.25rem;
-            margin: 0;
-            text-align: center;
-        }
-
-        &:hover {
-            background: var(--sidebar-hover-bg);
-            color: var(--sidebar-brand-color);
-        }
-
-        &.active-route {
-            background: var(--sidebar-active-bg);
-            color: var(--sidebar-accent);
-            font-weight: 600;
-            box-shadow: var(--sidebar-active-shadow);
-
-            .layout-menuitem-icon {
-                color: var(--sidebar-accent);
-            }
-        }
     }
+}
+
+.settings-dialog__nav-icon {
+    flex-shrink: 0;
+    width: 1.125rem;
+    font-size: 1.0625rem;
+    color: var(--settings-dialog-nav-muted);
+}
+
+.settings-dialog__nav-item--active .settings-dialog__nav-icon {
+    color: var(--settings-dialog-nav-active-text);
 }
 
 .settings-dialog__panel {
     display: flex;
     flex-direction: column;
-    padding: 1rem 1.5rem 2rem ;
+    padding: 1.35rem 1rem 2rem 1rem;
     background: var(--settings-dialog-panel-bg);
+    align-self: stretch;
 }
 
 .settings-dialog__title {
-    margin: 0 0 1.25rem;
-    font-size: 1.25rem;
+    margin: 0 0 1.75rem;
+    font-size: 1.375rem;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.35;
     letter-spacing: -0.015em;
     color: var(--p-text-color);
 }
@@ -153,37 +184,37 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    min-height: 3rem;
-    padding: 0.625rem 0;
-    border-bottom: 1px solid var(--settings-dialog-row-border);
+    gap: 2rem;
+    min-height: 3.25rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--settings-dialog-row-border);
 }
 
 .settings-dialog__row-label {
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 400;
-    line-height: 1.25;
+    line-height: 1.3;
     color: var(--p-text-color);
 }
 
 .settings-dialog__select {
-    width: 10.5rem;
+    width: 12rem;
     flex-shrink: 0;
 
     &.p-select {
-        width: 10.5rem;
-        min-height: 2.25rem;
+        width: 12rem;
+        min-height: 2.5rem;
         border: 1px solid var(--settings-dialog-border);
         border-radius: 0.625rem;
-        background: var(--settings-dialog-panel-bg);
+        background: var(--settings-dialog-select-bg);
         box-shadow: none;
     }
 
     .p-select-label {
-        padding: 0.4375rem 0.75rem;
-        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
         font-weight: 400;
-        line-height: 1.25;
+        line-height: 1.3;
     }
 
     .p-select-dropdown {
@@ -205,20 +236,20 @@
 
     .settings-dialog__layout {
         grid-template-columns: 1fr;
-        height: auto;
-        min-height: 24rem;
     }
 
     .settings-dialog__sidebar {
-        padding: 1rem 0.75rem 0.75rem;
+        padding: 0.75rem 0.75rem 0.75rem;
+        border-right: none;
+        border-bottom: 1px solid var(--settings-dialog-border);
     }
 
-    .settings-dialog__nav ul {
-        display: flex;
+    .settings-dialog__nav {
+        flex-direction: row;
         overflow-x: auto;
     }
 
-    .settings-dialog__nav ul button.sidebar-nav-link {
+    .settings-dialog__nav-item {
         width: auto;
         white-space: nowrap;
     }

@@ -213,17 +213,21 @@
 
             &:hover {
                 background: var(--sidebar-hover-bg);
-                color: var(--sidebar-brand-color);
+                color: var(--sidebar-hover-text);
+
+                .layout-menuitem-icon {
+                    color: var(--sidebar-hover-text);
+                }
             }
 
             &.active-route {
                 background: var(--sidebar-active-bg);
-                color: var(--sidebar-accent);
+                color: var(--sidebar-active-text);
                 font-weight: 600;
                 box-shadow: var(--sidebar-active-shadow);
 
                 .layout-menuitem-icon {
-                    color: var(--sidebar-accent);
+                    color: var(--sidebar-active-text);
                 }
             }
         }

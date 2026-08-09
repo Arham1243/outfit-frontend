@@ -45,20 +45,14 @@
     --sidebar-brand-color: var(--p-text-color);
     --sidebar-accent: var(--p-primary-500);
     --sidebar-muted: var(--p-text-muted-color);
-    --sidebar-active-bg: color-mix(
-        in srgb,
-        var(--p-primary-500) 10%,
-        var(--p-content-background)
-    );
+    --sidebar-active-bg: var(--p-primary-50);
+    --sidebar-active-text: var(--p-primary-500);
     --sidebar-active-shadow: 0 1px 2px
         color-mix(in srgb, var(--p-text-color) 6%, transparent);
     --sidebar-footer-bg: var(--p-content-background);
     --sidebar-footer-border: var(--p-content-border-color);
-    --sidebar-hover-bg: color-mix(
-        in srgb,
-        var(--p-primary-500) 8%,
-        var(--p-content-background)
-    );
+    --sidebar-hover-bg: var(--sidebar-active-bg);
+    --sidebar-hover-text: var(--sidebar-active-text);
     --sidebar-mark-bg: var(--p-primary-500);
     --sidebar-mark-color: var(--p-primary-contrast-color);
     --sidebar-avatar-bg: color-mix(
@@ -78,6 +72,7 @@
         var(--p-text-color) 10%,
         var(--p-content-background)
     );
+    --sidebar-active-text: var(--p-text-color);
     --sidebar-active-shadow: none;
     --sidebar-footer-bg: transparent;
     --sidebar-footer-border: var(--p-content-border-color);
@@ -86,6 +81,7 @@
         var(--p-text-color) 6%,
         var(--p-content-background)
     );
+    --sidebar-hover-text: var(--p-text-color);
     --sidebar-avatar-bg: color-mix(
         in srgb,
         var(--p-text-color) 14%,

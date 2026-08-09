@@ -53,44 +53,44 @@ function persistAppearance(value) {
     <Dialog
         v-model:visible="layoutState.settingsDialogVisible"
         modal
-        header="&nbsp;"
         dismissableMask
         class="settings-dialog"
+        :showHeader="false"
         :draggable="false"
-        :style="{ width: 'min(94vw, 42.5rem)' }"
+        :style="{ width: 'min(94vw, 52rem)' }"
     >
-        <div class="settings-dialog__shell">
+        <div class="settings-dialog__frame">
+            <Button
+                type="button"
+                icon="pi pi-times"
+                rounded
+                text
+                severity="secondary"
+                class="settings-dialog__close"
+                :aria-label="$t('close')"
+                @click="closeSettingsDialog"
+            />
 
             <div class="settings-dialog__layout">
                 <aside class="settings-dialog__sidebar">
                     <nav
-                        class="layout-menu settings-dialog__nav"
+                        class="settings-dialog__nav"
                         :aria-label="$t('layout.settings_dialog.nav_label')"
                     >
-                        <ul>
-                            <li class="layout-root-menuitem">
-                                <button
-                                    type="button"
-                                    class="sidebar-nav-link flex items-center gap-2"
-                                    :class="{
-                                        'active-route':
-                                            activeSection === 'general'
-                                    }"
-                                >
-                                    <i
-                                        class="pi pi-sliders-h layout-menuitem-icon"
-                                        aria-hidden="true"
-                                    ></i>
-                                    <span class="layout-menuitem-text">
-                                        {{
-                                            $t(
-                                                'layout.settings_dialog.general'
-                                            )
-                                        }}
-                                    </span>
-                                </button>
-                            </li>
-                        </ul>
+                        <button
+                            type="button"
+                            class="settings-dialog__nav-item"
+                            :class="{
+                                'settings-dialog__nav-item--active':
+                                    activeSection === 'general'
+                            }"
+                        >
+                            <i
+                                class="pi pi-cog settings-dialog__nav-icon"
+                                aria-hidden="true"
+                            ></i>
+                            <span>{{ $t('layout.settings_dialog.general') }}</span>
+                        </button>
                     </nav>
                 </aside>
 
