@@ -121,6 +121,52 @@
         border-color: var(--p-content-border-color);
     }
 
+    .sidebar-premium .layout-menu ul a.sidebar-nav-link {
+        &.active-route {
+            background: color-mix(
+                in srgb,
+                var(--p-text-color) 10%,
+                var(--p-content-background)
+            );
+            color: var(--p-text-color);
+            box-shadow: none;
+
+            .layout-menuitem-icon {
+                color: var(--p-text-color);
+            }
+        }
+
+        &:hover {
+            color: var(--p-text-color);
+        }
+    }
+
+    .sidebar-premium .sidebar-user-card {
+        background: color-mix(
+            in srgb,
+            var(--p-text-color) 6%,
+            var(--p-content-background)
+        );
+
+        &:hover,
+        &.sidebar-user-card--open {
+            background: color-mix(
+                in srgb,
+                var(--p-text-color) 9%,
+                var(--p-content-background)
+            );
+        }
+    }
+
+    .sidebar-premium .sidebar-user-card__avatar {
+        background: color-mix(
+            in srgb,
+            var(--p-text-color) 14%,
+            var(--p-content-background)
+        );
+        color: var(--p-text-color);
+    }
+
     .sidebar-premium .layout-menu-container::-webkit-scrollbar-thumb {
         background: color-mix(in srgb, var(--p-text-muted-color) 55%, transparent);
     }

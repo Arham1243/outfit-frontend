@@ -29,12 +29,12 @@ th {
 .row-pointers tbody tr{
     cursor: pointer;
 }
-.layout-sidebar .layout-menu ul a.active-route {
+.layout-light .layout-sidebar .layout-menu ul a.active-route {
     background: #fff;
     color: var(--primary-color);
 }
 
-.layout-sidebar .layout-menu ul a.active-route i {
+.layout-light .layout-sidebar .layout-menu ul a.active-route i {
     color: var(--primary-color);
 }
 .bg-custom-gray{

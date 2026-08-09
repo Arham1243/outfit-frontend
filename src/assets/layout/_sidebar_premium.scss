@@ -35,7 +35,6 @@
         border: none;
         border-radius: 0;
         background: transparent;
-        color: var(--sidebar-muted);
         cursor: pointer;
         justify-self: end;
         transition: color var(--layout-section-transition-duration);
@@ -56,7 +55,7 @@
         }
 
         &:focus-visible {
-            outline: 2px solid color-mix(in srgb, var(--sidebar-accent) 40%, transparent);
+            outline: 2px solid color-mix(in srgb, var(--p-text-color) 20%, transparent);
             outline-offset: 2px;
         }
     }
@@ -77,7 +76,7 @@
 
     .sidebar-brand__title {
         display: block;
-        margin: 0 0 0 0px;
+        margin: 0 0 0 5px;
         font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
         font-size: 1.25rem;
         font-weight: 600;
@@ -137,7 +136,7 @@
         }
 
         &:focus-visible {
-            outline: 2px solid color-mix(in srgb, var(--sidebar-accent) 40%, transparent);
+            outline: 2px solid color-mix(in srgb, var(--p-text-color) 20%, transparent);
             outline-offset: 2px;
         }
     }

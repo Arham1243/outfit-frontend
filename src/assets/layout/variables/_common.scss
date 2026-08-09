@@ -70,41 +70,26 @@
 }
 
 .app-dark {
-    --sidebar-bg: color-mix(
-        in srgb,
-        var(--p-primary-950, var(--p-primary-900)) 22%,
-        var(--p-content-background)
-    );
-    --sidebar-border-color: color-mix(
-        in srgb,
-        var(--p-primary-500) 14%,
-        var(--p-content-border-color)
-    );
+    --sidebar-bg: var(--p-content-background);
+    --sidebar-border-color: var(--p-content-border-color);
+    --sidebar-accent: var(--p-text-color);
     --sidebar-active-bg: color-mix(
         in srgb,
-        var(--p-primary-500) 16%,
+        var(--p-text-color) 10%,
         var(--p-content-background)
     );
     --sidebar-active-shadow: none;
-    --sidebar-footer-bg: color-mix(
-        in srgb,
-        var(--p-primary-500) 10%,
-        var(--sidebar-bg)
-    );
-    --sidebar-footer-border: color-mix(
-        in srgb,
-        var(--p-primary-500) 22%,
-        var(--sidebar-bg)
-    );
+    --sidebar-footer-bg: transparent;
+    --sidebar-footer-border: var(--p-content-border-color);
     --sidebar-hover-bg: color-mix(
         in srgb,
-        var(--p-primary-500) 16%,
-        var(--sidebar-bg)
+        var(--p-text-color) 6%,
+        var(--p-content-background)
     );
     --sidebar-avatar-bg: color-mix(
         in srgb,
-        var(--p-primary-500) 22%,
-        var(--sidebar-bg)
+        var(--p-text-color) 14%,
+        var(--p-content-background)
     );
-    --sidebar-avatar-color: var(--p-primary-300);
+    --sidebar-avatar-color: var(--p-text-color);
 }
