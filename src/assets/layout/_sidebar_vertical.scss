@@ -10,6 +10,20 @@
     display: flex;
     flex-direction: column;
 
+    &.sidebar-premium {
+        .sidebar-header {
+            padding: 1.75rem 1.25rem 1.25rem;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .layout-menu-container {
+            overflow: auto;
+            flex: 1;
+            padding-bottom: 1rem;
+        }
+    }
+
     .sidebar-header {
         padding: 2.5rem 0 2rem 0;
         display: flex;

@@ -160,7 +160,13 @@
         "static": "Static",
         "surface": "Surface",
         "toggle_dark_mode": "Toggle dark mode",
-        "transparent": "Transparent"
+        "transparent": "Transparent",
+        "sidebar": {
+            "anchor": "Pin sidebar",
+            "member": "Member",
+            "tagline": "Wardrobe intelligence",
+            "workspace": "Workspace"
+        }
     },
     "lets_set_a_password_for_your_account": "Let's set a password for your account",
     "login": "Login",

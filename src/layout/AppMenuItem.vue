@@ -274,7 +274,11 @@ function checkActiveRoute(item) {
                 item.to && !item.items && item.visible !== false
             "
             @click="itemClick($event, item, index)"
-            :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
+            :class="[
+                item.class,
+                'sidebar-nav-link',
+                { 'active-route': checkActiveRoute(item) }
+            ]"
             tabindex="0"
             :to="item.to"
             @mouseenter="onMouseEnter"
@@ -291,6 +295,11 @@ function checkActiveRoute(item) {
             <span class="layout-menuitem-text">{{
                 item.label ? $t(item.label) : ''
             }}</span>
+            <span
+                v-if="checkActiveRoute(item)"
+                class="sidebar-active-dot"
+                aria-hidden="true"
+            ></span>
             <i
                 class="pi pi-fw pi-angle-down layout-submenu-toggler"
                 v-if="item.items"

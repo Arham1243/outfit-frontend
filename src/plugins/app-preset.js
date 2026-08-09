@@ -3,6 +3,7 @@ import Aura from '@primeuix/themes/aura';
 
 const AppPreset = definePreset(Aura, {
     semantic: {
+        // Primary palette drives sidebar accents, active states, and brand mark.
         primary: {
             50: '#fdf2f5',
             100: '#fce4eb',

@@ -34,4 +34,77 @@
     --border-radius: var(--p-content-border-radius);
     --layout-section-transition-duration: 0.2s;
     --focus-ring-shadow: var(--p-focus-ring-shadow);
+
+    /* Sidebar — derived from app-preset primary palette */
+    --sidebar-bg: color-mix(
+        in srgb,
+        var(--p-primary-50) 32%,
+        var(--p-surface-0, #ffffff)
+    );
+    --sidebar-border-color: var(--p-content-border-color);
+    --sidebar-brand-color: var(--p-text-color);
+    --sidebar-accent: var(--p-primary-500);
+    --sidebar-muted: var(--p-text-muted-color);
+    --sidebar-active-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 10%,
+        var(--p-content-background)
+    );
+    --sidebar-active-shadow: 0 1px 2px
+        color-mix(in srgb, var(--p-text-color) 6%, transparent);
+    --sidebar-footer-bg: var(--p-content-background);
+    --sidebar-footer-border: var(--p-content-border-color);
+    --sidebar-hover-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 8%,
+        var(--p-content-background)
+    );
+    --sidebar-mark-bg: var(--p-primary-500);
+    --sidebar-mark-color: var(--p-primary-contrast-color);
+    --sidebar-avatar-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 12%,
+        var(--p-content-background)
+    );
+    --sidebar-avatar-color: var(--p-primary-600);
+}
+
+.app-dark {
+    --sidebar-bg: color-mix(
+        in srgb,
+        var(--p-primary-950, var(--p-primary-900)) 22%,
+        var(--p-content-background)
+    );
+    --sidebar-border-color: color-mix(
+        in srgb,
+        var(--p-primary-500) 14%,
+        var(--p-content-border-color)
+    );
+    --sidebar-active-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 16%,
+        var(--p-content-background)
+    );
+    --sidebar-active-shadow: none;
+    --sidebar-footer-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 10%,
+        var(--sidebar-bg)
+    );
+    --sidebar-footer-border: color-mix(
+        in srgb,
+        var(--p-primary-500) 22%,
+        var(--sidebar-bg)
+    );
+    --sidebar-hover-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 16%,
+        var(--sidebar-bg)
+    );
+    --sidebar-avatar-bg: color-mix(
+        in srgb,
+        var(--p-primary-500) 22%,
+        var(--sidebar-bg)
+    );
+    --sidebar-avatar-color: var(--p-primary-300);
 }

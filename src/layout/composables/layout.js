@@ -6,7 +6,7 @@ const layoutConfig = reactive({
     surface: null,
     darkTheme: false,
     menuMode: 'static',
-    menuTheme: 'primaryColor'
+    menuTheme: 'colorScheme'
 });
 
 const layoutState = reactive({

@@ -161,7 +161,13 @@
         "static": "مستقل",
         "surface": "سطح",
         "toggle_dark_mode": "ڈارک موڈ تبدیل کریں",
-        "transparent": "شفاف"
+        "transparent": "شفاف",
+        "sidebar": {
+            "anchor": "سائیڈبار پن کریں",
+            "member": "رکن",
+            "tagline": "وارڈروب انٹیلیجنس",
+            "workspace": "ورک اسپیس"
+        }
     },
     "lets_set_a_password_for_your_account": "آئیے آپ کے اکاؤنٹ کے لیے پاس ورڈ مقرر کریں",
     "login": "لاگ ان",

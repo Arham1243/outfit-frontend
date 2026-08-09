@@ -161,7 +161,13 @@
         "static": "Statique",
         "surface": "Surface",
         "toggle_dark_mode": "Activer/désactiver le mode sombre",
-        "transparent": "Transparent"
+        "transparent": "Transparent",
+        "sidebar": {
+            "anchor": "Épingler la barre latérale",
+            "member": "Membre",
+            "tagline": "Intelligence vestimentaire",
+            "workspace": "Espace de travail"
+        }
     },
     "lets_set_a_password_for_your_account": "Définissons un mot de passe pour votre compte",
     "login": "Connexion",
