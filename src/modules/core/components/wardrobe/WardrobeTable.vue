@@ -3,7 +3,7 @@ import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue';
 import { useWardrobeStore } from '@/modules/core/stores';
 import { WardrobeService } from '@/modules/core/services';
 import { useGlobalStore } from '@/stores';
-import { PaginationOptions, SortFilterOptions, WARDROBE_IMAGE } from '@/config';
+import { PaginationOptions, SortFilterOptions, WARDROBE_IMAGE, buildWardrobeTypeOptions } from '@/config';
 import { useHelpers } from '@/composables';
 import { getValidationErrorMessage } from '@/utils/apiErrors';
 
@@ -48,16 +48,20 @@ const isBulkDelete = ref(false);
 const isDragOver = ref(false);
 const fileInputRef = ref(null);
 const formData = ref({
-    image: null
+    image: null,
+    type: null
 });
 /** Pending uploads for multi-create */
 const pendingImages = ref([]);
+const selectedTypeFilter = ref(null);
 let classificationPollTimer = null;
 let classificationPollStartedAt = null;
 
 const hasItemsPendingClassification = computed(() =>
     items.value.some((item) => !item.type)
 );
+
+const wardrobeTypeOptions = computed(() => buildWardrobeTypeOptions($t));
 
 const dialogHeader = computed(() =>
     isEditMode.value ? $t('edit_wardrobe_image') : $t('add_new_item')
@@ -73,7 +77,8 @@ const dialogInitialData = computed(() =>
               image:
                   selectedItem.value?.image_url ||
                   selectedItem.value?.image ||
-                  null
+                  null,
+              type: selectedItem.value?.type ?? null
           }
         : null
 );
@@ -187,6 +192,7 @@ const onDialogVisible = (visible) => {
 
 const resetForm = () => {
     formData.value.image = null;
+    formData.value.type = null;
     pendingImages.value = [];
     isDragOver.value = false;
     globalStore.clearErrors();
@@ -199,6 +205,7 @@ const editItem = () => {
     resetForm();
     formData.value.image =
         selectedItem.value.image_url || selectedItem.value.image || null;
+    formData.value.type = selectedItem.value?.type ?? null;
     openDialog('edit');
 };
 
@@ -220,6 +227,13 @@ const showActions = (event, item) => {
 
 const onPageChange = (event) => {
     pagination.updatePageParams(event);
+    selectedItems.value = [];
+    getItems();
+};
+
+const applyTypeFilter = () => {
+    sortFilters.updateFilters('type', selectedTypeFilter.value);
+    pagination.resetPageParams();
     selectedItems.value = [];
     getItems();
 };
@@ -355,16 +369,6 @@ const formatType = (type) => {
         .join('-');
 };
 
-const formatConfidence = (confidence) => {
-    if (confidence === null || confidence === undefined) return null;
-    return `${Math.round(Number(confidence) * 100)}%`;
-};
-
-const getPredictedLabels = (metadata) => {
-    if (!metadata?.predicted_labels?.length) return [];
-    return metadata.predicted_labels;
-};
-
 const getTypeTagClass = (type) => {
     const normalizedType = String(type || '').toLowerCase();
     const typeClasses = {
@@ -375,6 +379,8 @@ const getTypeTagClass = (type) => {
         shoes: 'wardrobe-type--shoes',
         jacket: 'wardrobe-type--jacket',
         sweater: 'wardrobe-type--sweater',
+        hoodie: 'wardrobe-type--hoodie',
+        sweatshirt: 'wardrobe-type--sweatshirt',
         shorts: 'wardrobe-type--shorts',
         dress: 'wardrobe-type--dress'
     };
@@ -387,10 +393,29 @@ const save = async () => {
         busy.value = true;
 
         if (isEditMode.value) {
-            const payload = filterFileFields({ ...formData.value }, ['image']);
-            if (payload.image) {
-                await wardrobeStore.update(selectedItem.value.uuid, payload);
+            const payload = {};
+            const imagePayload = filterFileFields(
+                { image: formData.value.image },
+                ['image']
+            );
+
+            if (imagePayload.image) {
+                payload.image = imagePayload.image;
             }
+
+            if (formData.value.type) {
+                payload.type = formData.value.type;
+            }
+
+            const typeChanged =
+                formData.value.type !== (selectedItem.value?.type ?? null);
+            const hasImageUpdate = Boolean(payload.image);
+
+            if (!typeChanged && !hasImageUpdate) {
+                return;
+            }
+
+            await wardrobeStore.update(selectedItem.value.uuid, payload);
         } else {
             if (!pendingImages.value.length) {
                 globalStore.showError(
@@ -484,6 +509,28 @@ const deleteItem = async () => {
 
     <Card class="py-3 px-2">
         <template #content>
+            <div class="wardrobe-table__filters">
+                <div class="wardrobe-table__filter-field">
+                    <label
+                        class="wardrobe-table__filter-label"
+                        for="wardrobe-type-filter"
+                    >
+                        {{ $t('filter_by_type') }}
+                    </label>
+                    <Select
+                        inputId="wardrobe-type-filter"
+                        v-model="selectedTypeFilter"
+                        :options="wardrobeTypeOptions"
+                        optionLabel="label"
+                        optionValue="value"
+                        :placeholder="$t('select')"
+                        showClear
+                        class="wardrobe-table__type-filter"
+                        @update:modelValue="applyTypeFilter"
+                    />
+                </div>
+            </div>
+
             <BaseTable
                 v-model:selection="selectedItems"
                 selectionMode="multiple"
@@ -544,33 +591,6 @@ const deleteItem = async () => {
                 </Column>
 
                 <Column
-                    columnKey="predicted_labels"
-                    field="metadata.predicted_labels"
-                    :header="$t('predicted_labels')"
-                >
-                    <template #body="{ data }">
-                        <div
-                            v-if="getPredictedLabels(data.metadata).length"
-                            class="wardrobe-table__labels"
-                        >
-                            <span
-                                v-for="(prediction, index) in getPredictedLabels(
-                                    data.metadata
-                                )"
-                                :key="`${prediction.label}-${index}`"
-                                class="wardrobe-table__label-chip"
-                            >
-                                {{ formatType(prediction.label) }}
-                                ({{
-                                    formatConfidence(prediction.score)
-                                }})
-                            </span>
-                        </div>
-                        <span v-else>-</span>
-                    </template>
-                </Column>
-
-                <Column
                     columnKey="actions"
                     v-if="
                         $ability.can('core.wardrobe.edit') ||
@@ -621,6 +641,25 @@ const deleteItem = async () => {
         @cancel="closeDialog"
         @confirm="save"
     >
+        <div
+            v-if="isEditMode"
+            class="col-span-12 sm:col-span-6 wardrobe-edit__field"
+        >
+            <label class="wardrobe-edit__label" for="wardrobe-edit-type">
+                {{ $t('wardrobe_type') }}
+            </label>
+            <Select
+                inputId="wardrobe-edit-type"
+                v-model="formData.type"
+                :options="wardrobeTypeOptions"
+                optionLabel="label"
+                optionValue="value"
+                :placeholder="$t('classification_pending')"
+                class="w-full"
+                :disabled="busy"
+            />
+        </div>
+
         <div class="mb-3 col-span-12 wardrobe-upload">
             <input
                 ref="fileInputRef"
@@ -775,7 +814,7 @@ const deleteItem = async () => {
     width: 6rem;
     aspect-ratio: 3 / 4;
     height: auto;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 0.75rem;
     cursor: pointer;
     border: 1px solid var(--p-content-border-color, #e2e8f0);
@@ -785,6 +824,30 @@ const deleteItem = async () => {
     font-size: 0.875rem;
     color: var(--p-text-muted-color, #64748b);
     font-style: italic;
+}
+
+.wardrobe-table__filters {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.wardrobe-table__filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 12rem;
+    max-width: 16rem;
+}
+
+.wardrobe-table__filter-label {
+    font-weight: 600;
+    color: var(--p-text-color, #334155);
+}
+
+.wardrobe-table__type-filter,
+.wardrobe-table__type-filter:deep(.p-select) {
+    width: 100%;
 }
 
 .wardrobe-type-tag:deep(.p-tag),
@@ -863,26 +926,15 @@ const deleteItem = async () => {
     border-color: #cbd5e1;
 }
 
-.wardrobe-table__labels {
+.wardrobe-edit__field {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.wardrobe-table__label-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.5rem;
-    border-radius: 9999px;
-    background: color-mix(
-        in srgb,
-        var(--p-primary-color, #2563eb) 10%,
-        var(--p-content-background, #fff)
-    );
+.wardrobe-edit__label {
+    font-weight: 600;
     color: var(--p-text-color, #334155);
-    font-size: 0.75rem;
-    line-height: 1.2;
-    border: 1px solid var(--p-content-border-color, #e2e8f0);
 }
 
 .wardrobe-upload {
@@ -947,7 +999,7 @@ const deleteItem = async () => {
 .wardrobe-upload__file-thumb-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .wardrobe-upload__file-details {
@@ -1097,12 +1149,6 @@ const deleteItem = async () => {
 
 :global(.app-dark) .wardrobe-table__color-swatch {
     border-color: #3f3f46;
-}
-
-:global(.app-dark) .wardrobe-table__label-chip {
-    background: #27272a;
-    border-color: #3f3f46;
-    color: #f4f4f5;
 }
 
 :global(.app-dark) :deep(.wardrobe-type-tag.wardrobe-type--t-shirt.p-tag) {

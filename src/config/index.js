@@ -108,3 +108,4 @@ export class SortFilterOptions {
 
 export * from './enums';
 export * from './imageDimensions';
+export * from './wardrobeTypes';

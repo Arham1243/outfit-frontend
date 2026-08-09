@@ -20,3 +20,7 @@ export const getLatestBatch = () => {
 export const getTypeCounts = () => {
     return AxiosService.get(`${BASE_URL}/outfits/wardrobe-type-counts`);
 };
+
+export const getCombinationStats = () => {
+    return AxiosService.get(`${BASE_URL}/outfits/combination-stats`);
+};

@@ -3,6 +3,7 @@ import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import PlaceholderImage from '@/assets/images/image_not_available.png';
 import { useOutfitStore } from '@/modules/core/stores';
+import { OutfitService } from '@/modules/core/services';
 import { OUTFIT_FACE_IMAGE } from '@/config';
 import { useGlobalStore, useProfileStore, useSessionStore } from '@/stores';
 import { useHelpers } from '@/composables/useHelpers';
@@ -18,7 +19,8 @@ const { filterFileFields } = useHelpers();
 
 const GALLERY_LIMIT = 50;
 const GALLERY_POLL_INTERVAL_MS = 3000;
-const GALLERY_POLL_MAX_ATTEMPTS = 40;
+const GALLERY_POLL_JOB_ESTIMATE_MS = 120000;
+const GALLERY_POLL_BUFFER_ATTEMPTS = 10;
 
 const outfitStore = useOutfitStore();
 const profileStore = useProfileStore();
@@ -33,7 +35,10 @@ const showGallery = ref(false);
 const showSettingsDialog = ref(false);
 const typeCounts = ref({});
 const wardrobeTotal = ref(0);
+const combinationStats = ref(null);
+const loadingCombinationStats = ref(false);
 const galleryItems = ref([]);
+const pendingBatchIds = ref(new Set());
 let galleryPollTimer = null;
 let galleryPollAttempts = 0;
 
@@ -80,6 +85,58 @@ const sortedTypeCounts = computed(() => {
 const generateButtonLabel = computed(() =>
     galleryItems.value.length ? $t('generate_more') : $t('generate')
 );
+
+const showCombinationStats = computed(() => {
+    const stats = combinationStats.value;
+
+    return Boolean(stats?.wardrobe_ready && stats.total_possible > 0);
+});
+
+const combinationStatsMessage = computed(() => {
+    const stats = combinationStats.value;
+
+    if (!stats?.wardrobe_ready || stats.total_possible <= 0) {
+        return '';
+    }
+
+    if (stats.all_exhausted) {
+        return $t('outfit_combinations_exhausted', {
+            total: stats.total_possible
+        });
+    }
+
+    return $t('outfit_combinations_available', {
+        total: stats.total_possible
+    });
+});
+
+const combinationCountsMessage = computed(() => {
+    const stats = combinationStats.value;
+
+    if (!stats?.wardrobe_ready || stats.total_possible <= 0) {
+        return '';
+    }
+
+    return $t('outfit_combinations_created_remaining', {
+        generated: stats.generated_count,
+        remaining: stats.remaining,
+        total: stats.total_possible
+    });
+});
+
+const isGenerateDisabled = computed(() => {
+    if (loadingGallery.value) {
+        return true;
+    }
+
+    const stats = combinationStats.value;
+
+    if (!stats?.wardrobe_ready) {
+        return false;
+    }
+
+    return stats.all_exhausted || stats.remaining === 0;
+});
 
 const heightFieldError = computed(() => {
     const messages = globalStore.errors?.height;
@@ -132,7 +189,13 @@ const normalizeHeightFromFeet = (value) => {
 };
 
 onBeforeMount(async () => {
-    await Promise.all([loadProfile(), loadTypeCounts(), loadGallery()]);
+    await Promise.all([
+        loadProfile(),
+        loadTypeCounts(),
+        loadCombinationStats(),
+        loadGallery()
+    ]);
+    await registerPendingBatchesForPolling();
     startGalleryPolling();
 });
 
@@ -186,11 +249,95 @@ const loadTypeCounts = async () => {
     }
 };
 
+const applyCombinationStats = (stats) => {
+    if (!stats || stats.total_possible === undefined) {
+        return;
+    }
+
+    combinationStats.value = {
+        total_possible: stats.total_possible,
+        generated_count: stats.generated_count,
+        remaining: stats.remaining,
+        per_batch_limit: stats.per_batch_limit,
+        all_exhausted: stats.all_exhausted,
+        wardrobe_ready: stats.wardrobe_ready ?? true
+    };
+};
+
+const loadCombinationStats = async () => {
+    try {
+        loadingCombinationStats.value = true;
+        const res = await outfitStore.getCombinationStats();
+        applyCombinationStats(res.data);
+    } finally {
+        loadingCombinationStats.value = false;
+    }
+};
+
 const mapGalleryItems = (items) =>
     (items ?? []).map((item, index) => ({
         ...item,
         _key: item.uuid ?? `outfit-${index}`
     }));
+
+const registerBatchForPolling = (batchId) => {
+    if (!batchId) {
+        return;
+    }
+
+    pendingBatchIds.value = new Set([...pendingBatchIds.value, batchId]);
+};
+
+const registerPendingBatchesForPolling = async () => {
+    if (!hasPendingGalleryItems()) {
+        return;
+    }
+
+    try {
+        const res = await OutfitService.getLatestBatch();
+        registerBatchForPolling(res.data?.meta?.batch_id);
+    } catch {
+        // Ignore; list polling below can still refresh pending tiles.
+    }
+};
+
+const mergeGalleryItems = (incoming) => {
+    if (!incoming?.length) {
+        return;
+    }
+
+    const byUuid = new Map(galleryItems.value.map((item) => [item.uuid, item]));
+
+    for (const item of incoming) {
+        const existing = byUuid.get(item.uuid);
+        byUuid.set(item.uuid, {
+            ...(existing ?? {}),
+            ...item,
+            _key: item.uuid ?? existing?._key ?? item._key
+        });
+    }
+
+    const incomingUuids = new Set(incoming.map((item) => item.uuid));
+    const orderedIncoming = incoming.map((item) => byUuid.get(item.uuid));
+    const rest = galleryItems.value.filter((item) => !incomingUuids.has(item.uuid));
+
+    galleryItems.value = [...orderedIncoming, ...rest];
+    showGallery.value = galleryItems.value.length > 0;
+};
+
+const loadGallerySilently = async () => {
+    const res = await OutfitService.list({ page: 1, limit: GALLERY_LIMIT });
+    const payload = res.data;
+
+    if (!payload.data?.length) {
+        return false;
+    }
+
+    showGallery.value = true;
+    galleryItems.value = mapGalleryItems(payload.data);
+
+    return true;
+};
 
 const loadGallery = async () => {
     const res = await outfitStore.list({ page: 1, limit: GALLERY_LIMIT });
@@ -207,6 +354,43 @@ const loadGallery = async () => {
 const hasPendingGalleryItems = () =>
     galleryItems.value.some((item) => isOutfitPending(item));
 
+const getGalleryPollMaxAttempts = () => {
+    const pendingCount = Math.max(
+        1,
+        galleryItems.value.filter((item) => isOutfitPending(item)).length,
+        pendingBatchIds.value.size
+    );
+
+    return (
+        Math.ceil(
+            (pendingCount * GALLERY_POLL_JOB_ESTIMATE_MS) / GALLERY_POLL_INTERVAL_MS
+        ) + GALLERY_POLL_BUFFER_ATTEMPTS
+    );
+};
+
+const refreshPendingOutfits = async () => {
+    if (pendingBatchIds.value.size === 0 && hasPendingGalleryItems()) {
+        await registerPendingBatchesForPolling();
+    }
+
+    for (const batchId of [...pendingBatchIds.value]) {
+        const res = await OutfitService.getBatch(batchId);
+        const payload = res.data;
+
+        mergeGalleryItems(mapGalleryItems(payload.data));
+
+        if ((payload.meta?.pending ?? 0) === 0) {
+            const next = new Set(pendingBatchIds.value);
+            next.delete(batchId);
+            pendingBatchIds.value = next;
+        }
+    }
+
+    if (hasPendingGalleryItems()) {
+        await loadGallerySilently();
+    }
+};
+
 const stopGalleryPolling = () => {
     if (galleryPollTimer) {
         clearInterval(galleryPollTimer);
@@ -222,20 +406,35 @@ const startGalleryPolling = () => {
         return;
     }
 
-    galleryPollTimer = setInterval(async () => {
+    const poll = async () => {
         galleryPollAttempts += 1;
 
         try {
-            await loadGallery();
+            await refreshPendingOutfits();
         } catch {
             stopGalleryPolling();
             return;
         }
 
-        if (!hasPendingGalleryItems() || galleryPollAttempts >= GALLERY_POLL_MAX_ATTEMPTS) {
+        if (!hasPendingGalleryItems()) {
+            stopGalleryPolling();
+            try {
+                const res = await OutfitService.getCombinationStats();
+                applyCombinationStats(res.data?.data);
+            } catch {
+                // Non-blocking refresh after the gallery finishes updating.
+            }
+            return;
+        }
+
+        if (galleryPollAttempts >= getGalleryPollMaxAttempts()) {
             stopGalleryPolling();
         }
-    }, GALLERY_POLL_INTERVAL_MS);
+    };
+
+    galleryPollAttempts = 0;
+    poll();
+    galleryPollTimer = setInterval(poll, GALLERY_POLL_INTERVAL_MS);
 };
 
 const openSettingsDialog = async () => {
@@ -352,12 +551,24 @@ const createOutfits = async () => {
     try {
         loadingGallery.value = true;
         showGallery.value = true;
-        await outfitStore.generate();
-        await loadGallery();
+        const res = await outfitStore.generate();
+        applyCombinationStats(res.meta);
+        registerBatchForPolling(res.meta?.batch_id);
+
+        if (res.data?.length) {
+            mergeGalleryItems(mapGalleryItems(res.data));
+        } else {
+            await loadGallerySilently();
+        }
+
         startGalleryPolling();
     } catch (error) {
         const responseData = error?.response?.data;
         if (error?.response?.status === 422) {
+            if (responseData?.meta) {
+                applyCombinationStats(responseData.meta);
+            }
+
             if (responseData?.meta?.requires_settings) {
                 await openSettingsForMissingProfile(
                     getValidationErrorMessage(
@@ -453,12 +664,29 @@ const createOutfits = async () => {
                 </div>
             </div>
 
+            <div
+                v-if="showCombinationStats"
+                class="outfits-hero__combination-stats"
+                :class="{
+                    'outfits-hero__combination-stats--exhausted':
+                        combinationStats?.all_exhausted
+                }"
+            >
+                <p class="outfits-hero__combination-stats-summary">
+                    {{ combinationStatsMessage }}
+                </p>
+                <p class="outfits-hero__combination-stats-counts">
+                    {{ combinationCountsMessage }}
+                </p>
+            </div>
+
             <Button
                 v-if="$ability.can('core.outfits.create')"
                 class="outfits-hero__create"
                 :label="generateButtonLabel"
                 icon="pi pi-sparkles"
                 :loading="loadingGallery"
+                :disabled="isGenerateDisabled"
                 @click="createOutfits"
             />
         </header>
@@ -469,7 +697,7 @@ const createOutfits = async () => {
             <div v-else-if="galleryItems.length" class="outfits-gallery">
                 <article
                     v-for="item in galleryItems"
-                    :key="item._key"
+                    :key="`${item.uuid}-${item.status}-${item.image_url ?? ''}`"
                     class="outfits-gallery__tile"
                     :class="{
                         'outfits-gallery__tile--pending': isOutfitPending(item),
@@ -729,6 +957,38 @@ const createOutfits = async () => {
     color: var(--p-text-muted-color);
     font-size: 0.875rem;
     padding: 0.125rem 0.25rem;
+}
+
+.outfits-hero__combination-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0 0 1.25rem;
+    max-width: 36rem;
+}
+
+.outfits-hero__combination-stats-summary,
+.outfits-hero__combination-stats-counts {
+    margin: 0;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.outfits-hero__combination-stats-summary {
+    font-size: 0.9375rem;
+    color: var(--p-text-muted-color, #64748b);
+}
+
+.outfits-hero__combination-stats-counts {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--p-text-color, #334155);
+}
+
+.outfits-hero__combination-stats--exhausted
+    .outfits-hero__combination-stats-summary {
+    color: var(--p-text-color, #334155);
 }
 
 .outfits-settings__height-input {

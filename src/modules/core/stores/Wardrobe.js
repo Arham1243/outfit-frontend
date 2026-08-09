@@ -25,13 +25,15 @@ export const useWardrobeStore = defineStore('WardrobeStore', () => {
         });
     };
 
-    const update = (id, payload) => {
+    const update = (id, payload, options = {}) => {
         return globalStore.actionWrapper(async () => {
             const res = await WardrobeService.update(id, payload);
-            globalStore.showSuccess(
-                $t('wardrobe_updated'),
-                $t('wardrobe_updated_successfully')
-            );
+            if (!options.silent) {
+                globalStore.showSuccess(
+                    $t('wardrobe_updated'),
+                    $t('wardrobe_updated_successfully')
+                );
+            }
             return res.data;
         });
     };

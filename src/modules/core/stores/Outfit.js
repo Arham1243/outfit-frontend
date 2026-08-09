@@ -40,11 +40,19 @@ export const useOutfitStore = defineStore('OutfitStore', () => {
         });
     };
 
+    const getCombinationStats = () => {
+        return globalStore.actionWrapper(async () => {
+            const res = await OutfitService.getCombinationStats();
+            return res.data;
+        });
+    };
+
     return {
         list,
         generate,
         getBatch,
         getLatestBatch,
-        getTypeCounts
+        getTypeCounts,
+        getCombinationStats
     };
 });

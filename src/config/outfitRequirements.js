@@ -1,10 +1,10 @@
 export const OUTFIT_FOOTWEAR_TYPES = ['shoes'];
 
-export const OUTFIT_TOP_TYPES = ['shirt', 't-shirt', 'sweater'];
+export const OUTFIT_TOP_TYPES = ['shirt', 't-shirt', 'hoodie', 'sweatshirt'];
 
 export const OUTFIT_BOTTOM_TYPES = ['pants', 'jeans', 'shorts'];
 
-export const OUTFIT_ONE_PIECE_TYPES = ['dress'];
+export const OUTFIT_ONE_PIECE_TYPES = [];
 
 export const OUTFIT_WARDROBE_GROUP_KEYS = {
     footwear: 'outfit_group_footwear',
