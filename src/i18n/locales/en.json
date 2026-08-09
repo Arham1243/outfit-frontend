@@ -101,6 +101,8 @@
     "outfit_complete_settings_first": "Add your gender and height in outfit settings before generating.",
     "outfit_generate_failed": "Complete your outfit settings and wardrobe before generating.",
     "outfit_generation_failed": "Generation failed",
+    "outfit_items_used": "Wardrobe items used",
+    "outfit_items_used_short": "Items used",
     "outfit_no_combinations_available": "Every outfit combination from your current wardrobe was already generated. Add more items to create new looks, or check the gallery below for your existing batch.",
     "outfit_combinations_available": "With this wardrobe you can create {total} outfit combinations.",
     "outfit_combinations_created_remaining": "{generated} created · {remaining} remaining of {total}",

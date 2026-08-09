@@ -9,6 +9,7 @@ import { useGlobalStore, useProfileStore, useSessionStore } from '@/stores';
 import { useHelpers } from '@/composables/useHelpers';
 import { getValidationErrorMessage } from '@/utils/apiErrors';
 import { formatMissingWardrobeGroups } from '@/config/outfitRequirements';
+import { formatWardrobeTypeLabel } from '@/config/wardrobeTypes';
 import {
     cmToFeetInchesInput,
     feetInchesInputToCm,
@@ -39,6 +40,8 @@ const combinationStats = ref(null);
 const loadingCombinationStats = ref(false);
 const galleryItems = ref([]);
 const pendingBatchIds = ref(new Set());
+const showWardrobeDialog = ref(false);
+const selectedOutfit = ref(null);
 let galleryPollTimer = null;
 let galleryPollAttempts = 0;
 
@@ -542,6 +545,12 @@ const isOutfitPending = (item) =>
 
 const isOutfitFailed = (item) => item?.status === 'failed';
 
+const openWardrobeDialog = (item, event) => {
+    event?.stopPropagation();
+    selectedOutfit.value = item;
+    showWardrobeDialog.value = true;
+};
+
 const openSettingsForMissingProfile = async (message) => {
     globalStore.showError($t('validation_error'), message);
     await openSettingsDialog();
@@ -704,40 +713,115 @@ const createOutfits = async () => {
                         'outfits-gallery__tile--failed': isOutfitFailed(item)
                     }"
                 >
-                    <Image
-                        v-if="item.image_url"
-                        :src="item.image_url"
-                        :alt="$t('outfit_preview')"
-                        preview
-                        imageClass="outfits-gallery__img"
-                    >
-                        <template #preview="slotProps">
-                            <img
-                                :src="item.image_url"
-                                :alt="$t('outfit_preview')"
-                                :class="[slotProps.class, 'outfit-image-preview']"
-                                :style="slotProps.style"
-                                @click="slotProps.previewCallback"
-                            />
-                        </template>
-                    </Image>
-                    <div
-                        v-else-if="isOutfitPending(item)"
-                        class="outfits-gallery__placeholder"
-                    >
-                        <Loader compact />
-                    </div>
-                    <div
-                        v-else-if="isOutfitFailed(item)"
-                        class="outfits-gallery__placeholder outfits-gallery__placeholder--failed"
-                    >
-                        <i class="pi pi-exclamation-triangle" aria-hidden="true" />
-                        <span>{{ $t('outfit_generation_failed') }}</span>
+                    <div class="outfits-gallery__outfit">
+                        <img
+                            v-if="item.image_url"
+                            :src="item.image_url"
+                            :alt="$t('outfit_preview')"
+                            class="outfits-gallery__img"
+                            role="button"
+                            tabindex="0"
+                            @click="openWardrobeDialog(item, $event)"
+                            @keydown.enter="openWardrobeDialog(item, $event)"
+                            @keydown.space.prevent="openWardrobeDialog(item, $event)"
+                        />
+                        <div
+                            v-else-if="isOutfitPending(item)"
+                            class="outfits-gallery__placeholder"
+                        >
+                            <Loader compact />
+                        </div>
+                        <div
+                            v-else-if="isOutfitFailed(item)"
+                            class="outfits-gallery__placeholder outfits-gallery__placeholder--failed"
+                        >
+                            <i class="pi pi-exclamation-triangle" aria-hidden="true" />
+                            <span>{{ $t('outfit_generation_failed') }}</span>
+                        </div>
                     </div>
                 </article>
             </div>
         </section>
     </section>
+
+    <Dialog
+        v-model:visible="showWardrobeDialog"
+        modal
+        dismissable-mask
+        :header="$t('outfit_preview')"
+        class="outfits-wardrobe-dialog"
+        :style="{ width: 'auto', maxWidth: '98vw' }"
+        @hide="selectedOutfit = null"
+    >
+        <div v-if="selectedOutfit" class="outfits-wardrobe-dialog__body">
+            <div class="outfits-wardrobe-dialog__outfit">
+                <img
+                    v-if="selectedOutfit.image_url"
+                    :src="selectedOutfit.image_url"
+                    :alt="$t('outfit_preview')"
+                    class="outfits-wardrobe-dialog__outfit-img"
+                />
+                <div
+                    v-else-if="isOutfitPending(selectedOutfit)"
+                    class="outfits-wardrobe-dialog__outfit-placeholder"
+                >
+                    <Loader compact />
+                </div>
+                <div
+                    v-else-if="isOutfitFailed(selectedOutfit)"
+                    class="outfits-wardrobe-dialog__outfit-placeholder outfits-wardrobe-dialog__outfit-placeholder--failed"
+                >
+                    <i class="pi pi-exclamation-triangle" aria-hidden="true" />
+                    <span>{{ $t('outfit_generation_failed') }}</span>
+                </div>
+            </div>
+
+            <aside class="outfits-wardrobe-dialog__items">
+                <p class="outfits-wardrobe-dialog__items-label">
+                    {{ $t('outfit_items_used') }}
+                </p>
+                <div class="outfits-wardrobe-dialog__grid">
+                    <article
+                        v-for="wardrobe in selectedOutfit.wardrobe_items"
+                        :key="wardrobe.uuid"
+                        class="outfits-wardrobe-dialog__item"
+                    >
+                        <div class="outfits-wardrobe-dialog__item-media">
+                            <Image
+                                v-if="wardrobe.image_url"
+                                :src="wardrobe.image_url"
+                                :alt="formatWardrobeTypeLabel(wardrobe.type)"
+                                preview
+                                imageClass="outfits-wardrobe-dialog__item-img"
+                            >
+                                <template #preview="slotProps">
+                                    <img
+                                        :src="wardrobe.image_url"
+                                        :alt="formatWardrobeTypeLabel(wardrobe.type)"
+                                        :class="[
+                                            slotProps.class,
+                                            'outfits-wardrobe-dialog__item-preview'
+                                        ]"
+                                        :style="slotProps.style"
+                                        @click="slotProps.previewCallback"
+                                    />
+                                </template>
+                            </Image>
+                            <div
+                                v-else
+                                class="outfits-wardrobe-dialog__item-img outfits-wardrobe-dialog__item-img--empty"
+                            >
+                                <i class="pi pi-image" aria-hidden="true" />
+                            </div>
+                        </div>
+                        <span class="outfits-wardrobe-dialog__item-label">
+                            {{ formatWardrobeTypeLabel(wardrobe.type) }}
+                        </span>
+                    </article>
+                </div>
+            </aside>
+        </div>
+    </Dialog>
 
     <BaseDialog
         v-model:visible="showSettingsDialog"
@@ -1125,30 +1209,26 @@ const createOutfits = async () => {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 0.35rem;
+    align-items: start;
 }
 
 .outfits-gallery__tile {
     position: relative;
+    width: 100%;
     aspect-ratio: 2 / 3;
     overflow: hidden;
     border-radius: 0.35rem;
     background: var(--p-surface-100, #f1f5f9);
 }
 
-.outfits-gallery__tile :deep(.p-image) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.outfits-gallery__outfit {
+    position: relative;
     width: 100%;
     height: 100%;
 }
 
-.outfits-gallery__tile :deep(.p-image-preview) {
-    object-fit: contain;
-}
-
 .outfits-gallery__tile :deep(.outfits-gallery__img),
-.outfits-gallery__tile :deep(img) {
+.outfits-gallery__img {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -1179,9 +1259,191 @@ const createOutfits = async () => {
     color: var(--p-red-500, #ef4444);
 }
 
+.outfits-wardrobe-dialog__body {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.outfits-wardrobe-dialog__outfit {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: fit-content;
+    max-width: min(34rem, 52vw);
+    min-height: 0;
+    padding: 0.5rem;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    border-radius: 0.75rem;
+    background: var(--p-surface-0, #fff);
+}
+
+.outfits-wardrobe-dialog__outfit-img {
+    display: block;
+    width: auto;
+    max-width: min(33rem, 50vw);
+    height: min(78vh, 44rem);
+    object-fit: contain;
+    object-position: top left;
+}
+
+.outfits-wardrobe-dialog__outfit-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 16rem;
+    color: var(--p-text-muted-color, #64748b);
+    text-align: center;
+}
+
+.outfits-wardrobe-dialog__outfit-placeholder--failed {
+    color: var(--p-red-500, #ef4444);
+}
+
+.outfits-wardrobe-dialog__items {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 24rem;
+    max-width: 34vw;
+    min-width: 18rem;
+    padding: 0.85rem;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    border-radius: 0.75rem;
+    background: var(--p-surface-50, #f8fafc);
+}
+
+.outfits-wardrobe-dialog__items-label {
+    flex: 0 0 auto;
+    margin: 0 0 0.6rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--p-text-muted-color, #64748b);
+}
+
+.outfits-wardrobe-dialog__grid {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.65rem;
+    min-height: 0;
+}
+
+.outfits-wardrobe-dialog__item {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 0;
+    padding: 0.65rem;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    border-radius: 0.625rem;
+    background: var(--p-surface-0, #fff);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.outfits-wardrobe-dialog__item-media {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    min-height: 6.5rem;
+    padding: 0.4rem;
+    overflow: hidden;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    border-radius: 0.5rem;
+    background: var(--p-surface-50, #f8fafc);
+}
+
+.outfits-wardrobe-dialog__item :deep(.p-image) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.outfits-wardrobe-dialog__item :deep(.outfits-wardrobe-dialog__item-img),
+.outfits-wardrobe-dialog__item :deep(img:not(.outfits-wardrobe-dialog__item-preview)) {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: contain;
+    cursor: zoom-in;
+}
+
+.outfits-wardrobe-dialog__item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.outfits-wardrobe-dialog__item-img--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--p-text-muted-color, #64748b);
+    font-size: 1.125rem;
+}
+
+.outfits-wardrobe-dialog__item-label {
+    flex: 0 0 auto;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--p-text-color);
+    white-space: nowrap;
+}
+
 @media (max-width: 768px) {
     .outfits-gallery {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .outfits-wardrobe-dialog__body {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .outfits-wardrobe-dialog__items {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .outfits-wardrobe-dialog__grid {
+        flex: none;
+    }
+
+    .outfits-wardrobe-dialog__item {
+        flex: none;
+    }
+
+    .outfits-wardrobe-dialog__item-media {
+        min-height: 5.5rem;
+    }
+
+    .outfits-wardrobe-dialog__outfit {
+        max-width: 100%;
+    }
+
+    .outfits-wardrobe-dialog__outfit-img {
+        max-width: 100%;
+        height: min(60vh, 32rem);
     }
 }
 

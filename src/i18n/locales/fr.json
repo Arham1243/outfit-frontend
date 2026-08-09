@@ -101,6 +101,8 @@
     "outfit_complete_settings_first": "Ajoutez votre genre et votre taille dans les paramètres de tenue avant de générer.",
     "outfit_generate_failed": "Complétez vos paramètres de tenue et votre garde-robe avant de générer.",
     "outfit_generation_failed": "Échec de la génération",
+    "outfit_items_used": "Articles de garde-robe utilisés",
+    "outfit_items_used_short": "Articles utilisés",
     "outfit_group_bottom": "bas (pantalon, jean ou short)",
     "outfit_group_footwear": "chaussures",
     "outfit_group_top": "haut (chemise, t-shirt ou pull)",
