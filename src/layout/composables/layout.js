@@ -16,6 +16,8 @@ const layoutState = reactive({
     anchored: true,
     overlaySubmenuActive: false,
     profileSidebarVisible: false,
+    profileDialogVisible: false,
+    accountMenuVisible: false,
     configSidebarVisible: false,
     staticMenuMobileActive: false,
     menuHoverActive: false,
@@ -37,6 +39,8 @@ export function resetLayoutState() {
     layoutState.anchored = false;
     layoutState.overlaySubmenuActive = false;
     layoutState.profileSidebarVisible = false;
+    layoutState.profileDialogVisible = false;
+    layoutState.accountMenuVisible = false;
     layoutState.configSidebarVisible = false;
     layoutState.staticMenuMobileActive = false;
     layoutState.menuHoverActive = false;
@@ -56,6 +60,7 @@ export function useLayout() {
 
         if (window.innerWidth > 991) {
             if (layoutConfig.menuMode === 'drawer') {
+                layoutState.accountMenuVisible = false;
                 const nextAnchored = !layoutState.anchored;
                 layoutState.anchored = nextAnchored;
                 layoutState.sidebarActive = nextAnchored;
@@ -78,7 +83,30 @@ export function useLayout() {
             layoutState.menuHoverActive = false;
         }
 
+        layoutState.accountMenuVisible = false;
         layoutState.configSidebarVisible = !layoutState.configSidebarVisible;
+    };
+
+    const closeAccountMenu = () => {
+        layoutState.accountMenuVisible = false;
+    };
+
+    const toggleAccountMenu = () => {
+        layoutState.accountMenuVisible = !layoutState.accountMenuVisible;
+    };
+
+    const openProfileDialog = () => {
+        layoutState.accountMenuVisible = false;
+        layoutState.profileDialogVisible = true;
+    };
+
+    const closeProfileDialog = () => {
+        layoutState.profileDialogVisible = false;
+    };
+
+    const openSettings = () => {
+        layoutState.accountMenuVisible = false;
+        layoutState.configSidebarVisible = true;
     };
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
@@ -106,6 +134,11 @@ export function useLayout() {
         isDarkTheme,
         setActiveMenuItem,
         toggleConfigSidebar,
+        closeAccountMenu,
+        toggleAccountMenu,
+        openProfileDialog,
+        closeProfileDialog,
+        openSettings,
         isSlim,
         isSlimPlus,
         isHorizontal,

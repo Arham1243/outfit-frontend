@@ -170,6 +170,13 @@
             "close_sidebar": "Close sidebar",
             "toggle_menu": "Toggle menu",
             "workspace": "Workspace"
+        },
+        "account": {
+            "menu_label": "Account menu",
+            "profile": "Profile",
+            "settings": "Settings",
+            "logout": "Log out",
+            "edit_profile": "Edit profile"
         }
     },
     "lets_set_a_password_for_your_account": "Let's set a password for your account",

@@ -9,7 +9,7 @@ import {
     watch
 } from 'vue';
 import AppConfig from './AppConfig.vue';
-import AppProfileSidebar from './AppProfileSidebar.vue';
+import AppProfileDialog from './AppProfileDialog.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Forbidden from '@/views/errors/Forbidden.vue';
@@ -132,7 +132,7 @@ const containerClass = computed(() => {
                     <router-view></router-view>
                 </div>
             </div>
-            <AppProfileSidebar />
+            <AppProfileDialog />
             <AppConfig />
         </div>
         <Toast></Toast>

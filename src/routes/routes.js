@@ -50,23 +50,6 @@ export default [
         ]
     },
     {
-        path: '/profile',
-        component: AppLayout,
-        children: [
-            {
-                path: '',
-                name: 'Profile',
-                component: () => import('@/views/profile/index.vue'),
-                meta: {
-                    breadcrumb: [
-                        { label: 'breadcrumbs.wardrobe', route: '/wardrobe' },
-                        { label: 'breadcrumbs.profile' }
-                    ]
-                }
-            }
-        ]
-    },
-    {
         path: '/offline',
         name: 'Offline',
         component: () => import('@/views/errors/Offline.vue')

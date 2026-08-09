@@ -295,11 +295,6 @@ function checkActiveRoute(item) {
             <span class="layout-menuitem-text">{{
                 item.label ? $t(item.label) : ''
             }}</span>
-            <span
-                v-if="checkActiveRoute(item)"
-                class="sidebar-active-dot"
-                aria-hidden="true"
-            ></span>
             <i
                 class="pi pi-fw pi-angle-down layout-submenu-toggler"
                 v-if="item.items"

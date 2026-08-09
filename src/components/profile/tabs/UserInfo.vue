@@ -1,10 +1,8 @@
 <script setup>
 import { onBeforeMount, ref, toRefs } from 'vue';
-import { useRoleStore } from '@/modules/core/stores';
 import { useLanguageStore } from '@/stores';
 import PlaceholderImage from '@/assets/images/image_not_available.png';
 
-const roleStore = useRoleStore();
 const languageStore = useLanguageStore();
 const languageSelectOptions = ref([]);
 const loadingLanguages = ref(false);
@@ -12,12 +10,18 @@ const savedPreferredLanguage = ref(null);
 
 const props = defineProps({
     formData: { type: Object, required: true },
-    busy: { type: Boolean, required: true, default: false }
+    busy: { type: Boolean, required: true, default: false },
+    variant: {
+        type: String,
+        default: 'page'
+    }
 });
 
 const { formData, busy } = toRefs(props);
-const roles = ref([]);
-const loadingRoles = ref(false);
+const fieldColClass =
+    props.variant === 'dialog'
+        ? 'col-span-12 sm:col-span-6'
+        : 'col-span-12 sm:col-span-6 lg:col-span-4';
 const emit = defineEmits(['save']);
 const save = () => {
     emit('save');
@@ -70,30 +74,6 @@ async function loadLanguageOptions() {
     }
 }
 
-const statusOptions = [
-    { name: 'Active', code: 'active' },
-    { name: 'Inactive', code: 'inactive' }
-];
-
-const getRoles = async (searchText = '') => {
-    try {
-        loadingRoles.value = true;
-        const params = { limit: 300 };
-        const payload = {
-            search: { value: searchText },
-            sort: [{ field: 'name', order: 'asc' }],
-            filters: [{ field: 'status', operator: '=', value: 1 }]
-        };
-        const res = await roleStore.list(payload, params);
-        roles.value = res.data?.map((r) => ({
-            id: r.id,
-            name: r.name
-        }));
-    } finally {
-        loadingRoles.value = false;
-    }
-};
-
 function onFileSelect(event) {
     const file = event.files[0];
     if (!file) return;
@@ -106,8 +86,8 @@ function onFileSelect(event) {
 </script>
 
 <template>
-    <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+    <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+        <div :class="fieldColClass">
             <label class="block mb-3 required">{{ $t('primary_email') }}</label>
             <InputField
                 id="email"
@@ -119,7 +99,7 @@ function onFileSelect(event) {
             />
         </div>
 
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+        <div :class="fieldColClass">
             <label class="block mb-3 required">{{ $t('full_name') }}</label>
             <InputField
                 id="name"
@@ -131,32 +111,7 @@ function onFileSelect(event) {
             />
         </div>
 
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
-            <label class="block mb-3">{{ $t('status') }}</label>
-            <InputField
-                v-if="formData.status !== 'pending'"
-                id="status"
-                :disabled="busy"
-                class="w-full"
-                v-model="formData.status"
-                :placeholder="$t('select')"
-                variant="dropdown"
-                optionLabel="name"
-                optionValue="code"
-                :options="statusOptions"
-            />
-            <InputField
-                v-else
-                id="status"
-                :disabled="busy"
-                class="w-full"
-                v-model="formData.status"
-                variant="text"
-                @keyup.enter="save"
-            />
-        </div>
-
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+        <div :class="fieldColClass">
             <label class="block mb-3">{{ $t('gender') }}</label>
             <InputField
                 id="gender"
@@ -172,7 +127,7 @@ function onFileSelect(event) {
             />
         </div>
 
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+        <div :class="fieldColClass">
             <label class="block mb-3">{{ $t('date_of_birth') }}</label>
             <InputField
                 id="date_of_birth"
@@ -184,25 +139,7 @@ function onFileSelect(event) {
             />
         </div>
 
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
-            <label class="block mb-3">{{ $t('role') }}</label>
-            <ApiDropdown
-                id="role_id"
-                showClear
-                filter
-                @search="getRoles"
-                :placeholder="$t('select')"
-                class="w-full"
-                v-model="formData.role_id"
-                :loading="loadingRoles"
-                :options="roles"
-                optionLabel="name"
-                optionValue="id"
-                :disabled="busy"
-            />
-        </div>
-
-        <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+        <div :class="fieldColClass">
             <label class="block mb-3">{{
                 $t('preferred_language')
             }}</label>

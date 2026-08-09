@@ -171,6 +171,13 @@
             "close_sidebar": "سائیڈبار بند کریں",
             "toggle_menu": "مینو ٹوگل کریں",
             "workspace": "ورک اسپیس"
+        },
+        "account": {
+            "menu_label": "اکاؤنٹ مینو",
+            "profile": "پروفائل",
+            "settings": "ترتیبات",
+            "logout": "لاگ آؤٹ",
+            "edit_profile": "پروفائل میں ترمیم"
         }
     },
     "lets_set_a_password_for_your_account": "آئیے آپ کے اکاؤنٹ کے لیے پاس ورڈ مقرر کریں",

@@ -17,9 +17,7 @@ const ACTIONS_IMPLYING_VIEW = ['create', 'edit', 'delete'];
  */
 export const ENTITY_APPLICABLE_ACTIONS = {
     'core.wardrobe': ['view', 'create', 'edit', 'delete'],
-    'core.outfits': ['view', 'create'],
-    'core.users': ['view', 'create', 'edit'],
-    'core.roles': ['view', 'create', 'edit', 'delete']
+    'core.outfits': ['view', 'create']
 };
 
 /** Not shown in the tenant role permissions matrix. */
@@ -138,8 +136,6 @@ export function normalizePermissionMatrix(matrix) {
 
 /** Display labels that would otherwise be wrong or too long (i18n key paths). */
 const ENTITY_LABEL_OVERRIDES = {
-    'core.users': 'menu.user_management',
-    'core.roles': 'menu.user_roles',
     'core.wardrobe': 'menu.wardrobe',
     'core.outfits': 'menu.outfits'
 };
@@ -152,12 +148,7 @@ export const SECTION_HEADER_PRESET_KEYS = {
 export const PERMISSION_MATRIX_SECTIONS = [
     {
         title: 'Core',
-        entities: [
-            'core.wardrobe',
-            'core.outfits',
-            'core.users',
-            'core.roles'
-        ],
+        entities: ['core.wardrobe', 'core.outfits'],
         childIndent: false
     }
 ];
