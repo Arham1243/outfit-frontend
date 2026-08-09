@@ -29,14 +29,17 @@
             0 0 0 1px rgba(15, 23, 42, 0.03),
             0 24px 48px rgba(15, 23, 42, 0.14);
     }
-
+    
     .p-dialog-content {
         padding: 0;
         background: var(--settings-dialog-panel-bg);
         color: var(--p-text-color);
     }
 }
-
+.p-dialog-close-button{
+    outline: none !important;
+    border: none !important;
+}
 .app-dark .settings-dialog.p-dialog {
     border-color: var(--settings-dialog-border);
     box-shadow:

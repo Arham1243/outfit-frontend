@@ -32,7 +32,7 @@ const userInitials = computed(() => {
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 });
 
-const userSubtitle = computed(() => currentUser.value?.email || '');
+const userSubtitle = computed(() => '');
 </script>
 
 <template>

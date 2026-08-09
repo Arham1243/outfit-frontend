@@ -36,7 +36,6 @@ const {
 const rootRef = ref(null);
 
 const isOpen = computed(() => layoutState.accountMenuVisible);
-const userEmail = computed(() => sessionStore.user?.email || '');
 
 function handleDocumentClick(event) {
     if (!isOpen.value) {
@@ -104,13 +103,6 @@ async function logout() {
                 role="menu"
                 :aria-label="$t('layout.account.menu_label')"
             >
-                <p
-                    v-if="userEmail"
-                    class="sidebar-account-menu__email"
-                >
-                    {{ userEmail }}
-                </p>
-
                 <ul class="sidebar-account-menu__list">
                     <li>
                         <button
@@ -119,7 +111,10 @@ async function logout() {
                             role="menuitem"
                             @click="openProfileDialog"
                         >
-                            <i class="pi pi-user sidebar-account-menu__icon"></i>
+                            <i
+                                class="pi pi-user sidebar-account-menu__icon"
+                                aria-hidden="true"
+                            ></i>
                             <span>{{ $t('layout.account.profile') }}</span>
                         </button>
                     </li>
@@ -130,7 +125,10 @@ async function logout() {
                             role="menuitem"
                             @click="openSettings"
                         >
-                            <i class="pi pi-cog sidebar-account-menu__icon"></i>
+                            <i
+                                class="pi pi-cog sidebar-account-menu__icon"
+                                aria-hidden="true"
+                            ></i>
                             <span>{{ $t('layout.account.settings') }}</span>
                         </button>
                     </li>
@@ -142,12 +140,13 @@ async function logout() {
                     <li>
                         <button
                             type="button"
-                            class="sidebar-account-menu__item sidebar-account-menu__item--danger"
+                            class="sidebar-account-menu__item"
                             role="menuitem"
                             @click="logout"
                         >
                             <i
                                 class="pi pi-sign-out sidebar-account-menu__icon"
+                                aria-hidden="true"
                             ></i>
                             <span>{{ $t('layout.account.logout') }}</span>
                         </button>
@@ -172,7 +171,7 @@ async function logout() {
                     {{ userName }}
                 </span>
                 <span class="sidebar-user-card__role">
-                    Free Plan
+                    {{ userSubtitle || $t('layout.sidebar.free_plan') }}
                 </span>
             </span>
             <i
