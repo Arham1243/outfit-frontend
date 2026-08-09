@@ -195,12 +195,13 @@ async function getItem({ showLoading = true } = {}) {
                     type="button"
                     :label="$t('cancel')"
                     severity="secondary"
-                    outlined
+                    text
                     :disabled="busy"
                     @click="requestClose"
                 />
                 <Button
                     type="button"
+                    icon="pi pi-check"
                     :label="$t('save')"
                     :disabled="busy || !isDirty"
                     :loading="busy"
