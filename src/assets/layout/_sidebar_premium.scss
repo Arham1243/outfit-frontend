@@ -311,7 +311,12 @@
                     justify-self: unset;
                 }
 
-                .sidebar-user-card__copy {
+                .layout-menu-container {
+                    overflow: hidden;
+                }
+
+                .sidebar-user-card__copy,
+                .sidebar-user-card__icon {
                     display: none;
                 }
 
@@ -321,17 +326,29 @@
                     border: none;
                     background: transparent;
                     justify-content: center;
+
+                    &:hover,
+                    &.sidebar-user-card--open {
+                        background: transparent;
+                    }
                 }
 
                 .layout-menu ul a.sidebar-nav-link {
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    gap: 0 !important;
                     width: var(--sidebar-rail-slot) !important;
                     height: var(--sidebar-rail-slot);
                     min-width: var(--sidebar-rail-slot);
                     margin-inline: 0;
                     padding: 0 !important;
+                    overflow: hidden;
+
+                    .layout-menuitem-text,
+                    .layout-submenu-toggler {
+                        display: none;
+                    }
 
                     .layout-menuitem-icon {
                         width: var(--sidebar-icon-size);
@@ -339,7 +356,6 @@
                         margin: 0 !important;
                         font-size: var(--sidebar-icon-size);
                     }
-
                 }
             }
         }
