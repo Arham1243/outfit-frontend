@@ -249,11 +249,10 @@ function checkActiveRoute(item) {
             v-if="(!item.to || item.items) && item.visible !== false"
             :href="item.url"
             @click="itemClick($event, item, index)"
-            :class="item.class"
+            :class="[item.class, 'sidebar-nav-link']"
             :target="item.target"
             tabindex="0"
             @mouseenter="onMouseEnter"
-            class="flex items-center gap-2"
             v-tooltip.hover="
                 isSlim && root && !isActiveMenu
                       ? $t(item.label)
@@ -282,7 +281,6 @@ function checkActiveRoute(item) {
             tabindex="0"
             :to="item.to"
             @mouseenter="onMouseEnter"
-            class="flex items-center gap-2"
             v-tooltip.hover="
                 isSlim && root && !isActiveMenu
                       ? item.label

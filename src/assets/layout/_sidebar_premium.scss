@@ -189,12 +189,17 @@
         }
 
         ul a.sidebar-nav-link {
+            display: flex;
+            align-items: center;
             margin: 0.125rem 0;
-            padding: 0.625rem 0;
-            border-radius: 0.75rem;
+            padding: var(--nav-item-padding);
+            border-radius: var(--nav-item-radius);
             color: var(--sidebar-muted);
-            font-weight: 500;
-            gap: 0.75rem;
+            font-size: var(--nav-item-font-size);
+            font-weight: var(--nav-item-font-weight);
+            line-height: var(--nav-item-line-height);
+            gap: var(--nav-item-gap);
+            min-height: var(--nav-item-min-height);
             transition:
                 background-color var(--layout-section-transition-duration),
                 color var(--layout-section-transition-duration),
@@ -204,9 +209,9 @@
 
             .layout-menuitem-icon {
                 color: inherit;
-                font-size: var(--sidebar-icon-size);
-                width: var(--sidebar-rail-slot);
-                min-width: var(--sidebar-rail-slot);
+                font-size: var(--nav-item-icon-size);
+                width: var(--nav-item-icon-size);
+                min-width: var(--nav-item-icon-size);
                 margin: 0;
                 text-align: center;
             }
@@ -223,7 +228,6 @@
             &.active-route {
                 background: var(--sidebar-active-bg);
                 color: var(--sidebar-active-text);
-                font-weight: 600;
                 box-shadow: var(--sidebar-active-shadow);
 
                 .layout-menuitem-icon {
@@ -263,7 +267,8 @@
 
             .layout-menu ul a.sidebar-nav-link {
                 width: auto !important;
-                padding: 0.625rem 0 !important;
+                padding: var(--nav-item-padding) !important;
+                gap: var(--nav-item-gap) !important;
             }
         }
 
@@ -272,11 +277,6 @@
             .sidebar-premium {
                 .sidebar-header {
                     padding: 1rem var(--sidebar-padding-x) 0.75rem !important;
-                }
-
-                .layout-menu ul a.sidebar-nav-link {
-                    padding: 0.625rem 0 !important;
-                    gap: 0.75rem !important;
                 }
             }
         }

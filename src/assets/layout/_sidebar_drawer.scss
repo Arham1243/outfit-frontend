@@ -26,7 +26,7 @@
 
                     .layout-menu {
                         ul a.sidebar-nav-link {
-                            padding: 0.625rem 0;
+                            padding: var(--nav-item-padding);
                             width: auto;
                         }
                     }

@@ -32,16 +32,17 @@
     &__item {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: var(--nav-item-gap);
         width: 100%;
-        padding: 0.625rem 0.75rem;
+        min-height: var(--nav-item-min-height);
+        padding: var(--nav-item-padding);
         border: none;
-        border-radius: 0.625rem;
+        border-radius: var(--nav-item-radius);
         background: transparent;
         color: var(--p-text-color);
-        font-size: 0.875rem;
-        font-weight: 400;
-        line-height: 1.25;
+        font-size: var(--nav-item-font-size);
+        font-weight: var(--nav-item-font-weight);
+        line-height: var(--nav-item-line-height);
         text-align: start;
         cursor: pointer;
         transition:
@@ -61,8 +62,9 @@
 
     &__icon {
         flex-shrink: 0;
-        width: 1.125rem;
-        font-size: 1rem;
+        width: var(--nav-item-icon-size);
+        min-width: var(--nav-item-icon-size);
+        font-size: var(--nav-item-icon-size);
         text-align: center;
         color: inherit;
     }
