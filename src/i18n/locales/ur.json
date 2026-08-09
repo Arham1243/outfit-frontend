@@ -178,6 +178,14 @@
             "settings": "ترتیبات",
             "logout": "لاگ آؤٹ",
             "edit_profile": "پروفائل میں ترمیم"
+        },
+        "settings_dialog": {
+            "nav_label": "ترتیبات کے حصے",
+            "general": "عام",
+            "appearance": "ظاہری شکل",
+            "appearance_system": "سسٹم",
+            "appearance_dark": "ڈارک",
+            "appearance_light": "لائٹ"
         }
     },
     "lets_set_a_password_for_your_account": "آئیے آپ کے اکاؤنٹ کے لیے پاس ورڈ مقرر کریں",

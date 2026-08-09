@@ -172,12 +172,11 @@ async function logout() {
                     {{ userName }}
                 </span>
                 <span class="sidebar-user-card__role">
-                    {{ userSubtitle || $t('layout.sidebar.member') }}
+                    Free Plan
                 </span>
             </span>
             <i
-                class="pi sidebar-user-card__chevron"
-                :class="isOpen ? 'pi-chevron-down' : 'pi-chevron-up'"
+                class="pi pi-cog sidebar-user-card__icon"
                 aria-hidden="true"
             ></i>
         </button>

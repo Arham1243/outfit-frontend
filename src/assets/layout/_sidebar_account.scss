@@ -94,15 +94,15 @@
     transform: translateY(0.375rem);
 }
 
-.sidebar-user-card__chevron {
+.sidebar-user-card__icon {
     flex-shrink: 0;
     margin-left: auto;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--sidebar-muted);
-    transition: transform 0.15s ease;
+    transition: color 0.15s ease;
 }
 
-.sidebar-user-card--open .sidebar-user-card__chevron {
+.sidebar-user-card--open .sidebar-user-card__icon {
     color: var(--sidebar-brand-color);
 }
 
@@ -113,7 +113,7 @@
             right: auto;
         }
 
-        .sidebar-user-card__chevron,
+        .sidebar-user-card__icon,
         .sidebar-user-card__copy {
             display: none;
         }

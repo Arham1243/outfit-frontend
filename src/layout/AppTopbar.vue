@@ -1,5 +1,9 @@
 <script setup>
-import { setDarkTheme, useLayout } from '@/layout/composables/layout';
+import {
+    resolveAppearanceToDark,
+    setAppearance,
+    useLayout
+} from '@/layout/composables/layout';
 import { useSessionStore } from '@/stores';
 import { AuthService } from '@/services';
 
@@ -29,9 +33,9 @@ function persistDarkMode(isDark) {
 }
 
 function executeDarkModeToggle() {
-    const next = !layoutConfig.darkTheme;
-    setDarkTheme(next);
-    persistDarkMode(next);
+    const nextAppearance = layoutConfig.darkTheme ? 'light' : 'dark';
+    setAppearance(nextAppearance);
+    persistDarkMode(resolveAppearanceToDark(nextAppearance));
 }
 </script>
 

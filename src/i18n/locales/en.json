@@ -177,6 +177,14 @@
             "settings": "Settings",
             "logout": "Log out",
             "edit_profile": "Edit profile"
+        },
+        "settings_dialog": {
+            "nav_label": "Settings sections",
+            "general": "General",
+            "appearance": "Appearance",
+            "appearance_system": "System",
+            "appearance_dark": "Dark",
+            "appearance_light": "Light"
         }
     },
     "lets_set_a_password_for_your_account": "Let's set a password for your account",

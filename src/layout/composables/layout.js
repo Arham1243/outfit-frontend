@@ -1,10 +1,13 @@
 import { computed, reactive } from 'vue';
 
+const APPEARANCE_STORAGE_KEY = 'outfit-ui-appearance';
+
 const layoutConfig = reactive({
     preset: 'Aura',
     primary: 'emerald',
     surface: null,
     darkTheme: false,
+    appearance: 'system',
     menuMode: 'drawer',
     menuTheme: 'colorScheme'
 });
@@ -17,6 +20,7 @@ const layoutState = reactive({
     overlaySubmenuActive: false,
     profileSidebarVisible: false,
     profileDialogVisible: false,
+    settingsDialogVisible: false,
     accountMenuVisible: false,
     configSidebarVisible: false,
     staticMenuMobileActive: false,
@@ -25,11 +29,87 @@ const layoutState = reactive({
 });
 
 /** Reset transient UI (sidebars, overlays). Call when the session ends so the next login starts clean. */
+export function getSystemPrefersDark() {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+export function resolveAppearanceToDark(appearance) {
+    if (appearance === 'dark') {
+        return true;
+    }
+
+    if (appearance === 'light') {
+        return false;
+    }
+
+    return getSystemPrefersDark();
+}
+
 /** Sync layout + Tailwind/Prime dark selector on `<html>`. */
 export function setDarkTheme(isDark) {
     const on = !!isDark;
     layoutConfig.darkTheme = on;
     document.documentElement.classList.toggle('app-dark', on);
+}
+
+export function loadStoredAppearance() {
+    if (typeof localStorage === 'undefined') {
+        return null;
+    }
+
+    const stored = localStorage.getItem(APPEARANCE_STORAGE_KEY);
+    if (stored === 'system' || stored === 'light' || stored === 'dark') {
+        return stored;
+    }
+
+    return null;
+}
+
+export function setAppearance(appearance, { persist = true } = {}) {
+    const mode =
+        appearance === 'dark' || appearance === 'light' ? appearance : 'system';
+    layoutConfig.appearance = mode;
+
+    if (persist && typeof localStorage !== 'undefined') {
+        localStorage.setItem(APPEARANCE_STORAGE_KEY, mode);
+    }
+
+    setDarkTheme(resolveAppearanceToDark(mode));
+}
+
+let systemThemeListenerAttached = false;
+
+function handleSystemThemeChange() {
+    if (layoutConfig.appearance === 'system') {
+        setDarkTheme(getSystemPrefersDark());
+    }
+}
+
+export function ensureAppearanceListener() {
+    if (typeof window === 'undefined' || systemThemeListenerAttached) {
+        return;
+    }
+
+    window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', handleSystemThemeChange);
+    systemThemeListenerAttached = true;
+}
+
+export function initAppearancePreference(fallbackDark = false) {
+    ensureAppearanceListener();
+
+    const stored = loadStoredAppearance();
+    if (stored) {
+        setAppearance(stored, { persist: false });
+        return;
+    }
+
+    setAppearance(fallbackDark ? 'dark' : 'light', { persist: false });
 }
 
 export function resetLayoutState() {
@@ -40,6 +120,7 @@ export function resetLayoutState() {
     layoutState.overlaySubmenuActive = false;
     layoutState.profileSidebarVisible = false;
     layoutState.profileDialogVisible = false;
+    layoutState.settingsDialogVisible = false;
     layoutState.accountMenuVisible = false;
     layoutState.configSidebarVisible = false;
     layoutState.staticMenuMobileActive = false;
@@ -104,9 +185,17 @@ export function useLayout() {
         layoutState.profileDialogVisible = false;
     };
 
-    const openSettings = () => {
+    const openSettingsDialog = () => {
         layoutState.accountMenuVisible = false;
-        layoutState.configSidebarVisible = true;
+        layoutState.settingsDialogVisible = true;
+    };
+
+    const closeSettingsDialog = () => {
+        layoutState.settingsDialogVisible = false;
+    };
+
+    const openSettings = () => {
+        openSettingsDialog();
     };
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
@@ -138,6 +227,8 @@ export function useLayout() {
         toggleAccountMenu,
         openProfileDialog,
         closeProfileDialog,
+        openSettingsDialog,
+        closeSettingsDialog,
         openSettings,
         isSlim,
         isSlimPlus,

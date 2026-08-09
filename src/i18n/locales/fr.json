@@ -178,6 +178,14 @@
             "settings": "Paramètres",
             "logout": "Se déconnecter",
             "edit_profile": "Modifier le profil"
+        },
+        "settings_dialog": {
+            "nav_label": "Sections des paramètres",
+            "general": "Général",
+            "appearance": "Apparence",
+            "appearance_system": "Système",
+            "appearance_dark": "Sombre",
+            "appearance_light": "Clair"
         }
     },
     "lets_set_a_password_for_your_account": "Définissons un mot de passe pour votre compte",

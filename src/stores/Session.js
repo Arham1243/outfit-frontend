@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
-import { resetLayoutState, setDarkTheme } from '@/layout/composables/layout';
+import { resetLayoutState, initAppearancePreference } from '@/layout/composables/layout';
 import { updateAbility } from '@/plugins/ability';
 import { AuthService } from '@/services';
 import { resetLocale, syncLocaleFromUser } from '@/i18n';
@@ -81,7 +81,7 @@ export const useSessionStore = defineStore('SessionStore', () => {
 
         user.value = res.data;
         syncLocaleFromUser(user.value);
-        setDarkTheme(!!user.value?.dark_mode);
+        initAppearancePreference(!!user.value?.dark_mode);
         permissions.value = res.permissions ?? [];
         userRole.value = res.role ?? {};
         updateAbility(permissions.value);

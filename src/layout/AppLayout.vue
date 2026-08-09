@@ -10,6 +10,7 @@ import {
 } from 'vue';
 import AppConfig from './AppConfig.vue';
 import AppProfileDialog from './AppProfileDialog.vue';
+import AppSettingsDialog from './AppSettingsDialog.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Forbidden from '@/views/errors/Forbidden.vue';
@@ -133,6 +134,7 @@ const containerClass = computed(() => {
                 </div>
             </div>
             <AppProfileDialog />
+            <AppSettingsDialog />
             <AppConfig />
         </div>
         <Toast></Toast>
