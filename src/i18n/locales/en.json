@@ -163,8 +163,12 @@
         "transparent": "Transparent",
         "sidebar": {
             "anchor": "Pin sidebar",
+            "brand": "Outfit Studio",
             "member": "Member",
             "tagline": "Wardrobe intelligence",
+            "open_sidebar": "Open sidebar",
+            "close_sidebar": "Close sidebar",
+            "toggle_menu": "Toggle menu",
             "workspace": "Workspace"
         }
     },

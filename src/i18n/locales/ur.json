@@ -164,8 +164,12 @@
         "transparent": "شفاف",
         "sidebar": {
             "anchor": "سائیڈبار پن کریں",
+            "brand": "Outfit Studio",
             "member": "رکن",
             "tagline": "وارڈروب انٹیلیجنس",
+            "open_sidebar": "سائیڈبار کھولیں",
+            "close_sidebar": "سائیڈبار بند کریں",
+            "toggle_menu": "مینو ٹوگل کریں",
             "workspace": "ورک اسپیس"
         }
     },

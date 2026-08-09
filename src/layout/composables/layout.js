@@ -5,15 +5,15 @@ const layoutConfig = reactive({
     primary: 'emerald',
     surface: null,
     darkTheme: false,
-    menuMode: 'static',
+    menuMode: 'drawer',
     menuTheme: 'colorScheme'
 });
 
 const layoutState = reactive({
     staticMenuDesktopInactive: false,
     overlayMenuActive: false,
-    sidebarActive: false,
-    anchored: false,
+    sidebarActive: true,
+    anchored: true,
     overlaySubmenuActive: false,
     profileSidebarVisible: false,
     configSidebarVisible: false,
@@ -51,9 +51,17 @@ export function useLayout() {
     const toggleMenu = () => {
         if (layoutConfig.menuMode === 'overlay') {
             layoutState.overlayMenuActive = !layoutState.overlayMenuActive;
+            return;
         }
 
         if (window.innerWidth > 991) {
+            if (layoutConfig.menuMode === 'drawer') {
+                const nextAnchored = !layoutState.anchored;
+                layoutState.anchored = nextAnchored;
+                layoutState.sidebarActive = nextAnchored;
+                return;
+            }
+
             layoutState.staticMenuDesktopInactive =
                 !layoutState.staticMenuDesktopInactive;
         } else {

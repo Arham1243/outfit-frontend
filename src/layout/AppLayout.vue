@@ -8,7 +8,6 @@ import {
     ref,
     watch
 } from 'vue';
-import AppBreadCrumb from './AppBreadcrumb.vue';
 import AppConfig from './AppConfig.vue';
 import AppProfileSidebar from './AppProfileSidebar.vue';
 import AppSidebar from './AppSidebar.vue';
@@ -58,7 +57,7 @@ function unbindOutsideClickListener() {
 
 function isOutsideClicked(event) {
     const sidebarEl = document.querySelector('.layout-sidebar');
-    const topbarButtonEl = document.querySelector('.topbar-menubutton');
+    const topbarButtonEl = document.querySelector('.sidebar-menu-toggle');
 
     return !(
         sidebarEl?.isSameNode(event.target) ||
@@ -129,7 +128,6 @@ const containerClass = computed(() => {
                 :class="layoutContentWrapperClass"
             >
                 <AppTopbar />
-                <AppBreadCrumb class="content-breadcrumb"></AppBreadCrumb>
                 <div class="layout-content" :class="layoutContentClass">
                     <router-view></router-view>
                 </div>

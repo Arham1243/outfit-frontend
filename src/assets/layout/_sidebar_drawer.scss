@@ -71,7 +71,7 @@
                             }
 
                             .layout-menuitem-icon {
-                                font-size: 1.25rem;
+                                font-size: 0.9rem;
                                 width: 1.25rem;
                             }
 
@@ -167,9 +167,9 @@
 
                         ul {
                             a {
-                                padding: 0.75rem 2rem;
-                                padding-right: 1.25rem;
+                                padding: 0.75rem;
                                 width: auto;
+                                gap: 0.25rem !important;
                                 .layout-submenu-toggler {
                                     display: block;
                                 }
@@ -177,6 +177,7 @@
                                 span {
                                     opacity: 1;
                                     white-space: nowrap;
+                                    font-size: 0.95rem;
                                     transition: all 0.3s;
                                 }
                             }

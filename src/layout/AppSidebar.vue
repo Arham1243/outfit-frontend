@@ -4,13 +4,19 @@ import { useLayout } from '@/layout/composables/layout';
 import { useSessionStore } from '@/stores';
 import AppMenu from './AppMenu.vue';
 
-const { layoutState } = useLayout();
+const { layoutState, toggleMenu } = useLayout();
 const sessionStore = useSessionStore();
-
-let timeout = null;
 
 const currentUser = computed(() => sessionStore.user);
 const userRole = computed(() => sessionStore.userRole);
+
+const isSidebarExpanded = computed(() => layoutState.anchored);
+
+const sidebarToggleLabel = computed(() =>
+    isSidebarExpanded.value
+        ? 'layout.sidebar.close_sidebar'
+        : 'layout.sidebar.open_sidebar'
+);
 
 const userInitials = computed(() => {
     const name = currentUser.value?.name?.trim();
@@ -30,69 +36,55 @@ const userSubtitle = computed(() => {
     return userRole.value?.name || currentUser.value?.email || '';
 });
 
-function onMouseEnter() {
-    if (!layoutState.anchored) {
-        if (timeout) {
-            clearTimeout(timeout);
-            timeout = null;
-        }
-        layoutState.sidebarActive = true;
-    }
-}
-
-function onMouseLeave() {
-    if (!layoutState.anchored) {
-        if (!timeout) {
-            timeout = setTimeout(
-                () => (layoutState.sidebarActive = false),
-                300
-            );
-        }
-    }
-}
-
-function onAnchorToggle() {
-    layoutState.anchored = !layoutState.anchored;
-}
-
 function openProfile() {
     layoutState.profileSidebarVisible = !layoutState.profileSidebarVisible;
 }
 </script>
 
 <template>
-    <div
-        class="layout-sidebar sidebar-premium"
-        @mouseenter="onMouseEnter"
-        @mouseleave="onMouseLeave"
-    >
+    <div class="layout-sidebar sidebar-premium">
         <header class="sidebar-header">
             <router-link :to="{ name: 'Wardrobe' }" class="sidebar-brand">
-                <span class="sidebar-brand__mark" aria-hidden="true">
-                    <i class="pi pi-sparkles"></i>
-                </span>
-                <span class="sidebar-brand__copy">
-                    <p class="sidebar-brand__title">
-                        <span class="sidebar-brand__name">Outfit</span>
-                        <span class="sidebar-brand__suffix">Studio</span>
-                    </p>
-                    <p class="sidebar-brand__tagline">
-                        {{ $t('layout.sidebar.tagline') }}
-                    </p>
+                <span class="sidebar-brand__title">
+                    {{ $t('layout.sidebar.brand') }}
                 </span>
             </router-link>
             <button
-                class="layout-sidebar-anchor z-20"
                 type="button"
-                :aria-label="$t('layout.sidebar.anchor')"
-                @click="onAnchorToggle"
-            ></button>
+                class="sidebar-menu-toggle p-trigger"
+                :class="{ 'sidebar-menu-toggle--expanded': isSidebarExpanded }"
+                :aria-label="$t(sidebarToggleLabel)"
+                :aria-expanded="isSidebarExpanded"
+                v-tooltip.hover.right="$t(sidebarToggleLabel)"
+                @click="toggleMenu"
+            >
+                <svg
+                    class="sidebar-panel-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <rect
+                        x="4"
+                        y="4"
+                        width="16"
+                        height="16"
+                        rx="2.5"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                    />
+                    <path
+                        d="M9 4v16"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                    />
+                </svg>
+            </button>
         </header>
 
         <div class="layout-menu-container">
-            <p class="sidebar-section-label">
-                {{ $t('layout.sidebar.workspace') }}
-            </p>
             <AppMenu />
         </div>
 

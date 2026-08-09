@@ -10,8 +10,7 @@
     max-height: 100dvh;
     overflow: hidden;
 
-    > .layout-topbar,
-    > .content-breadcrumb {
+    > .layout-topbar {
         flex-shrink: 0;
     }
 }
