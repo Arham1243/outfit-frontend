@@ -103,7 +103,7 @@
 
     .sidebar-footer {
         flex-shrink: 0;
-        padding: 0.75rem var(--sidebar-padding-x) 1rem;
+        padding: 0.3rem var(--sidebar-padding-x);
         border-top: 1px solid var(--sidebar-border-color);
     }
 
@@ -112,21 +112,17 @@
         align-items: center;
         gap: 0.75rem;
         width: 100%;
-        padding: 0.625rem 0;
-        border: 1px solid var(--sidebar-footer-border);
-        border-radius: 0.75rem;
-        background: var(--sidebar-footer-bg);
+        padding:0.75rem;
+        border: none;
+        border-radius: 0.5rem;
+        background: transparent;
         color: var(--sidebar-brand-color);
         cursor: pointer;
         text-align: start;
-        transition:
-            background-color var(--layout-section-transition-duration),
-            border-color var(--layout-section-transition-duration),
-            box-shadow var(--layout-section-transition-duration);
+        transition: background-color var(--layout-section-transition-duration);
 
         &:hover {
             background: var(--sidebar-hover-bg);
-            border-color: color-mix(in srgb, var(--sidebar-accent) 25%, var(--sidebar-footer-border));
         }
 
         &:focus-visible {
@@ -169,7 +165,7 @@
     .sidebar-user-card__role {
         display: block;
         margin-top: 0.125rem;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         line-height: 1.25;
         color: var(--sidebar-muted);
         white-space: nowrap;
