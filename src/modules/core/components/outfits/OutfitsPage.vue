@@ -458,16 +458,6 @@ const saveProfile = async ({ showErrors = true } = {}) => {
             return false;
         }
 
-        if (requiresFaceImage.value && !formData.value.face_image) {
-            if (showErrors) {
-                globalStore.showError(
-                    $t('validation_error'),
-                    $t('outfit_face_image_required')
-                );
-            }
-            return false;
-        }
-
         formData.value.height = height;
         const payload = filterFileFields(
             {
@@ -478,6 +468,13 @@ const saveProfile = async ({ showErrors = true } = {}) => {
             },
             ['face_image']
         );
+
+        if (
+            formData.value.face_image === null
+            && settingsInitialData.value.face_image
+        ) {
+            payload.face_image = null;
+        }
         await profileStore.update(user.uuid, payload, { silent: true });
         await sessionStore.me();
         await loadProfile();
@@ -491,10 +488,12 @@ const saveProfile = async ({ showErrors = true } = {}) => {
         };
         return true;
     } catch (error) {
-        globalStore.showError(
-            $t('validation_error'),
-            getValidationErrorMessage(error, $t('something_went_wrong'))
-        );
+        if (showErrors) {
+            globalStore.showError(
+                $t('validation_error'),
+                getValidationErrorMessage(error, $t('something_went_wrong'))
+            );
+        }
         return false;
     } finally {
         savingProfile.value = false;
@@ -511,6 +510,15 @@ const openViewDialog = (item) => {
 
 const createOutfits = async () => {
     try {
+        if (requiresFaceImage.value && !formData.value.face_image) {
+            globalStore.showError(
+                $t('validation_error'),
+                $t('outfit_face_image_required')
+            );
+            scrollToSettings();
+            return;
+        }
+
         const saved = await saveProfile({ showErrors: true });
         if (!saved) {
             scrollToSettings();
@@ -618,7 +626,7 @@ const createOutfits = async () => {
                     @face-mode-change="saveProfile({ showErrors: false })"
                     @height-blur="saveProfile({ showErrors: true })"
                     @face-select="onFaceFileSelect"
-                    @face-remove="saveProfile({ showErrors: true })"
+                    @face-remove="saveProfile({ showErrors: false })"
                     @generate="createOutfits"
                 />
             </div>
