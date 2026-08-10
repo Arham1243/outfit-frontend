@@ -61,11 +61,19 @@ export const useWardrobeStore = defineStore('WardrobeStore', () => {
         });
     };
 
+    const fetchTypeCounts = () => {
+        return globalStore.actionWrapper(async () => {
+            const res = await WardrobeService.typeCounts();
+            return res.data;
+        });
+    };
+
     return {
         search,
         create,
         update,
         deleteItem,
-        bulkDelete
+        bulkDelete,
+        fetchTypeCounts
     };
 });

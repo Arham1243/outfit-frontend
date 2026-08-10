@@ -1,7 +1,7 @@
 <script setup>
-import WardrobeTable from '@/modules/core/components/wardrobe/WardrobeTable.vue';
+import WardrobePage from '@/modules/core/components/wardrobe/WardrobePage.vue';
 </script>
 
 <template>
-    <WardrobeTable />
+    <WardrobePage />
 </template>

@@ -24,3 +24,7 @@ export const bulkDelete = (uuids) => {
         data: { uuids }
     });
 };
+
+export const typeCounts = () => {
+    return AxiosService.get(`${BASE_URL}/wardrobes/type-counts`);
+};
