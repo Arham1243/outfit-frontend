@@ -41,14 +41,16 @@ function onSearchInput(event) {
 <template>
     <div class="wardrobe-toolbar">
         <div class="wardrobe-toolbar__search-row">
-            <IconField class="wardrobe-toolbar__search">
-                <InputIcon class="pi pi-search" />
-                <InputText
-                    :modelValue="searchQuery"
-                    :placeholder="$t('wardrobe_search_placeholder')"
-                    @input="onSearchInput"
-                />
-            </IconField>
+            <div class="wardrobe-toolbar__search">
+                <IconField>
+                    <InputIcon class="pi pi-search" />
+                    <InputText
+                        :modelValue="searchQuery"
+                        :placeholder="$t('wardrobe_search_placeholder')"
+                        @input="onSearchInput"
+                    />
+                </IconField>
+            </div>
 
             <Button
                 v-if="canDelete"

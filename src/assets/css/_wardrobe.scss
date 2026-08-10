@@ -2,6 +2,10 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    width: 100%;
+    max-width: 95rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 3vw, 2rem);
     padding-bottom: 2rem;
 }
 
@@ -59,26 +63,25 @@
 }
 
 .wardrobe-toolbar__search-row {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     gap: 0.75rem;
 }
 
-@media screen and (min-width: 768px) {
-    .wardrobe-toolbar__search-row {
-        flex-direction: row;
-        align-items: center;
-    }
-}
-
 .wardrobe-toolbar__search {
-    flex: 1;
+    width: 100%;
+    min-width: 0;
 }
 
-.wardrobe-toolbar__search :deep(.p-inputtext) {
+.wardrobe-toolbar__search .p-iconfield {
+    width: 100%;
+    display: block;
+}
+
+.wardrobe-toolbar__search .p-inputtext {
     width: 100%;
     min-height: 2.75rem;
-    border-radius: 9999px;
     padding-left: 2.5rem;
 }
 
@@ -168,7 +171,6 @@
     min-height: 12rem;
 }
 
-.wardrobe-grid__loading,
 .wardrobe-grid__empty {
     display: flex;
     align-items: center;
@@ -216,8 +218,8 @@
 }
 
 .wardrobe-card--selected {
-    border-color: var(--p-primary-500);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--p-primary-500) 20%, transparent);
+    border: 2px solid var(--p-primary-500);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--p-primary-500) 25%, transparent);
 }
 
 .wardrobe-card__media {
@@ -256,7 +258,10 @@
     bottom: 0.625rem;
     padding: 0.25rem 0.5rem;
     border-radius: 9999px;
-    background: rgba(15, 23, 42, 0.72);
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     color: #fff;
     font-size: 0.75rem;
     font-weight: 500;
@@ -264,7 +269,7 @@
 }
 
 .wardrobe-card__body {
-    padding: 0.75rem 0.25rem 0;
+    padding: 0.875rem 1rem 1rem;
 }
 
 .wardrobe-card__name {
@@ -350,13 +355,13 @@
 .wardrobe-view {
     display: grid;
     grid-template-columns: 1fr;
-    min-height: 20rem;
+    min-height: 32rem;
 }
 
 @media screen and (min-width: 768px) {
     .wardrobe-view {
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-        min-height: 24rem;
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+        min-height: 32rem;
     }
 }
 
@@ -364,30 +369,68 @@
     position: relative;
     overflow: hidden;
     background: #111;
+    min-height: 28rem;
 }
 
-.wardrobe-view__media :deep(.p-image),
-.wardrobe-view__media :deep(img),
-.wardrobe-view__image {
-    display: block;
+.wardrobe-zoom {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    min-height: 16rem;
-    object-fit: cover;
+    min-height: 28rem;
+    overflow: hidden;
+    background: #111;
 }
 
-.wardrobe-view__zoom-hint {
+.wardrobe-zoom--pannable {
+    cursor: grab;
+}
+
+.wardrobe-zoom--panning {
+    cursor: grabbing;
+}
+
+.wardrobe-zoom__stage {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: 28rem;
+    overflow: hidden;
+}
+
+.wardrobe-zoom__image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+    will-change: transform;
+}
+
+.wardrobe-zoom__toolbar {
     position: absolute;
-    left: 1rem;
+    left: 50%;
     bottom: 1rem;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 9999px;
-    background: rgba(15, 23, 42, 0.72);
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.82);
     color: #fff;
     font-size: 0.8125rem;
+    font-weight: 500;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.wardrobe-zoom__level {
+    min-width: 3rem;
+    text-align: center;
 }
 
 .wardrobe-view__panel {
@@ -665,17 +708,18 @@
 
 .app-dark {
     .wardrobe-pill--active {
-        background: color-mix(
-            in srgb,
-            var(--p-primary-500) 14%,
-            var(--p-content-background)
-        );
-        color: var(--p-primary-400);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.1);
     }
 
-    .wardrobe-card__badge,
-    .wardrobe-view__zoom-hint {
-        background: rgba(0, 0, 0, 0.72);
+    .wardrobe-pill--active .wardrobe-pill__count {
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    .wardrobe-card__badge {
+        background: rgba(0, 0, 0, 0.42);
+        border-color: rgba(255, 255, 255, 0.18);
     }
 
     .wardrobe-upload__dropzone {

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useHelpers } from '@/composables';
 import PlaceholderImage from '@/assets/images/image_not_available.png';
+import WardrobeZoomableImage from './WardrobeZoomableImage.vue';
 import {
     formatType,
     getItemDisplayName,
@@ -54,21 +55,17 @@ function closeDialog() {
         class="wardrobe-dialog wardrobe-dialog--view"
         :showHeader="false"
         :draggable="false"
-        :style="{ width: 'min(94vw, 52rem)' }"
+        :style="{ width: 'min(94vw, 64rem)' }"
         @update:visible="emit('update:visible', $event)"
     >
         <div class="wardrobe-view">
             <div class="wardrobe-view__media">
-                <Image
+                <WardrobeZoomableImage
+                    v-if="item"
+                    :key="item.uuid"
                     :src="imageUrl"
                     :alt="displayName"
-                    preview
-                    imageClass="wardrobe-view__image"
                 />
-                <span class="wardrobe-view__zoom-hint">
-                    <i class="pi pi-search-plus" aria-hidden="true"></i>
-                    {{ $t('wardrobe_click_to_zoom') }}
-                </span>
             </div>
 
             <div class="wardrobe-view__panel">

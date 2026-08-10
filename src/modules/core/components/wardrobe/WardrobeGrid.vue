@@ -26,9 +26,7 @@ function onToggle(item) {
 
 <template>
     <div class="wardrobe-grid-wrap">
-        <div v-if="loading" class="wardrobe-grid__loading">
-            <ProgressSpinner strokeWidth="4" />
-        </div>
+        <Loader v-if="loading" />
 
         <div v-else-if="!items.length" class="wardrobe-grid__empty">
             {{ $t('no_wardrobe_images_found') }}
