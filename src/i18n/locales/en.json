@@ -211,7 +211,8 @@
             "appearance": "Appearance",
             "appearance_system": "System",
             "appearance_dark": "Dark",
-            "appearance_light": "Light"
+            "appearance_light": "Light",
+            "language": "Language"
         }
     },
     "lets_set_a_password_for_your_account": "Let's set a password for your account",
@@ -219,6 +220,7 @@
     "make_active": "Make Active",
     "make_inactive": "Make Inactive",
     "male": "Male",
+    "name": "Name",
     "menu": {
         "user_management": "User Management",
         "user_roles": "User Roles",

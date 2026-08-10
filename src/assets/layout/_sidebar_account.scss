@@ -151,14 +151,126 @@
         padding-top: 0.25rem;
     }
 
-    .p-select,
-    .p-inputtext,
-    .p-datepicker {
+    .p-inputtext {
         width: 100%;
     }
+}
 
-    .p-select-label {
-        flex: 1 1 auto;
-        min-width: 0;
+.profile-dialog-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.75rem;
+    padding: 0.5rem 0 0.75rem;
+}
+
+.profile-dialog-form__avatar-wrap {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    overflow: visible;
+}
+
+.profile-dialog-form__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 7rem;
+    height: 7rem;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--p-primary-color);
+    color: var(--p-primary-contrast-color);
+}
+
+.profile-dialog-form__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-dialog-form__avatar-initials {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.04em;
+}
+
+.profile-dialog-form__avatar-edit {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 2px solid var(--p-content-background);
+    border-radius: 999px;
+    background: #ececf1;
+    color: #2f3645;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease;
+
+    &:hover:not(:disabled) {
+        background: #e4e4ea;
+        box-shadow: 0 2px 4px rgba(15, 23, 42, 0.12);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+.profile-dialog-form__camera-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.app-dark {
+    .profile-dialog-form__avatar-edit {
+        background: #d4d4d8;
+        color: #18181b;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+
+        &:hover:not(:disabled) {
+            background: #e4e4e7;
+        }
+    }
+}
+
+.profile-dialog-form__file-upload {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.profile-dialog-form__field {
+    width: 100%;
+}
+
+.profile-dialog-form__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--p-text-color);
+}
+
+.profile-dialog-form__input {
+    width: 100%;
+
+    .p-inputtext {
+        min-height: 2.75rem;
+        border-radius: 0.75rem;
     }
 }

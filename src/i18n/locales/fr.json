@@ -212,7 +212,8 @@
             "appearance": "Apparence",
             "appearance_system": "Système",
             "appearance_dark": "Sombre",
-            "appearance_light": "Clair"
+            "appearance_light": "Clair",
+            "language": "Langue"
         }
     },
     "lets_set_a_password_for_your_account": "Définissons un mot de passe pour votre compte",
@@ -220,6 +221,7 @@
     "make_active": "Rendre actif",
     "make_inactive": "Rendre inactif",
     "male": "Homme",
+    "name": "Nom",
     "menu": {
         "user_management": "Gestion des utilisateurs",
         "user_roles": "Rôles des utilisateurs",

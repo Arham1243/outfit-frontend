@@ -37,6 +37,10 @@ const rootRef = ref(null);
 
 const isOpen = computed(() => layoutState.accountMenuVisible);
 
+const userProfileImage = computed(
+    () => sessionStore.user?.profile_image ?? null
+);
+
 function handleDocumentClick(event) {
     if (!isOpen.value) {
         return;
@@ -164,7 +168,15 @@ async function logout() {
             @click="toggleAccountMenu"
         >
             <span class="sidebar-user-card__avatar" aria-hidden="true">
-                {{ userInitials }}
+                <img
+                    v-if="userProfileImage"
+                    :src="userProfileImage"
+                    :alt="userName"
+                    class="sidebar-user-card__avatar-image"
+                />
+                <span v-else class="sidebar-user-card__avatar-initials">
+                    {{ userInitials }}
+                </span>
             </span>
             <span class="sidebar-user-card__copy">
                 <span class="sidebar-user-card__name">

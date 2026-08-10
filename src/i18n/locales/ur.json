@@ -212,7 +212,8 @@
             "appearance": "ظاہری شکل",
             "appearance_system": "سسٹم",
             "appearance_dark": "ڈارک",
-            "appearance_light": "لائٹ"
+            "appearance_light": "لائٹ",
+            "language": "زبان"
         }
     },
     "lets_set_a_password_for_your_account": "آئیے آپ کے اکاؤنٹ کے لیے پاس ورڈ مقرر کریں",
@@ -220,6 +221,7 @@
     "make_active": "فعال کریں",
     "make_inactive": "غیر فعال کریں",
     "male": "مرد",
+    "name": "نام",
     "menu": {
         "user_management": "صارف کا انتظام",
         "user_roles": "صارف کے کردار",

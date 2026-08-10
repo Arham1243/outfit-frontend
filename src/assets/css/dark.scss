@@ -167,6 +167,10 @@
         color: var(--p-primary-500);
     }
 
+    .sidebar-premium .sidebar-user-card__avatar-initials {
+        color: var(--p-primary-500);
+    }
+
     .sidebar-premium .layout-menu-container::-webkit-scrollbar-thumb {
         background: color-mix(in srgb, var(--p-text-muted-color) 55%, transparent);
     }

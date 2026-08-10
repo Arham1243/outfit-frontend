@@ -21,8 +21,6 @@ const userId = sessionStore.user?.uuid;
 
 const formData = ref({
     name: '',
-    status: 'pending',
-    email: '',
     profile_image: null
 });
 
@@ -113,8 +111,13 @@ async function save() {
 
     try {
         busy.value = true;
-        const { email: _email, status: _status, ...formValues } = formData.value;
-        const payload = filterFileFields(formValues, ['profile_image']);
+        const payload = filterFileFields(
+            {
+                name: formData.value.name,
+                profile_image: formData.value.profile_image
+            },
+            ['profile_image']
+        );
         await profileStore.update(userId, payload);
         await refreshSessionUser();
         await syncSavedProfile();
@@ -164,7 +167,6 @@ async function getItem({ showLoading = true } = {}) {
         <UserInfo
             v-else
             :key="`profile-dialog-${resetKey}`"
-            variant="dialog"
             :formData="formData"
             :busy="busy"
             @save="save"

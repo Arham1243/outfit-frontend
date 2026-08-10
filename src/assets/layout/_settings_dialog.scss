@@ -227,11 +227,16 @@
     }
 }
 
-.settings-dialog__select--language {
-    width: 14rem;
+.settings-dialog__select-overlay {
+    &.p-select-overlay {
+        box-sizing: border-box;
+    }
 
-    &.p-select {
-        width: 14rem;
+    .p-select-option,
+    .p-select-option-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 

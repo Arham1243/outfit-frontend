@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import {
     resolveAppearanceToDark,
     setAppearance,
@@ -18,6 +18,8 @@ const languageOptions = ref([]);
 const loadingLanguages = ref(false);
 const preferredLanguageUuid = ref(null);
 const savingLanguage = ref(false);
+const appearanceSelectRef = ref(null);
+const languageSelectRef = ref(null);
 
 const appearanceOptions = computed(() => [
     {
@@ -107,6 +109,24 @@ function persistAppearance(value) {
         .catch(() => {});
 }
 
+function syncSelectOverlayWidth(selectRef) {
+    nextTick(() => {
+        const trigger = selectRef.value?.$el;
+        if (!trigger) {
+            return;
+        }
+
+        const width = `${trigger.getBoundingClientRect().width}px`;
+        document
+            .querySelectorAll('.settings-dialog__select-overlay')
+            .forEach((overlay) => {
+                overlay.style.width = width;
+                overlay.style.minWidth = width;
+                overlay.style.maxWidth = width;
+            });
+    });
+}
+
 function persistPreferredLanguage(value) {
     const userId = sessionStore.user?.uuid;
     if (!userId) {
@@ -188,19 +208,23 @@ function persistPreferredLanguage(value) {
                                 {{ $t('layout.settings_dialog.appearance') }}
                             </span>
                             <Select
+                                ref="appearanceSelectRef"
                                 v-model="appearance"
                                 :options="appearanceOptions"
                                 optionLabel="label"
                                 optionValue="value"
+                                overlayClass="settings-dialog__select-overlay"
                                 class="settings-dialog__select"
+                                @show="syncSelectOverlayWidth(appearanceSelectRef)"
                             />
                         </div>
 
                         <div class="settings-dialog__row">
                             <span class="settings-dialog__row-label">
-                                {{ $t('preferred_language') }}
+                                {{ $t('layout.settings_dialog.language') }}
                             </span>
                             <Select
+                                ref="languageSelectRef"
                                 v-model="preferredLanguage"
                                 :options="languageOptions"
                                 optionLabel="name"
@@ -208,10 +232,11 @@ function persistPreferredLanguage(value) {
                                 :placeholder="$t('select')"
                                 :loading="loadingLanguages || savingLanguage"
                                 :disabled="loadingLanguages || savingLanguage"
-                                showClear
                                 filter
                                 :filterFields="['name', 'locale', 'code']"
+                                overlayClass="settings-dialog__select-overlay"
                                 class="settings-dialog__select settings-dialog__select--language"
+                                @show="syncSelectOverlayWidth(languageSelectRef)"
                             />
                         </div>
                     </div>
