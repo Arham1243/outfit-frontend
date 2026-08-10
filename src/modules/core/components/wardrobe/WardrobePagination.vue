@@ -42,37 +42,40 @@ function goNext() {
 
 <template>
     <nav class="wardrobe-pagination" aria-label="Pagination">
-        <button
+        <Button
             type="button"
-            class="wardrobe-pagination__nav wardrobe-pagination__nav--prev"
+            label="Prev"
+            icon="pi pi-chevron-left"
+            iconPos="left"
+            variant="outlined"
+            size="small"
+            severity="secondary"
             :disabled="isFirstPage"
             @click="goPrev"
-        >
-            <span aria-hidden="true">&lt;</span>
-            <span>Prev</span>
-        </button>
+        />
 
-        <button
+        <Button
             v-for="pageNumber in pages"
             :key="pageNumber"
             type="button"
-            class="wardrobe-pagination__page"
-            :class="{ 'wardrobe-pagination__page--active': pageNumber === page }"
+            :label="String(pageNumber)"
+            size="small"
+            :variant="pageNumber === page ? undefined : 'outlined'"
+            :severity="pageNumber === page ? 'primary' : 'secondary'"
             :aria-current="pageNumber === page ? 'page' : undefined"
-            :disabled="pageNumber === page"
             @click="goToPage(pageNumber)"
-        >
-            {{ pageNumber }}
-        </button>
+        />
 
-        <button
+        <Button
             type="button"
-            class="wardrobe-pagination__nav wardrobe-pagination__nav--next"
+            label="Next"
+            icon="pi pi-chevron-right"
+            iconPos="right"
+            variant="outlined"
+            size="small"
+            severity="secondary"
             :disabled="isLastPage"
             @click="goNext"
-        >
-            <span>Next</span>
-            <span aria-hidden="true">&gt;</span>
-        </button>
+        />
     </nav>
 </template>

@@ -627,7 +627,8 @@ const createOutfits = async () => {
 </script>
 
 <template>
-    <section class="outfits-page">
+    <section class="outfits-page-shell">
+        <section class="outfits-page">
         <header class="outfits-hero">
             <h1 class="outfits-hero__title">{{ $t('create_outfits') }}</h1>
 
@@ -741,6 +742,7 @@ const createOutfits = async () => {
                     </div>
                 </article>
             </div>
+        </section>
         </section>
     </section>
 
@@ -954,20 +956,12 @@ const createOutfits = async () => {
 </template>
 
 <style scoped>
-.outfits-page {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
 .outfits-hero {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding: 1rem 0 0.5rem;
-    max-width: 42rem;
-    margin: 0 auto;
     width: 100%;
 }
 
@@ -1202,7 +1196,6 @@ const createOutfits = async () => {
 
 .outfits-gallery-section {
     width: 100%;
-    padding-bottom: 2rem;
 }
 
 .outfits-gallery {
