@@ -82,7 +82,6 @@ const IGNORE_KEYS = new Set([
     'data',
     'date',
     'date_format',
-    'date_of_birth',
     'days_out',
     'decimal_time',
     'default_credit_card_system_link',

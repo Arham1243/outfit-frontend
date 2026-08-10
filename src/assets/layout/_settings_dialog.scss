@@ -227,6 +227,14 @@
     }
 }
 
+.settings-dialog__select--language {
+    width: 14rem;
+
+    &.p-select {
+        width: 14rem;
+    }
+}
+
 @media screen and (max-width: ($breakpoint - 1)) {
     .settings-dialog {
         &.p-dialog {
@@ -265,7 +273,9 @@
     }
 
     .settings-dialog__select,
-    .settings-dialog__select.p-select {
+    .settings-dialog__select.p-select,
+    .settings-dialog__select--language,
+    .settings-dialog__select--language.p-select {
         width: 100%;
     }
 }

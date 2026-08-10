@@ -1,17 +1,23 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
     resolveAppearanceToDark,
     setAppearance,
     useLayout
 } from '@/layout/composables/layout';
 import { AuthService } from '@/services';
-import { useSessionStore } from '@/stores';
+import { useLanguageStore, useProfileStore, useSessionStore } from '@/stores';
 
 const { layoutState, closeSettingsDialog, layoutConfig } = useLayout();
 const sessionStore = useSessionStore();
+const profileStore = useProfileStore();
+const languageStore = useLanguageStore();
 
 const activeSection = ref('general');
+const languageOptions = ref([]);
+const loadingLanguages = ref(false);
+const preferredLanguageUuid = ref(null);
+const savingLanguage = ref(false);
 
 const appearanceOptions = computed(() => [
     {
@@ -36,6 +42,59 @@ const appearance = computed({
     }
 });
 
+const preferredLanguage = computed({
+    get: () => preferredLanguageUuid.value,
+    set: (value) => {
+        if (value === preferredLanguageUuid.value || savingLanguage.value) {
+            return;
+        }
+
+        preferredLanguageUuid.value = value;
+        persistPreferredLanguage(value);
+    }
+});
+
+function buildLanguageSelectOptions(activeList, selectedUuid, selectedLanguage) {
+    const list = Array.isArray(activeList) ? [...activeList] : [];
+
+    if (
+        selectedUuid &&
+        selectedLanguage &&
+        !list.some((language) => language.uuid === selectedUuid)
+    ) {
+        list.push(selectedLanguage);
+    }
+
+    return list;
+}
+
+async function loadLanguageOptions() {
+    const user = sessionStore.user;
+    preferredLanguageUuid.value =
+        user?.preferred_language_uuid ?? user?.preferred_language?.uuid ?? null;
+
+    try {
+        loadingLanguages.value = true;
+        const active = await languageStore.getActiveLanguages();
+        languageOptions.value = buildLanguageSelectOptions(
+            active,
+            preferredLanguageUuid.value,
+            user?.preferred_language ?? user?.preferredLanguage ?? null
+        );
+    } finally {
+        loadingLanguages.value = false;
+    }
+}
+
+watch(
+    () => layoutState.settingsDialogVisible,
+    (visible) => {
+        if (visible) {
+            loadLanguageOptions();
+        }
+    }
+);
+
 function persistAppearance(value) {
     AuthService.updateUiPreferences({
         dark_mode: resolveAppearanceToDark(value)
@@ -46,6 +105,30 @@ function persistAppearance(value) {
             }
         })
         .catch(() => {});
+}
+
+function persistPreferredLanguage(value) {
+    const userId = sessionStore.user?.uuid;
+    if (!userId) {
+        return;
+    }
+
+    const previousValue =
+        sessionStore.user?.preferred_language_uuid ??
+        sessionStore.user?.preferred_language?.uuid ??
+        null;
+
+    savingLanguage.value = true;
+
+    profileStore
+        .update(userId, { preferred_language_uuid: value }, { silent: true })
+        .then(() => sessionStore.me())
+        .catch(() => {
+            preferredLanguageUuid.value = previousValue;
+        })
+        .finally(() => {
+            savingLanguage.value = false;
+        });
 }
 </script>
 
@@ -110,6 +193,25 @@ function persistAppearance(value) {
                                 optionLabel="label"
                                 optionValue="value"
                                 class="settings-dialog__select"
+                            />
+                        </div>
+
+                        <div class="settings-dialog__row">
+                            <span class="settings-dialog__row-label">
+                                {{ $t('preferred_language') }}
+                            </span>
+                            <Select
+                                v-model="preferredLanguage"
+                                :options="languageOptions"
+                                optionLabel="name"
+                                optionValue="uuid"
+                                :placeholder="$t('select')"
+                                :loading="loadingLanguages || savingLanguage"
+                                :disabled="loadingLanguages || savingLanguage"
+                                showClear
+                                filter
+                                :filterFields="['name', 'locale', 'code']"
+                                class="settings-dialog__select settings-dialog__select--language"
                             />
                         </div>
                     </div>

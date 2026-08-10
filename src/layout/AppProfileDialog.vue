@@ -10,8 +10,7 @@ const { layoutState, closeProfileDialog } = useLayout();
 const globalStore = useGlobalStore();
 const sessionStore = useSessionStore();
 const profileStore = useProfileStore();
-const { filterFileFields, formatDateForApi, normalizeDateForPicker } =
-    useHelpers();
+const { filterFileFields } = useHelpers();
 
 const busy = ref(false);
 const loading = ref(false);
@@ -24,10 +23,6 @@ const formData = ref({
     name: '',
     status: 'pending',
     email: '',
-    gender: null,
-    date_of_birth: null,
-    preferred_language_uuid: null,
-    preferred_language: null,
     profile_image: null
 });
 
@@ -68,12 +63,6 @@ function mapResponseToForm(data = {}) {
             mapped[key] = formData.value[key];
         }
     }
-
-    mapped.preferred_language_uuid =
-        data.preferred_language_uuid ?? data.preferred_language?.uuid ?? null;
-    mapped.preferred_language = data.preferred_language ?? null;
-    mapped.date_of_birth = normalizeDateForPicker(data.date_of_birth);
-    mapped.gender = data.gender ?? null;
 
     nextTick(() => {
         formData.value = { ...formData.value, ...mapped };
@@ -124,14 +113,8 @@ async function save() {
 
     try {
         busy.value = true;
-        const {
-            preferred_language: _preferredLanguage,
-            email: _email,
-            status: _status,
-            ...formValues
-        } = formData.value;
+        const { email: _email, status: _status, ...formValues } = formData.value;
         const payload = filterFileFields(formValues, ['profile_image']);
-        payload.date_of_birth = formatDateForApi(formData.value.date_of_birth);
         await profileStore.update(userId, payload);
         await refreshSessionUser();
         await syncSavedProfile();
@@ -153,9 +136,7 @@ async function getItem({ showLoading = true } = {}) {
             loading.value = true;
         }
 
-        const res = await profileStore.getItem(userId, {
-            include: 'preferredLanguage'
-        });
+        const res = await profileStore.getItem(userId);
         mapResponseToForm(res?.data);
 
         await nextTick();

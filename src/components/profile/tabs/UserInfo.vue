@@ -1,12 +1,6 @@
 <script setup>
-import { onBeforeMount, ref, toRefs } from 'vue';
-import { useLanguageStore } from '@/stores';
+import { toRefs } from 'vue';
 import PlaceholderImage from '@/assets/images/image_not_available.png';
-
-const languageStore = useLanguageStore();
-const languageSelectOptions = ref([]);
-const loadingLanguages = ref(false);
-const savedPreferredLanguage = ref(null);
 
 const props = defineProps({
     formData: { type: Object, required: true },
@@ -26,53 +20,6 @@ const emit = defineEmits(['save']);
 const save = () => {
     emit('save');
 };
-
-const genderOptions = [
-    { name: $t('male'), code: 'male' },
-    { name: $t('female'), code: 'female' }
-];
-
-const isFutureDate = (date) => {
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    return date > today;
-};
-
-onBeforeMount(async () => {
-    await loadLanguageOptions();
-});
-
-function buildLanguageSelectOptions(
-    activeList,
-    selectedUuid,
-    selectedLanguage
-) {
-    const list = Array.isArray(activeList) ? [...activeList] : [];
-    if (
-        selectedUuid &&
-        selectedLanguage &&
-        !list.some((lang) => lang.uuid === selectedUuid)
-    ) {
-        list.push(selectedLanguage);
-    }
-    return list;
-}
-
-async function loadLanguageOptions() {
-    try {
-        loadingLanguages.value = true;
-        savedPreferredLanguage.value =
-            formData.value.preferred_language ?? null;
-        const active = await languageStore.getActiveLanguages();
-        languageSelectOptions.value = buildLanguageSelectOptions(
-            active,
-            formData.value.preferred_language_uuid,
-            savedPreferredLanguage.value
-        );
-    } finally {
-        loadingLanguages.value = false;
-    }
-}
 
 function onFileSelect(event) {
     const file = event.files[0];
@@ -108,56 +55,6 @@ function onFileSelect(event) {
                 v-model="formData.name"
                 variant="text"
                 @keyup.enter="save"
-            />
-        </div>
-
-        <div :class="fieldColClass">
-            <label class="block mb-3">{{ $t('gender') }}</label>
-            <InputField
-                id="gender"
-                :disabled="busy"
-                class="w-full"
-                v-model="formData.gender"
-                :placeholder="$t('select')"
-                variant="dropdown"
-                optionLabel="name"
-                optionValue="code"
-                :options="genderOptions"
-                showClear
-            />
-        </div>
-
-        <div :class="fieldColClass">
-            <label class="block mb-3">{{ $t('date_of_birth') }}</label>
-            <InputField
-                id="date_of_birth"
-                variant="date"
-                v-model="formData.date_of_birth"
-                class="w-full"
-                :disabled="busy"
-                :disabled-date="isFutureDate"
-            />
-        </div>
-
-        <div :class="fieldColClass">
-            <label class="block mb-3">{{
-                $t('preferred_language')
-            }}</label>
-            <InputField
-                id="preferred_language_uuid"
-                v-model="formData.preferred_language_uuid"
-                variant="dropdown"
-                :options="languageSelectOptions"
-                optionLabel="name"
-                optionValue="uuid"
-                :placeholder="$t('select')"
-                class="w-full"
-                :loading="loadingLanguages"
-                :disabled="busy || loadingLanguages"
-                showClear
-                filter
-                :filterFields="['name', 'locale', 'code']"
-                filter-placeholder="Search "
             />
         </div>
 
