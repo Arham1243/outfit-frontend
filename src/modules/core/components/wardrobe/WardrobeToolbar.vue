@@ -55,8 +55,6 @@ function onSearchInput(event) {
                 type="button"
                 :label="selectMode ? $t('wardrobe_done') : $t('wardrobe_select')"
                 :icon="selectMode ? 'pi pi-check' : 'pi pi-list-check'"
-                severity="secondary"
-                outlined
                 class="wardrobe-toolbar__select-btn"
                 @click="emit('toggle-select')"
             />

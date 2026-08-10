@@ -203,6 +203,7 @@
     border: 1px solid transparent;
     border-radius: 1rem;
     background: transparent;
+    overflow: hidden;
     cursor: pointer;
     transition:
         border-color 0.15s ease,
@@ -222,7 +223,6 @@
 .wardrobe-card__media {
     position: relative;
     overflow: hidden;
-    border-radius: 1rem;
     background: color-mix(
         in srgb,
         var(--p-text-color) 4%,
@@ -394,9 +394,11 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 0.5rem;
 }
-
+.wardrobe-dialog--view .p-dialog-content{
+    padding: 0 !important;
+}
 .wardrobe-view__close {
     position: absolute !important;
     top: 0.75rem;
