@@ -10,7 +10,7 @@ export const WARDROBE_IMAGE = {
 /** CSS-friendly thumb width used in tables and upload previews. */
 export const WARDROBE_IMAGE_THUMB_WIDTH = '6rem';
 
-/** Outfit face reference upload (square headshot works best for FASHN face_reference). */
+/** Outfit face reference upload (square headshot works best). */
 export const OUTFIT_FACE_IMAGE = {
     recommendedWidth: 512,
     recommendedHeight: 512,
