@@ -11,6 +11,7 @@ import {
     getWardrobeItemDisplayName,
     getWardrobeItemSubtitle
 } from './outfitDisplay';
+import OutfitGeneratingEffect from './OutfitGeneratingEffect.vue';
 
 const props = defineProps({
     visible: { type: Boolean, default: false },
@@ -114,9 +115,9 @@ async function handleDownload() {
                 />
                 <div
                     v-else-if="isPending"
-                    class="outfits-view__placeholder"
+                    class="outfits-view__placeholder outfits-view__placeholder--generating"
                 >
-                    <Loader compact />
+                    <OutfitGeneratingEffect />
                 </div>
                 <div
                     v-else-if="isFailed"

@@ -25,7 +25,7 @@ const galleryPagination = new PaginationOptions(1, 20);
 const GALLERY_POLL_INTERVAL_MS = 3000;
 const GALLERY_POLL_JOB_ESTIMATE_MS = 120000;
 const GALLERY_POLL_BUFFER_ATTEMPTS = 10;
-const BATCH_SIZE_OPTIONS = [3, 6, 9, 12];
+const BATCH_SIZE_OPTIONS = [1, 2, 3, 4];
 
 const outfitStore = useOutfitStore();
 const profileStore = useProfileStore();
@@ -57,7 +57,7 @@ const formData = ref({
 });
 
 const heightFtInput = ref('');
-const batchSize = ref(3);
+const batchSize = ref(1);
 
 const settingsInitialData = ref({
     gender: null,
@@ -73,10 +73,10 @@ const maxBatchSize = computed(() => {
     const remaining = combinationStats.value?.remaining;
 
     if (remaining == null || remaining <= 0) {
-        return 12;
+        return 4;
     }
 
-    return Math.min(12, remaining);
+    return Math.min(4, remaining);
 });
 
 const batchSizeOptions = computed(() =>
@@ -98,7 +98,9 @@ watch(
 );
 
 const generateButtonLabel = computed(() =>
-    $t('outfits_generate_count', { count: batchSize.value })
+    $t('outfits_generate_count', batchSize.value, {
+        count: batchSize.value
+    })
 );
 
 const showCombinationStats = computed(() => {
@@ -600,7 +602,7 @@ const createOutfits = async () => {
 
             <div class="outfits-hero-grid">
                 <OutfitsCapacityCard
-                    :loading="loadingCounts"
+                    :loading="loadingCounts || loadingCombinationStats"
                     :type-counts="typeCounts"
                     :combination-stats="combinationStats"
                     :progress-percent="generationProgress"

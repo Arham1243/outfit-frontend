@@ -5,6 +5,7 @@ import {
     formatOutfitMeta,
     getOutfitTitle
 } from './outfitDisplay';
+import OutfitGeneratingEffect from './OutfitGeneratingEffect.vue';
 
 const props = defineProps({
     item: { type: Object, required: true },
@@ -53,12 +54,6 @@ const thumbItems = computed(() =>
                 class="outfits-gallery-card__img"
             />
             <div
-                v-else-if="pending"
-                class="outfits-gallery-card__placeholder"
-            >
-                <Loader compact />
-            </div>
-            <div
                 v-else-if="failed"
                 class="outfits-gallery-card__placeholder outfits-gallery-card__placeholder--failed"
             >
@@ -80,9 +75,26 @@ const thumbItems = computed(() =>
             </div>
         </div>
 
-        <div class="outfits-gallery-card__body">
+        <div
+            v-if="pending"
+            class="outfits-gallery-card__generating"
+        >
+            <OutfitGeneratingEffect compact />
+        </div>
+
+        <div
+            v-if="!pending"
+            class="outfits-gallery-card__body"
+        >
             <h3 class="outfits-gallery-card__title">{{ title }}</h3>
             <p v-if="meta" class="outfits-gallery-card__meta">{{ meta }}</p>
+        </div>
+        <div
+            v-else
+            class="outfits-gallery-card__body outfits-gallery-card__body--pending-spacer"
+            aria-hidden="true"
+        >
+            <h3 class="outfits-gallery-card__title">&nbsp;</h3>
         </div>
     </article>
 </template>

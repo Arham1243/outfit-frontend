@@ -7,6 +7,7 @@ const props = defineProps({
     selectedType: { type: String, default: null },
     typeCounts: { type: Object, default: () => ({}) },
     total: { type: Number, default: 0 },
+    loadingCounts: { type: Boolean, default: false },
     selectMode: { type: Boolean, default: false },
     canDelete: { type: Boolean, default: false }
 });
@@ -62,7 +63,12 @@ function onSearchInput(event) {
             />
         </div>
 
-        <div class="wardrobe-toolbar__pills" role="tablist" :aria-label="$t('filter_by_type')">
+        <div
+            class="wardrobe-toolbar__pills"
+            role="tablist"
+            :aria-label="$t('filter_by_type')"
+            :aria-busy="loadingCounts"
+        >
             <button
                 v-for="pill in categoryPills"
                 :key="pill.value ?? 'all'"
@@ -74,7 +80,15 @@ function onSearchInput(event) {
                 @click="emit('select-type', pill.value)"
             >
                 <span>{{ pill.label }}</span>
-                <span class="wardrobe-pill__count">{{ pill.count }}</span>
+                <Skeleton
+                    v-if="loadingCounts"
+                    class="wardrobe-pill__count-skeleton"
+                    width="1.125rem"
+                    height="0.875rem"
+                    borderRadius="0.25rem"
+                    aria-hidden="true"
+                />
+                <span v-else class="wardrobe-pill__count">{{ pill.count }}</span>
             </button>
         </div>
     </div>

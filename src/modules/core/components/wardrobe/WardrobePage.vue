@@ -33,6 +33,8 @@ const pagination = new PaginationOptions(1, 20);
 const sortFilters = new SortFilterOptions();
 
 const loading = ref(false);
+const loadingCounts = ref(true);
+const countsLoaded = ref(false);
 const busy = ref(false);
 const items = ref([]);
 const totalRecords = ref(0);
@@ -170,13 +172,20 @@ const startClassificationPolling = () => {
 };
 
 async function loadTypeCounts() {
+    if (!countsLoaded.value) {
+        loadingCounts.value = true;
+    }
+
     try {
         const res = await wardrobeStore.fetchTypeCounts();
         typeCounts.value = res.data ?? {};
         wardrobeTotal.value = res.total ?? 0;
+        countsLoaded.value = true;
     } catch {
         typeCounts.value = {};
         wardrobeTotal.value = 0;
+    } finally {
+        loadingCounts.value = false;
     }
 }
 
@@ -367,6 +376,7 @@ function openDeleteFromView() {
         <WardrobeHeader
             :total="wardrobeTotal"
             :type-counts="typeCounts"
+            :loading-counts="loadingCounts"
             :last-updated-label="lastUpdatedLabel"
             :can-create="canCreate"
             @bulk-upload="showBulkDialog = true"
@@ -378,6 +388,7 @@ function openDeleteFromView() {
             :selected-type="selectedTypeFilter"
             :type-counts="typeCounts"
             :total="wardrobeTotal"
+            :loading-counts="loadingCounts"
             :select-mode="selectMode"
             :can-delete="canDelete"
             @select-type="applyTypeFilter"

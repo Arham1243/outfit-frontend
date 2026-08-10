@@ -5,6 +5,7 @@ import { countActiveCategories } from './wardrobeDisplay';
 const props = defineProps({
     total: { type: Number, default: 0 },
     typeCounts: { type: Object, default: () => ({}) },
+    loadingCounts: { type: Boolean, default: false },
     lastUpdatedLabel: { type: String, default: '' },
     canCreate: { type: Boolean, default: false }
 });
@@ -30,7 +31,14 @@ const statsText = computed(() => {
     <header class="wardrobe-header">
         <div class="wardrobe-header__copy">
             <h1 class="wardrobe-header__title">{{ $t('wardrobe') }}</h1>
-            <p class="wardrobe-header__stats">{{ statsText }}</p>
+            <p v-if="loadingCounts" class="wardrobe-header__stats" aria-busy="true">
+                <Skeleton
+                    width="min(100%, 18rem)"
+                    height="0.9375rem"
+                    borderRadius="0.375rem"
+                />
+            </p>
+            <p v-else class="wardrobe-header__stats">{{ statsText }}</p>
         </div>
 
         <div v-if="canCreate" class="wardrobe-header__actions">

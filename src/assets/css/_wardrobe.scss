@@ -1,7 +1,7 @@
 .wardrobe-page-shell {
     box-sizing: border-box;
     width: calc(100% + 4rem);
-    min-height: calc(100% + 4rem);
+    min-height: 100dvh;
     margin: -2rem;
     padding: 2rem;
     background: var(--p-primary-50);
@@ -9,7 +9,7 @@
 
 .app-dark .wardrobe-page-shell {
     width: 100%;
-    min-height: 100%;
+    min-height: 100dvh;
     margin: 0;
     padding: 0;
     background: transparent;
@@ -165,6 +165,10 @@
     font-size: 0.8125rem;
     font-weight: 400;
     color: var(--p-text-muted-color);
+}
+
+.wardrobe-pill__count-skeleton {
+    flex-shrink: 0;
 }
 
 .wardrobe-pill--active .wardrobe-pill__count {

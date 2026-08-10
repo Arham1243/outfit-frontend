@@ -11,7 +11,7 @@ const props = defineProps({
     formData: { type: Object, required: true },
     saving: { type: Boolean, default: false },
     generateLabel: { type: String, required: true },
-    batchSizeOptions: { type: Array, default: () => [3, 6, 9, 12] },
+    batchSizeOptions: { type: Array, default: () => [1, 2, 3, 4] },
     loading: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
     canCreate: { type: Boolean, default: false },
@@ -22,7 +22,7 @@ const props = defineProps({
 });
 
 const heightFtInput = defineModel('heightFtInput', { type: String, default: '' });
-const batchSize = defineModel('batchSize', { type: Number, default: 3 });
+const batchSize = defineModel('batchSize', { type: Number, default: 1 });
 
 const emit = defineEmits([
     'gender-change',
