@@ -17,13 +17,6 @@ const sortedTypeCounts = computed(() =>
         .filter(([, count]) => count > 0)
         .sort(([a], [b]) => a.localeCompare(b))
 );
-
-function formatTypeCount(type, count) {
-    return $t('wardrobe_type_count', {
-        count,
-        type: formatWardrobeTypeLabel(type)
-    });
-}
 </script>
 
 <template>
@@ -73,25 +66,34 @@ function formatTypeCount(type, count) {
             />
         </div>
 
-        <div
-            class="outfits-capacity-card__chips"
-            :class="{ 'outfits-capacity-card__chips--disabled': loading }"
-        >
-            <button
-                v-for="[type, count] in sortedTypeCounts"
-                :key="type"
-                type="button"
-                class="outfits-capacity-card__chip"
-                @click="$emit('go-wardrobe')"
+        <div class="outfits-capacity-card__wardrobe">
+            <p class="outfits-capacity-card__chips-label">
+                {{ $t('outfits_wardrobe_breakdown') }}
+            </p>
+
+            <div
+                class="outfits-capacity-card__chips"
+                :class="{ 'outfits-capacity-card__chips--disabled': loading }"
             >
-                {{ formatTypeCount(type, count) }}
-            </button>
-            <span
-                v-if="!loading && !sortedTypeCounts.length"
-                class="outfits-capacity-card__empty"
-            >
-                {{ $t('no_wardrobe_images_found') }}
-            </span>
+                <button
+                    v-for="[type, count] in sortedTypeCounts"
+                    :key="type"
+                    type="button"
+                    class="outfits-capacity-card__chip"
+                    @click="$emit('go-wardrobe')"
+                >
+                    <span class="outfits-capacity-card__chip-count">{{ count }}</span>
+                    <span class="outfits-capacity-card__chip-type">
+                        {{ formatWardrobeTypeLabel(type) }}
+                    </span>
+                </button>
+                <span
+                    v-if="!loading && !sortedTypeCounts.length"
+                    class="outfits-capacity-card__empty"
+                >
+                    {{ $t('no_wardrobe_images_found') }}
+                </span>
+            </div>
         </div>
     </section>
 </template>
