@@ -67,7 +67,9 @@ const settingsInitialData = ref({
     face_mode: 'ai_model'
 });
 
-const requiresFaceImage = computed(() => formData.value.face_mode === 'user_face');
+const requiresFaceImage = computed(
+    () => formData.value.face_mode === 'user_face'
+);
 
 const maxBatchSize = computed(() => {
     const remaining = combinationStats.value?.remaining;
@@ -287,10 +289,9 @@ const mergeGalleryItems = (incoming) => {
         });
     }
 
-    galleryItems.value = incoming.map(
-        (item) => byUuid.get(item.uuid) ?? item
-    );
-    showGallery.value = galleryItems.value.length > 0 || galleryTotalRecords.value > 0;
+    galleryItems.value = incoming.map((item) => byUuid.get(item.uuid) ?? item);
+    showGallery.value =
+        galleryItems.value.length > 0 || galleryTotalRecords.value > 0;
 };
 
 const loadGallery = async ({ silent = false } = {}) => {
@@ -299,7 +300,8 @@ const loadGallery = async ({ silent = false } = {}) => {
         ? (await OutfitService.list(params)).data
         : await outfitStore.list(params);
 
-    galleryTotalRecords.value = payload.meta?.total ?? payload.data?.length ?? 0;
+    galleryTotalRecords.value =
+        payload.meta?.total ?? payload.data?.length ?? 0;
 
     if (!payload.data?.length) {
         galleryItems.value = [];
@@ -342,7 +344,8 @@ const getGalleryPollMaxAttempts = () => {
 
     return (
         Math.ceil(
-            (pendingCount * GALLERY_POLL_JOB_ESTIMATE_MS) / GALLERY_POLL_INTERVAL_MS
+            (pendingCount * GALLERY_POLL_JOB_ESTIMATE_MS) /
+                GALLERY_POLL_INTERVAL_MS
         ) + GALLERY_POLL_BUFFER_ATTEMPTS
     );
 };
@@ -472,8 +475,8 @@ const saveProfile = async ({ showErrors = true } = {}) => {
         );
 
         if (
-            formData.value.face_image === null
-            && settingsInitialData.value.face_image
+            formData.value.face_image === null &&
+            settingsInitialData.value.face_image
         ) {
             payload.face_image = null;
         }
@@ -650,6 +653,10 @@ const createOutfits = async () => {
     <OutfitsViewDialog
         v-model:visible="showViewDialog"
         :item="selectedOutfit"
-        @update:visible="(value) => { if (!value) selectedOutfit = null; }"
+        @update:visible="
+            (value) => {
+                if (!value) selectedOutfit = null;
+            }
+        "
     />
 </template>

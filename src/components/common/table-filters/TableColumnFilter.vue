@@ -38,9 +38,7 @@ const autocompletePreset = computed(() => {
 
 const autocompleteSuggestions = computed(() => {
     const suggestions =
-        autocompletePreset.value?.suggestions ??
-        props.config.suggestions ??
-        [];
+        autocompletePreset.value?.suggestions ?? props.config.suggestions ?? [];
 
     return [...unref(suggestions)];
 });

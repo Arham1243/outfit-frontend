@@ -80,9 +80,7 @@ const lastUpdatedLabel = computed(() => {
         day: 'numeric'
     });
 
-    return latestDay === today
-        ? $t('wardrobe_last_updated_today')
-        : latestDay;
+    return latestDay === today ? $t('wardrobe_last_updated_today') : latestDay;
 });
 
 onBeforeMount(async () => {
@@ -373,95 +371,95 @@ function openDeleteFromView() {
 <template>
     <div class="wardrobe-page-shell">
         <div class="wardrobe-page">
-        <WardrobeHeader
-            :total="wardrobeTotal"
-            :type-counts="typeCounts"
-            :loading-counts="loadingCounts"
-            :last-updated-label="lastUpdatedLabel"
-            :can-create="canCreate"
-            @bulk-upload="showBulkDialog = true"
-            @add-item="showAddDialog = true"
-        />
+            <WardrobeHeader
+                :total="wardrobeTotal"
+                :type-counts="typeCounts"
+                :loading-counts="loadingCounts"
+                :last-updated-label="lastUpdatedLabel"
+                :can-create="canCreate"
+                @bulk-upload="showBulkDialog = true"
+                @add-item="showAddDialog = true"
+            />
 
-        <WardrobeToolbar
-            v-model:search-query="searchQuery"
-            :selected-type="selectedTypeFilter"
-            :type-counts="typeCounts"
-            :total="wardrobeTotal"
-            :loading-counts="loadingCounts"
-            :select-mode="selectMode"
-            :can-delete="canDelete"
-            @select-type="applyTypeFilter"
-            @toggle-select="toggleSelectMode"
-        />
+            <WardrobeToolbar
+                v-model:search-query="searchQuery"
+                :selected-type="selectedTypeFilter"
+                :type-counts="typeCounts"
+                :total="wardrobeTotal"
+                :loading-counts="loadingCounts"
+                :select-mode="selectMode"
+                :can-delete="canDelete"
+                @select-type="applyTypeFilter"
+                @toggle-select="toggleSelectMode"
+            />
 
-        <WardrobeSelectionBar
-            v-if="selectMode && canDelete"
-            :selected-count="selectedItems.length"
-            :page-count="items.length"
-            @select-page="selectPage"
-            @delete="openDeleteDialog(true)"
-            @done="toggleSelectMode"
-        />
+            <WardrobeSelectionBar
+                v-if="selectMode && canDelete"
+                :selected-count="selectedItems.length"
+                :page-count="items.length"
+                @select-page="selectPage"
+                @delete="openDeleteDialog(true)"
+                @done="toggleSelectMode"
+            />
 
-        <WardrobeGrid
-            :items="items"
-            :loading="loading"
-            :select-mode="selectMode"
-            :selected-items="selectedItems"
-            :can-select="canDelete"
-            @open-item="openItem"
-            @toggle-item="toggleItemSelection"
-        />
+            <WardrobeGrid
+                :items="items"
+                :loading="loading"
+                :select-mode="selectMode"
+                :selected-items="selectedItems"
+                :can-select="canDelete"
+                @open-item="openItem"
+                @toggle-item="toggleItemSelection"
+            />
 
-        <WardrobePagination
-            v-if="!loading && totalRecords > pagination.limit"
-            :page="pagination.page"
-            :total-records="totalRecords"
-            :page-size="pagination.limit"
-            @page-change="onPageChange"
-        />
+            <WardrobePagination
+                v-if="!loading && totalRecords > pagination.limit"
+                :page="pagination.page"
+                :total-records="totalRecords"
+                :page-size="pagination.limit"
+                @page-change="onPageChange"
+            />
 
-        <WardrobeAddDialog
-            v-if="canCreate"
-            v-model:visible="showAddDialog"
-            :busy="busy"
-            @save="handleAddSave"
-        />
+            <WardrobeAddDialog
+                v-if="canCreate"
+                v-model:visible="showAddDialog"
+                :busy="busy"
+                @save="handleAddSave"
+            />
 
-        <WardrobeBulkUploadDialog
-            v-if="canCreate"
-            v-model:visible="showBulkDialog"
-            :busy="busy"
-            @save="handleBulkSave"
-        />
+            <WardrobeBulkUploadDialog
+                v-if="canCreate"
+                v-model:visible="showBulkDialog"
+                :busy="busy"
+                @save="handleBulkSave"
+            />
 
-        <WardrobeViewDialog
-            v-model:visible="showViewDialog"
-            :item="selectedItem"
-            :can-edit="canEdit"
-            :can-delete="canDelete"
-            @edit="openEditFromView"
-            @delete="openDeleteFromView"
-        />
+            <WardrobeViewDialog
+                v-model:visible="showViewDialog"
+                :item="selectedItem"
+                :can-edit="canEdit"
+                :can-delete="canDelete"
+                @edit="openEditFromView"
+                @delete="openDeleteFromView"
+            />
 
-        <WardrobeEditDialog
-            v-if="canEdit"
-            v-model:visible="showEditDialog"
-            :item="selectedItem"
-            :busy="busy"
-            @save="handleEditSave"
-        />
+            <WardrobeEditDialog
+                v-if="canEdit"
+                v-model:visible="showEditDialog"
+                :item="selectedItem"
+                :busy="busy"
+                @save="handleEditSave"
+            />
 
-        <WardrobeDeleteDialog
-            v-if="canDelete"
-            v-model:visible="showDeleteDialog"
-            :busy="loading"
-            :item="selectedItem"
-            :bulk-count="selectedItems.length"
-            :is-bulk="isBulkDelete"
-            @confirm="handleDeleteConfirm"
-        />
+            <WardrobeDeleteDialog
+                v-if="canDelete"
+                v-model:visible="showDeleteDialog"
+                :busy="loading"
+                :item="selectedItem"
+                :bulk-count="selectedItems.length"
+                :is-bulk="isBulkDelete"
+                @confirm="handleDeleteConfirm"
+            />
         </div>
     </div>
 </template>

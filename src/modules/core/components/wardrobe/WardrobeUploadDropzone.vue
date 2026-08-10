@@ -12,13 +12,7 @@ const props = defineProps({
     variant: { type: String, default: 'default' }
 });
 
-const emit = defineEmits([
-    'pick',
-    'dragover',
-    'dragleave',
-    'drop',
-    'change'
-]);
+const emit = defineEmits(['pick', 'dragover', 'dragleave', 'drop', 'change']);
 
 const uploadDimensionHint = computed(() =>
     $t('wardrobe_upload_recommended_dimensions', {

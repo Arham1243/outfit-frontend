@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useSessionStore } from '@/stores';
+import { AuthService } from '@/services';
 import SidebarAccountMenu from './SidebarAccountMenu.vue';
 import AppMenu from './AppMenu.vue';
 
@@ -33,6 +34,24 @@ const userInitials = computed(() => {
 });
 
 const userSubtitle = computed(() => '');
+
+function persistSidebarOpen(isOpen) {
+    AuthService.updateUiPreferences({ sidebar_open: isOpen })
+        .then(() => {
+            if (sessionStore.user) {
+                sessionStore.user.sidebar_open = isOpen;
+            }
+        })
+        .catch(() => {});
+}
+
+function onToggleSidebar() {
+    const previousOpen = layoutState.anchored;
+    toggleMenu();
+    if (layoutState.anchored !== previousOpen) {
+        persistSidebarOpen(layoutState.anchored);
+    }
+}
 </script>
 
 <template>
@@ -50,7 +69,7 @@ const userSubtitle = computed(() => '');
                 :aria-label="$t(sidebarToggleLabel)"
                 :aria-expanded="isSidebarExpanded"
                 v-tooltip.hover.right="$t(sidebarToggleLabel)"
-                @click="toggleMenu"
+                @click="onToggleSidebar"
             >
                 <svg
                     class="sidebar-panel-icon"

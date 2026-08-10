@@ -33,11 +33,8 @@ const goBack = () => {
 </script>
 <template>
     <div>
-        <h4 class="text-3xl font-bold text-center mb-4">
-            {{ $t('forgot_password') }}
-        </h4>
-
-        <p class="text-center mb-12 text-gray-700">
+        <h1 class="auth-title">{{ $t('forgot_password') }}</h1>
+        <p class="auth-subtitle">
             {{
                 $t(
                     'enter_your_email_address_and_well_send_you_a_link_to_reset_your_password'
@@ -46,30 +43,30 @@ const goBack = () => {
         </p>
 
         <form @submit.prevent="handleSubmit">
-            <div class="grid mb-3">
-                <div class="mb-6 col-span-12">
-                    <label for="email" class="block mb-2">{{
-                        $t('email')
-                    }}</label>
-                    <InputField
-                        id="email"
-                        v-model="email"
-                        variant="text"
-                        class="w-full"
-                    />
-                </div>
+            <div class="auth-field" :class="{ 'auth-field--float': !!email }">
+                <label class="auth-float-label" for="email">{{
+                    $t('email_address')
+                }}</label>
+                <InputField
+                    id="email"
+                    v-model="email"
+                    variant="text"
+                    autocomplete="email"
+                    placeholder=" "
+                    class="w-full"
+                    :disabled="loading"
+                />
             </div>
 
             <Button
-                class="w-full left-loading mb-4"
+                class="auth-submit left-loading"
                 :label="$t('continue')"
                 :disabled="!email || loading"
                 :loading="loading"
                 type="submit"
             />
             <Button
-                variant="outlined"
-                class="w-full left-loading"
+                class="auth-submit-secondary left-loading"
                 :label="$t('back_to_login')"
                 :disabled="loading"
                 @click="goBack"

@@ -21,7 +21,11 @@ const isFirstPage = computed(() => props.page <= 1);
 const isLastPage = computed(() => props.page >= totalPages.value);
 
 function goToPage(pageNumber) {
-    if (pageNumber === props.page || pageNumber < 1 || pageNumber > totalPages.value) {
+    if (
+        pageNumber === props.page ||
+        pageNumber < 1 ||
+        pageNumber > totalPages.value
+    ) {
         return;
     }
 

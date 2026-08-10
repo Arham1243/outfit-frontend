@@ -112,6 +112,13 @@ export function initAppearancePreference(fallbackDark = false) {
     setAppearance(fallbackDark ? 'dark' : 'light', { persist: false });
 }
 
+/** Apply desktop drawer open/closed from user preference. */
+export function applySidebarOpen(open) {
+    const isOpen = !!open;
+    layoutState.anchored = isOpen;
+    layoutState.sidebarActive = isOpen;
+}
+
 export function resetLayoutState() {
     layoutState.staticMenuDesktopInactive = false;
     layoutState.overlayMenuActive = false;
@@ -142,9 +149,7 @@ export function useLayout() {
         if (window.innerWidth > 991) {
             if (layoutConfig.menuMode === 'drawer') {
                 layoutState.accountMenuVisible = false;
-                const nextAnchored = !layoutState.anchored;
-                layoutState.anchored = nextAnchored;
-                layoutState.sidebarActive = nextAnchored;
+                applySidebarOpen(!layoutState.anchored);
                 return;
             }
 

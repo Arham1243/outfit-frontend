@@ -40,7 +40,9 @@ const typeLabel = computed(() => {
 });
 
 const header = computed(() =>
-    props.isBulk ? $t('delete_wardrobe_images') : $t('wardrobe_delete_dialog_title')
+    props.isBulk
+        ? $t('delete_wardrobe_images')
+        : $t('wardrobe_delete_dialog_title')
 );
 
 function closeDialog() {
@@ -62,16 +64,26 @@ function closeDialog() {
         <div v-if="isBulk" class="wardrobe-delete__content">
             <p class="wardrobe-delete__message">
                 {{
-                    $t('are_you_sure_you_want_to_delete_selected_wardrobe_images', {
-                        count: bulkCount
-                    })
+                    $t(
+                        'are_you_sure_you_want_to_delete_selected_wardrobe_images',
+                        {
+                            count: bulkCount
+                        }
+                    )
                 }}
             </p>
         </div>
 
-        <div v-else class="wardrobe-delete__content wardrobe-delete__content--item">
+        <div
+            v-else
+            class="wardrobe-delete__content wardrobe-delete__content--item"
+        >
             <div class="wardrobe-delete__preview">
-                <img :src="imageUrl" alt="" class="wardrobe-delete__preview-img" />
+                <img
+                    :src="imageUrl"
+                    alt=""
+                    class="wardrobe-delete__preview-img"
+                />
             </div>
             <div class="wardrobe-delete__copy">
                 <p class="wardrobe-delete__name">{{ displayName }}</p>

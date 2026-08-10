@@ -20,10 +20,7 @@ const sortedTypeCounts = computed(() =>
 </script>
 
 <template>
-    <section
-        class="outfits-capacity-card"
-        :aria-busy="loading"
-    >
+    <section class="outfits-capacity-card" :aria-busy="loading">
         <div class="outfits-capacity-card__top">
             <p class="outfits-capacity-card__label">
                 {{ $t('outfits_generation_capacity') }}
@@ -70,11 +67,7 @@ const sortedTypeCounts = computed(() =>
                     height="1.75rem"
                     borderRadius="0.5rem"
                 />
-                <Skeleton
-                    width="100%"
-                    height="0.375rem"
-                    borderRadius="999px"
-                />
+                <Skeleton width="100%" height="0.375rem" borderRadius="999px" />
             </div>
 
             <div class="outfits-capacity-card__skeleton-wardrobe">
@@ -136,7 +129,9 @@ const sortedTypeCounts = computed(() =>
                         class="outfits-capacity-card__chip"
                         @click="$emit('go-wardrobe')"
                     >
-                        <span class="outfits-capacity-card__chip-count">{{ count }}</span>
+                        <span class="outfits-capacity-card__chip-count">{{
+                            count
+                        }}</span>
                         <span class="outfits-capacity-card__chip-type">
                             {{ formatWardrobeTypeLabel(type) }}
                         </span>

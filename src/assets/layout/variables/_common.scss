@@ -36,11 +36,7 @@
     --focus-ring-shadow: var(--p-focus-ring-shadow);
 
     /* Sidebar — derived from app-preset primary palette */
-    --sidebar-bg: color-mix(
-        in srgb,
-        var(--p-primary-50) 32%,
-        var(--p-surface-0, #ffffff)
-    );
+    --sidebar-bg: #fff;
     --sidebar-border-color: var(--p-content-border-color);
     --sidebar-brand-color: var(--p-text-color);
     --sidebar-accent: var(--p-primary-500);

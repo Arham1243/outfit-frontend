@@ -102,7 +102,9 @@ function save() {
         payload.type = formData.value.type;
     }
 
-    const imagePayload = filterFileFields({ image: formData.value.image }, ['image']);
+    const imagePayload = filterFileFields({ image: formData.value.image }, [
+        'image'
+    ]);
     if (imagePayload.image && imagePayload.image !== initialData.value?.image) {
         payload.image = imagePayload.image;
     }
@@ -131,7 +133,9 @@ function save() {
                 <span class="wardrobe-dialog__header-title">
                     {{ $t('wardrobe_edit_dialog_title') }}
                 </span>
-                <span class="wardrobe-dialog__header-subtitle">{{ subtitle }}</span>
+                <span class="wardrobe-dialog__header-subtitle">{{
+                    subtitle
+                }}</span>
             </div>
         </template>
 
@@ -149,7 +153,11 @@ function save() {
             class="wardrobe-dialog__preview wardrobe-dialog__preview--edit"
             @click="openFilePicker(busy)"
         >
-            <img :src="formData.image" alt="" class="wardrobe-dialog__preview-img" />
+            <img
+                :src="formData.image"
+                alt=""
+                class="wardrobe-dialog__preview-img"
+            />
         </div>
 
         <div class="wardrobe-dialog__field">

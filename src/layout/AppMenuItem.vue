@@ -254,9 +254,7 @@ function checkActiveRoute(item) {
             tabindex="0"
             @mouseenter="onMouseEnter"
             v-tooltip.hover="
-                isSlim && root && !isActiveMenu
-                      ? $t(item.label)
-                      : null
+                isSlim && root && !isActiveMenu ? $t(item.label) : null
             "
         >
             <i :class="item.icon" class="layout-menuitem-icon"></i>
@@ -269,9 +267,7 @@ function checkActiveRoute(item) {
             ></i>
         </a>
         <router-link
-            v-if="
-                item.to && !item.items && item.visible !== false
-            "
+            v-if="item.to && !item.items && item.visible !== false"
             @click="itemClick($event, item, index)"
             :class="[
                 item.class,
@@ -283,10 +279,10 @@ function checkActiveRoute(item) {
             @mouseenter="onMouseEnter"
             v-tooltip.hover="
                 isSlim && root && !isActiveMenu
-                      ? item.label
-                          ? $t(item.label)
-                          : null
-                      : null
+                    ? item.label
+                        ? $t(item.label)
+                        : null
+                    : null
             "
         >
             <i :class="item.icon" class="layout-menuitem-icon"></i>

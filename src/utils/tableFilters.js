@@ -137,7 +137,9 @@ export function primeFiltersToOrion(
         }
 
         const value =
-            filterMeta && typeof filterMeta === 'object' && 'value' in filterMeta
+            filterMeta &&
+            typeof filterMeta === 'object' &&
+            'value' in filterMeta
                 ? filterMeta.value
                 : filterMeta;
 
@@ -147,9 +149,7 @@ export function primeFiltersToOrion(
 
         const filterType = column.filter.type ?? 'text';
         const operator =
-            column.filter.operator ??
-            DEFAULT_OPERATORS[filterType] ??
-            '=';
+            column.filter.operator ?? DEFAULT_OPERATORS[filterType] ?? '=';
 
         let normalizedValue = value;
         if (filterType === 'number') {
@@ -188,10 +188,12 @@ export const TABLE_FILTER_PRESETS = {
     number: { type: 'number' }
 };
 
-export const STATUS_ACTIVE_INACTIVE_FILTER = TABLE_FILTER_PRESETS.statusActiveInactive;
+export const STATUS_ACTIVE_INACTIVE_FILTER =
+    TABLE_FILTER_PRESETS.statusActiveInactive;
 export const TEXT_COLUMN_FILTER = TABLE_FILTER_PRESETS.text;
 export const NUMBER_COLUMN_FILTER = TABLE_FILTER_PRESETS.number;
-export const BOOLEAN_YES_NO_FILTER = TABLE_FILTER_PRESETS.statusActiveInactiveBoolean;
+export const BOOLEAN_YES_NO_FILTER =
+    TABLE_FILTER_PRESETS.statusActiveInactiveBoolean;
 
 export const USER_STATUS_FILTER = {
     type: 'select',

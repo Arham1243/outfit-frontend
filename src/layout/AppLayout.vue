@@ -1,13 +1,7 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
-import {
-    computed,
-    onBeforeMount,
-    onBeforeUnmount,
-    ref,
-    watch
-} from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, ref, watch } from 'vue';
 import AppConfig from './AppConfig.vue';
 import AppProfileDialog from './AppProfileDialog.vue';
 import AppSettingsDialog from './AppSettingsDialog.vue';

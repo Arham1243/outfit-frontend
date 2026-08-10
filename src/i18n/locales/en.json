@@ -18,12 +18,20 @@
     "at_least_one_number": "At least one number",
     "at_least_one_symbol": "At least one symbol {'@'}$!%*#?&",
     "auth": {
+        "login": {
+            "subtitle": "Sign in to access your wardrobe and create outfits."
+        },
         "otp": {
             "verificationMessage": "You should have received an email with OTP code at {email}"
         },
+        "passwordReset": {
+            "resetLinkInvalid": "This password reset link is missing, invalid, or has expired. Request a new reset link from the login page.",
+            "subtitle": "Choose a new password for your account."
+        },
         "passwordSetup": {
             "passwordAlreadySet": "Your password is already set. You can log in now using your email and password.",
-            "setupLinkInvalid": "This password setup link is missing, invalid, or has expired. If you already finished setup, log in below. Otherwise use the link from your latest ServiCore email."
+            "setupLinkInvalid": "This password setup link is missing, invalid, or has expired. If you already finished setup, log in below. Otherwise use the link from your latest ServiCore email.",
+            "subtitle": "You'll use this password to log in to Outfit and other related products."
         }
     },
     "back_to_login": "Back to Login",
@@ -77,6 +85,7 @@
         }
     },
     "confirm_password": "Confirm Password",
+    "continue": "Continue",
     "generate": "Generate",
     "generate_more": "Generate more",
     "refresh_results": "Refresh results",
@@ -156,6 +165,7 @@
     "edit_role": "Edit Role",
     "edit_wardrobe_image": "Edit wardrobe image",
     "email": "Email",
+    "email_address": "Email address",
     "end_user_license_agreement": "End-User License Agreement",
     "enter_your_email_address_and_well_send_you_a_link_to_reset_your_password": "Enter your email address and we'll send you a link to reset your password.",
     "female": "Female",
@@ -295,6 +305,7 @@
     "status": "Status",
     "the_system_administrator_role_always_has_full_access_its_permissions_cannot_be_changed_you_can_still_adjust_permissions_for_other_system_roles_for_example_approver_or_standard_roles_and_for_custom_roles": "System roles are locked and cannot be edited or deleted. Their permissions cannot be changed.",
     "the_welcome_email_has_been_sent_again": "The welcome email has been sent again.",
+    "terms_of_use": "Terms of Use",
     "try_again": "Try Again",
     "unsaved_changes": "Unsaved Changes",
     "update": "Update",
@@ -355,6 +366,7 @@
     "wardrobe_save_changes": "Save changes",
     "wardrobe_item_name_required": "Please enter an item name.",
     "welcome": "Welcome",
+    "welcome_back": "Welcome Back",
     "welcome_email_sent": "Welcome email sent",
     "you_have_unsaved_changes_if_you_continue_those_changes_will_be_lost_do_you_want_to_discard_them": "You have unsaved changes. If you continue, those changes will be lost. Do you want to discard them?",
     "your_password_has_been_changed_successfully": "Your password has been changed successfully",

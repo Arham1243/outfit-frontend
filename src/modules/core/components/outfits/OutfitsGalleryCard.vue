@@ -1,10 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import PlaceholderImage from '@/assets/images/image_not_available.png';
-import {
-    formatOutfitMeta,
-    getOutfitTitle
-} from './outfitDisplay';
+import { formatOutfitMeta, getOutfitTitle } from './outfitDisplay';
 import OutfitGeneratingEffect from './OutfitGeneratingEffect.vue';
 
 const props = defineProps({
@@ -15,9 +12,7 @@ const props = defineProps({
 
 defineEmits(['open']);
 
-const title = computed(() =>
-    getOutfitTitle(props.item, $t('outfit_untitled'))
-);
+const title = computed(() => getOutfitTitle(props.item, $t('outfit_untitled')));
 
 const meta = computed(() =>
     formatOutfitMeta(props.item, {
@@ -75,17 +70,11 @@ const thumbItems = computed(() =>
             </div>
         </div>
 
-        <div
-            v-if="pending"
-            class="outfits-gallery-card__generating"
-        >
+        <div v-if="pending" class="outfits-gallery-card__generating">
             <OutfitGeneratingEffect compact />
         </div>
 
-        <div
-            v-if="!pending"
-            class="outfits-gallery-card__body"
-        >
+        <div v-if="!pending" class="outfits-gallery-card__body">
             <h3 class="outfits-gallery-card__title">{{ title }}</h3>
             <p v-if="meta" class="outfits-gallery-card__meta">{{ meta }}</p>
         </div>

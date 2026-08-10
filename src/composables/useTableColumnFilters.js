@@ -1,9 +1,6 @@
 import { ref } from 'vue';
 import { debounce } from 'lodash-es';
-import {
-    buildPrimeFilters,
-    primeFiltersToOrion
-} from '@/utils/tableFilters';
+import { buildPrimeFilters, primeFiltersToOrion } from '@/utils/tableFilters';
 
 export function useTableColumnFilters({
     columnConfigs,

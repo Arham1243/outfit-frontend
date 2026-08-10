@@ -1,10 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-    setDarkTheme,
-    useLayout
-} from '@/layout/composables/layout';
+import { setDarkTheme, useLayout } from '@/layout/composables/layout';
 import { useAuthStore, useSessionStore } from '@/stores';
 
 const props = defineProps({

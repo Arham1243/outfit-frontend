@@ -48,7 +48,9 @@ function executeDarkModeToggle() {
                         type="button"
                         rounded
                         class="topbar-icon-button"
-                        :class="{ 'topbar-icon-button--active': layoutConfig.darkTheme }"
+                        :class="{
+                            'topbar-icon-button--active': layoutConfig.darkTheme
+                        }"
                         :aria-label="$t('layout.toggle_dark_mode')"
                         @click="toggleDarkMode"
                     >

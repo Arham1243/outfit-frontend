@@ -18,8 +18,7 @@ const dots = computed(() => {
         const row = Math.floor(index / cols);
         const wave = (col / cols) * 1.35 + (row / rowCount) * 0.95;
         const sizeRoll = (col * 7 + row * 13 + index) % 6;
-        const size =
-            sizeRoll === 0 ? 'lg' : sizeRoll === 1 ? 'sm' : 'md';
+        const size = sizeRoll === 0 ? 'lg' : sizeRoll === 1 ? 'sm' : 'md';
 
         items.push({
             id: index,

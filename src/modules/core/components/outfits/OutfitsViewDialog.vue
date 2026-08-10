@@ -23,14 +23,10 @@ const emit = defineEmits(['update:visible']);
 const { formatDate } = useHelpers();
 const downloading = ref(false);
 
-const imageUrl = computed(
-    () => props.item?.image_url || PlaceholderImage
-);
+const imageUrl = computed(() => props.item?.image_url || PlaceholderImage);
 
 const title = computed(() =>
-    props.item
-        ? getOutfitTitle(props.item, $t('outfit_untitled'))
-        : ''
+    props.item ? getOutfitTitle(props.item, $t('outfit_untitled')) : ''
 );
 
 const faceModeLabel = computed(() => {
@@ -46,10 +42,13 @@ const subtitle = computed(() => {
     if (!props.item) return '';
 
     const generatedOn = props.item.created_at
-        ? `${$t('outfit_generated_on_label')} ${formatDate(props.item.created_at, {
-              month: 'short',
-              day: 'numeric'
-          })}`
+        ? `${$t('outfit_generated_on_label')} ${formatDate(
+              props.item.created_at,
+              {
+                  month: 'short',
+                  day: 'numeric'
+              }
+          )}`
         : '';
 
     return formatOutfitViewSubtitle(props.item, {
@@ -59,14 +58,11 @@ const subtitle = computed(() => {
     });
 });
 
-const wardrobeItems = computed(
-    () => props.item?.wardrobe_items ?? []
-);
+const wardrobeItems = computed(() => props.item?.wardrobe_items ?? []);
 
 const isPending = computed(
     () =>
-        props.item?.status === 'pending' ||
-        props.item?.status === 'processing'
+        props.item?.status === 'pending' || props.item?.status === 'processing'
 );
 
 const isFailed = computed(() => props.item?.status === 'failed');
@@ -76,7 +72,8 @@ function closeDialog() {
 }
 
 async function handleDownload() {
-    if (!props.item?.uuid || !props.item?.image_url || downloading.value) return;
+    if (!props.item?.uuid || !props.item?.image_url || downloading.value)
+        return;
 
     try {
         downloading.value = true;
@@ -165,7 +162,12 @@ async function handleDownload() {
                         >
                             <img
                                 :src="wardrobe.image_url || PlaceholderImage"
-                                :alt="getWardrobeItemDisplayName(wardrobe, $t('wardrobe_untitled'))"
+                                :alt="
+                                    getWardrobeItemDisplayName(
+                                        wardrobe,
+                                        $t('wardrobe_untitled')
+                                    )
+                                "
                                 class="outfits-view__item-thumb"
                             />
                             <div class="outfits-view__item-copy">

@@ -107,12 +107,12 @@
     --p-tooltip-background: #303030;
     --p-tooltip-color: #ffffff;
 
-    background: #080809;
+    background: var(--surface-ground, #080809);
 
     body,
     .layout-container,
     .layout-content-wrapper {
-        background: #080809;
+        background: var(--surface-ground, #080809);
         color: var(--p-text-color);
     }
 

@@ -242,7 +242,10 @@ function main() {
 
     const sourcePath = path.join(LOCALES_DIR, 'en.json');
     const sourceData = loadJson(sourcePath);
-    const { result: enResult, missing } = buildPrunedLocale(sourceData, usedKeys);
+    const { result: enResult, missing } = buildPrunedLocale(
+        sourceData,
+        usedKeys
+    );
 
     if (missing.length > 0) {
         console.warn('\nMissing keys in en.json (will be omitted):');

@@ -31,7 +31,11 @@ const statsText = computed(() => {
     <header class="wardrobe-header">
         <div class="wardrobe-header__copy">
             <h1 class="wardrobe-header__title">{{ $t('wardrobe') }}</h1>
-            <p v-if="loadingCounts" class="wardrobe-header__stats" aria-busy="true">
+            <p
+                v-if="loadingCounts"
+                class="wardrobe-header__stats"
+                aria-busy="true"
+            >
                 <Skeleton
                     width="min(100%, 18rem)"
                     height="0.9375rem"

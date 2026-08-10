@@ -1,26 +1,32 @@
 <script setup>
-import Logo from '@/assets/images/logo.png';
+import { onMounted } from 'vue';
+import {
+    ensureAppearanceListener,
+    setAppearance
+} from '@/layout/composables/layout';
+
+onMounted(() => {
+    ensureAppearanceListener();
+    // Temporary: force light mode for auth UI testing.
+    setAppearance('light', { persist: false });
+});
 </script>
 
 <template>
-    <div
-        class="min-h-screen flex items-center justify-center bg-[#F6F9FB] overflow-x-hidden py-10"
-    >
-        <div class="w-full max-w-[500px]">
-            <div class="text-center mb-4 pb-1">
-                <img :src="Logo" width="130" class="inline-block" />
-            </div>
-            <div
-                class="bg-white custom-shadow rounded-lg text-gray-800 px-[2.25rem] sm:px-[1.75rem] py-[2rem]"
-            >
-                <router-view />
-            </div>
+    <div class="auth-layout">
+        <div class="auth-layout__brand">{{ $t('layout.sidebar.brand') }}</div>
+
+        <div class="auth-layout__inner">
+            <router-view />
+
+            <footer class="auth-layout__footer">
+                <a href="#" rel="noopener">{{ $t('terms_of_use') }}</a>
+                <span class="auth-layout__footer-sep" aria-hidden="true"
+                    >|</span
+                >
+                <a href="#" rel="noopener">{{ $t('privacy_policy') }}</a>
+            </footer>
         </div>
         <Toast />
     </div>
 </template>
-<style scoped>
-.custom-shadow {
-    box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.1);
-}
-</style>

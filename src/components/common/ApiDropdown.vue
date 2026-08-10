@@ -156,11 +156,7 @@ const resolvedPlaceholder = computed(
 );
 
 const isDisabled = computed(
-    () =>
-        props.disabled ||
-        attrs.disabled ||
-        props.loading ||
-        attrs.loading
+    () => props.disabled || attrs.disabled || props.loading || attrs.loading
 );
 </script>
 

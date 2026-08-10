@@ -16,7 +16,10 @@ const props = defineProps({
 });
 
 const visible = defineModel('visible', { type: Boolean, default: false });
-const heightFtInput = defineModel('heightFtInput', { type: String, default: '' });
+const heightFtInput = defineModel('heightFtInput', {
+    type: String,
+    default: ''
+});
 
 const emit = defineEmits(['save', 'cancel', 'face-select']);
 
@@ -84,7 +87,9 @@ function removeFaceImage() {
                 </label>
                 <div
                     class="outfits-settings__height-input"
-                    :class="{ 'outfits-settings__height-input--invalid': !!heightError }"
+                    :class="{
+                        'outfits-settings__height-input--invalid': !!heightError
+                    }"
                 >
                     <input
                         id="outfit-height"
@@ -97,7 +102,9 @@ function removeFaceImage() {
                         :aria-invalid="!!heightError"
                         @input="heightFtInput = $event.target.value"
                     />
-                    <span class="outfits-settings__height-unit">{{ $t('ft') }}</span>
+                    <span class="outfits-settings__height-unit">{{
+                        $t('ft')
+                    }}</span>
                 </div>
                 <small
                     v-if="heightCmPreviewLabel"
@@ -160,7 +167,9 @@ function removeFaceImage() {
                             auto
                             :chooseLabel="$t('upload')"
                             chooseIcon="pi pi-upload"
-                            :maxFileSize="OUTFIT_FACE_IMAGE.maxFileSizeKb * 1024"
+                            :maxFileSize="
+                                OUTFIT_FACE_IMAGE.maxFileSizeKb * 1024
+                            "
                             accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
                             class="outfits-settings__face-upload"
                             :disabled="saving"

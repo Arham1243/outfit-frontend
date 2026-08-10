@@ -21,7 +21,8 @@ const credentials = ref({
 
 const PASSWORD_SETUP_NOTICES = {
     password_already_set: $t('auth.passwordSetup.passwordAlreadySet'),
-    setup_link_invalid: $t('auth.passwordSetup.setupLinkInvalid')
+    setup_link_invalid: $t('auth.passwordSetup.setupLinkInvalid'),
+    reset_link_invalid: $t('auth.passwordReset.resetLinkInvalid')
 };
 
 const passwordNotice = ref('');
@@ -36,6 +37,10 @@ const loginSubmitBlocked = computed(
         loading.value ||
         waitingForRecaptcha.value ||
         recaptchaWidgetId.value == null
+);
+
+const formBusy = computed(
+    () => loading.value || waitingForRecaptcha.value
 );
 
 function applyPasswordNoticeFromRoute() {
@@ -171,64 +176,81 @@ const login = () => {
 
 <template>
     <div>
-        <h4 class="text-3xl font-bold text-center mb-12">{{ $t('login') }}</h4>
+        <h1 class="auth-title">{{ $t('welcome_back') }}</h1>
+        <p class="auth-subtitle">{{ $t('auth.login.subtitle') }}</p>
+
         <Message
             v-if="passwordNotice"
             severity="info"
-            class="mb-6 w-full"
+            class="auth-notice w-full"
             :closable="true"
             @close="dismissPasswordNotice"
         >
             {{ passwordNotice }}
         </Message>
-        <form @submit.prevent="login">
-            <div class="grid">
-                <div class="mb-6 col-span-12">
-                    <label class="block mb-2" for="email">
-                        {{ $t('email') }}
-                    </label>
-                    <InputField
-                        variant="text"
-                        id="email"
-                        v-model="credentials.email"
-                        class="w-full"
-                    />
-                </div>
 
-                <div class="mb-4 col-span-12">
-                    <label class="block mb-2" for="password">
-                        {{ $t('password') }}
-                    </label>
-                    <InputField
-                        id="password"
-                        variant="password"
-                        v-model="credentials.password"
-                        class="w-full"
-                        inputClass="w-full"
-                        toggleMask
-                        :feedback="false"
-                    />
-                </div>
+        <form @submit.prevent="login">
+            <div
+                class="auth-field"
+                :class="{ 'auth-field--float': !!credentials.email }"
+            >
+                <label class="auth-float-label" for="email">{{
+                    $t('email_address')
+                }}</label>
+                <InputField
+                    variant="text"
+                    id="email"
+                    v-model="credentials.email"
+                    autocomplete="email"
+                    placeholder=" "
+                    class="w-full"
+                    :disabled="formBusy"
+                />
             </div>
 
-            <div class="flex justify-between items-center pt-1">
-                <div class="flex items-center">
+            <div
+                class="auth-field"
+                :class="{ 'auth-field--float': !!credentials.password }"
+            >
+                <label class="auth-float-label" for="password">{{
+                    $t('password')
+                }}</label>
+                <InputField
+                    id="password"
+                    variant="password"
+                    v-model="credentials.password"
+                    autocomplete="current-password"
+                    placeholder=" "
+                    class="w-full"
+                    inputClass="w-full"
+                    toggleMask
+                    :feedback="false"
+                    :disabled="formBusy"
+                />
+            </div>
+
+            <div class="auth-meta">
+                <div class="auth-checkbox">
                     <InputField
                         variant="checkbox"
                         v-model="credentials.remember_me"
                         binary
                         inputId="remember"
+                        :disabled="formBusy"
                     />
-                    <label for="remember" class="ml-2 cursor-pointer">
+                    <label for="remember" class="auth-checkbox-label">
                         {{ $t('remember_me') }}
                     </label>
                 </div>
                 <router-link
-                    class="primary-text"
+                    v-if="!formBusy"
                     :to="{ name: 'Password Reset Request' }"
                 >
                     {{ $t('forgot_password') }}
                 </router-link>
+                <span v-else class="opacity-50">{{
+                    $t('forgot_password')
+                }}</span>
             </div>
 
             <RecaptchaV2
@@ -240,8 +262,8 @@ const login = () => {
             />
 
             <Button
-                class="w-full left-loading mt-5"
-                :label="$t('login')"
+                class="auth-submit left-loading"
+                :label="$t('continue')"
                 :disabled="loginSubmitBlocked"
                 :loading="loading || waitingForRecaptcha"
                 type="submit"

@@ -56,7 +56,11 @@ const preferredLanguage = computed({
     }
 });
 
-function buildLanguageSelectOptions(activeList, selectedUuid, selectedLanguage) {
+function buildLanguageSelectOptions(
+    activeList,
+    selectedUuid,
+    selectedLanguage
+) {
     const list = Array.isArray(activeList) ? [...activeList] : [];
 
     if (
@@ -192,7 +196,9 @@ function persistPreferredLanguage(value) {
                                 class="pi pi-cog settings-dialog__nav-icon"
                                 aria-hidden="true"
                             ></i>
-                            <span>{{ $t('layout.settings_dialog.general') }}</span>
+                            <span>{{
+                                $t('layout.settings_dialog.general')
+                            }}</span>
                         </button>
                     </nav>
                 </aside>
@@ -215,7 +221,9 @@ function persistPreferredLanguage(value) {
                                 optionValue="value"
                                 overlayClass="settings-dialog__select-overlay"
                                 class="settings-dialog__select"
-                                @show="syncSelectOverlayWidth(appearanceSelectRef)"
+                                @show="
+                                    syncSelectOverlayWidth(appearanceSelectRef)
+                                "
                             />
                         </div>
 
@@ -236,7 +244,9 @@ function persistPreferredLanguage(value) {
                                 :filterFields="['name', 'locale', 'code']"
                                 overlayClass="settings-dialog__select-overlay"
                                 class="settings-dialog__select settings-dialog__select--language"
-                                @show="syncSelectOverlayWidth(languageSelectRef)"
+                                @show="
+                                    syncSelectOverlayWidth(languageSelectRef)
+                                "
                             />
                         </div>
                     </div>

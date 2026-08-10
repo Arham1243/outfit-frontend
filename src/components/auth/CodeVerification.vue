@@ -18,8 +18,16 @@ const code = ref('');
 const session = ref(route.query.session);
 const otpInputError = ref(false);
 
+const formBusy = computed(() => loading.value || isResendingOtp.value);
+
 const otpInputClasses = computed(() =>
-    otpInputError.value ? 'otp-input otp-input--error' : 'otp-input'
+    [
+        'otp-input',
+        otpInputError.value ? 'otp-input--error' : '',
+        formBusy.value ? 'otp-input--disabled' : ''
+    ]
+        .filter(Boolean)
+        .join(' ')
 );
 
 watch(code, (newValue) => {
@@ -101,31 +109,32 @@ const handleResendOtp = async () => {
 </script>
 <template>
     <div>
-        <h4 class="font-bold text-3xl text-center" data-testid="page-title">
+        <h1 class="auth-title" data-testid="page-title">
             {{ $t('otp_verification') }}
-        </h4>
-        <p class="text-center pt-2 pb-2" data-testid="page-subtitle">
+        </h1>
+        <p class="auth-subtitle" data-testid="page-subtitle">
             {{ verificationMessage }}
         </p>
         <form @submit.prevent="verifyCode">
-            <div class="grid grid-cols-12 gap-4 mt-6 mb-4">
-                <div class="col-span-12">
-                    <OtpInput
-                        :key="otpKey"
-                        :input-classes="otpInputClasses"
-                        inputType="number"
-                        :num-inputs="6"
-                        v-model:value="code"
-                        data-testid="otp-input"
-                        :should-auto-focus="true"
-                        :should-focus-order="true"
-                    />
-                </div>
+            <div
+                class="mt-2 mb-4"
+                :class="{ 'otp-input-wrap--disabled': formBusy }"
+            >
+                <OtpInput
+                    :key="otpKey"
+                    :input-classes="otpInputClasses"
+                    inputType="number"
+                    :num-inputs="6"
+                    v-model:value="code"
+                    data-testid="otp-input"
+                    :should-auto-focus="true"
+                    :should-focus-order="true"
+                />
             </div>
-            <div class="flex items-center justify-center pb-5">
-                <div class="flex items-center text-base font-bold">
+            <div class="flex items-center justify-center pb-2">
+                <div class="flex items-center text-sm">
                     <span
-                        class="d-flex text-surface-600 dark:text-surface-200"
+                        class="text-[var(--auth-muted,#6e6e80)]"
                         data-testid="not-receive-text"
                     >
                         {{ $t('didn_t_receive_the_otp') }}
@@ -133,46 +142,52 @@ const handleResendOtp = async () => {
                     <Button
                         data-testid="resend-button"
                         link
-                        class="!px-1 !py-1 underline text-base text-primary"
+                        class="!px-1 !py-1 underline text-sm !text-[var(--auth-text,#0d0d0d)]"
                         :loading="isResendingOtp"
+                        :disabled="formBusy"
                         @click="handleResendOtp"
                         :label="$t('resend')"
                     />
                 </div>
             </div>
-            <div class="flex flex-col flex-wrap gap-12 justify-between">
-                <Button
-                    :disabled="!isCodeValid || loading"
-                    data-testid="verify-button"
-                    :label="$t('verify')"
-                    class="w-full left-loading"
-                    :loading="loading"
-                    type="submit"
-                />
-            </div>
+            <Button
+                :disabled="!isCodeValid || formBusy"
+                data-testid="verify-button"
+                :label="$t('verify')"
+                class="auth-submit left-loading"
+                :loading="loading"
+                type="submit"
+            />
         </form>
     </div>
 </template>
 <style>
 .otp-input-container {
-    gap: 1rem;
+    gap: 0.65rem;
     justify-content: center;
-    padding-inline: 0.35rem;
+    padding-inline: 0.15rem;
 }
 
 .otp-input {
-    width: 50px;
-    height: 54px;
+    width: 2.75rem;
+    height: 3.15rem;
     padding: 5px;
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
+    border-radius: 0.85rem;
+    border: 1px solid #c2c2c2;
     text-align: center;
     font-size: 1.1rem;
     outline: none;
+    background: #fff;
+    color: #0d0d0d;
 }
 
 .otp-input:hover {
-    border-color: #14377d;
+    border-color: #0d0d0d;
+}
+
+.otp-input:focus {
+    border-color: #0d0d0d;
+    box-shadow: 0 0 0 1px #0d0d0d;
 }
 
 .otp-input--error {
@@ -181,5 +196,15 @@ const handleResendOtp = async () => {
 
 .otp-input--error:hover {
     border-color: #dc2626;
+}
+
+.otp-input-wrap--disabled {
+    pointer-events: none;
+    opacity: 0.55;
+}
+
+.otp-input--disabled {
+    cursor: not-allowed;
+    background: #f5f5f5;
 }
 </style>

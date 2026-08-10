@@ -88,8 +88,8 @@ function save() {
     });
 }
 
-const canSave = computed(
-    () => Boolean(formData.value.image && formData.value.name?.trim())
+const canSave = computed(() =>
+    Boolean(formData.value.image && formData.value.name?.trim())
 );
 </script>
 
@@ -117,11 +117,12 @@ const canSave = computed(
             @change="onFileInputChange"
         />
 
-        <div
-            v-if="formData.image"
-            class="wardrobe-dialog__preview"
-        >
-            <img :src="formData.image" alt="" class="wardrobe-dialog__preview-img" />
+        <div v-if="formData.image" class="wardrobe-dialog__preview">
+            <img
+                :src="formData.image"
+                alt=""
+                class="wardrobe-dialog__preview-img"
+            />
         </div>
 
         <WardrobeUploadDropzone

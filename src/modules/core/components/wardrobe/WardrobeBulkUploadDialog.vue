@@ -38,7 +38,9 @@ watch(
 async function processFiles(fileList) {
     const files = Array.from(fileList || []).filter(isAcceptedImage);
     if (!files.length) return;
-    const results = await Promise.all(files.map((file) => createPendingImage(file)));
+    const results = await Promise.all(
+        files.map((file) => createPendingImage(file))
+    );
     pendingImages.value = [...pendingImages.value, ...results];
 }
 
@@ -63,7 +65,10 @@ function closeDialog() {
 
 function save() {
     if (!pendingImages.value.length) return;
-    emit('save', pendingImages.value.map((item) => item.preview));
+    emit(
+        'save',
+        pendingImages.value.map((item) => item.preview)
+    );
 }
 </script>
 
@@ -105,17 +110,17 @@ function save() {
             @drop="onDrop"
         />
 
-        <div
-            v-if="pendingImages.length"
-            class="wardrobe-upload__preview-list"
-        >
+        <div v-if="pendingImages.length" class="wardrobe-upload__preview-list">
             <div
                 v-for="(item, index) in pendingImages"
                 :key="item.id"
                 class="wardrobe-upload__file-card"
             >
                 <div class="wardrobe-upload__file-card-main">
-                    <span class="wardrobe-upload__file-thumb" aria-hidden="true">
+                    <span
+                        class="wardrobe-upload__file-thumb"
+                        aria-hidden="true"
+                    >
                         <img
                             :src="item.preview"
                             :alt="item.name"
@@ -123,7 +128,10 @@ function save() {
                         />
                     </span>
                     <div class="wardrobe-upload__file-details">
-                        <p class="wardrobe-upload__file-name" :title="item.name">
+                        <p
+                            class="wardrobe-upload__file-name"
+                            :title="item.name"
+                        >
                             {{ item.name }}
                         </p>
                         <p

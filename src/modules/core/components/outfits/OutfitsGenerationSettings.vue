@@ -21,7 +21,10 @@ const props = defineProps({
     requiresFaceImage: { type: Boolean, default: false }
 });
 
-const heightFtInput = defineModel('heightFtInput', { type: String, default: '' });
+const heightFtInput = defineModel('heightFtInput', {
+    type: String,
+    default: ''
+});
 const batchSize = defineModel('batchSize', { type: Number, default: 1 });
 
 const emit = defineEmits([
@@ -178,7 +181,12 @@ function removeFaceImage() {
                     />
                     <div class="outfits-gen-settings__height-markers">
                         <span>{{ HEIGHT_MIN_CM }} {{ $t('cm') }}</span>
-                        <span>{{ Math.round((HEIGHT_MIN_CM + HEIGHT_MAX_CM) / 2) }} {{ $t('cm') }}</span>
+                        <span
+                            >{{
+                                Math.round((HEIGHT_MIN_CM + HEIGHT_MAX_CM) / 2)
+                            }}
+                            {{ $t('cm') }}</span
+                        >
                         <span>{{ HEIGHT_MAX_CM }} {{ $t('cm') }}</span>
                     </div>
                 </div>
@@ -283,7 +291,8 @@ function removeFaceImage() {
                     type="button"
                     class="outfits-batch-picker__option"
                     :class="{
-                        'outfits-batch-picker__option--active': batchSize === size
+                        'outfits-batch-picker__option--active':
+                            batchSize === size
                     }"
                     :disabled="loading || disabled || saving"
                     @click="batchSize = size"

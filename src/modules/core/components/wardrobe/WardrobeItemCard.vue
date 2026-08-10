@@ -16,7 +16,9 @@ const props = defineProps({
 
 const emit = defineEmits(['click', 'toggle']);
 
-const imageUrl = computed(() => getItemImageUrl(props.item) || PlaceholderImage);
+const imageUrl = computed(
+    () => getItemImageUrl(props.item) || PlaceholderImage
+);
 const displayName = computed(() =>
     getItemDisplayName(props.item, $t('wardrobe_untitled'))
 );
@@ -60,7 +62,10 @@ function handleCheckboxClick(event) {
                 loading="lazy"
             />
 
-            <span v-if="canSelect && selectMode" class="wardrobe-card__checkbox-wrap">
+            <span
+                v-if="canSelect && selectMode"
+                class="wardrobe-card__checkbox-wrap"
+            >
                 <Checkbox
                     :modelValue="selected"
                     binary
@@ -75,7 +80,11 @@ function handleCheckboxClick(event) {
         <div class="wardrobe-card__body">
             <h3 class="wardrobe-card__name">{{ displayName }}</h3>
             <p class="wardrobe-card__meta">
-                {{ item.type ? formatType(item.type) : $t('classification_pending') }}
+                {{
+                    item.type
+                        ? formatType(item.type)
+                        : $t('classification_pending')
+                }}
             </p>
         </div>
     </article>

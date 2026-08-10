@@ -18,12 +18,20 @@
     "at_least_one_number": "کم از کم ایک نمبر",
     "at_least_one_symbol": "کم از کم ایک علامت {'@'}$!%*#?&",
     "auth": {
+        "login": {
+            "subtitle": "اپنے وارڈروب تک رسائی اور آؤٹ فٹس بنانے کے لیے سائن ان کریں۔"
+        },
         "otp": {
             "verificationMessage": "آپ کو {email} پر OTP کوڈ کے ساتھ ایک ای میل موصول ہوئی ہوگی"
         },
+        "passwordReset": {
+            "resetLinkInvalid": "یہ پاس ورڈ ری سیٹ لنک گم ہے، غلط ہے، یا ختم ہو گیا ہے۔ لاگ ان صفحے سے نیا لنک درخواست کریں۔",
+            "subtitle": "اپنے اکاؤنٹ کے لیے نیا پاس ورڈ منتخب کریں۔"
+        },
         "passwordSetup": {
             "passwordAlreadySet": "آپ کا پاس ورڈ پہلے سے سیٹ ہے۔ آپ ابھی اپنی ای میل اور پاس ورڈ سے لاگ ان کر سکتے ہیں۔",
-            "setupLinkInvalid": "یہ پاس ورڈ سیٹ اپ لنک گم ہے، غلط ہے، یا ختم ہو گیا ہے۔ اگر آپ نے سیٹ اپ مکمل کر لیا ہے تو نیچے لاگ ان کریں۔ بصورت دیگر اپنی تازہ ترین ServiCore ای میل کا لنک استعمال کریں۔"
+            "setupLinkInvalid": "یہ پاس ورڈ سیٹ اپ لنک گم ہے، غلط ہے، یا ختم ہو گیا ہے۔ اگر آپ نے سیٹ اپ مکمل کر لیا ہے تو نیچے لاگ ان کریں۔ بصورت دیگر اپنی تازہ ترین ServiCore ای میل کا لنک استعمال کریں۔",
+            "subtitle": "آپ اس پاس ورڈ سے Outfit اور متعلقہ پروڈکٹس میں لاگ ان کریں گے۔"
         }
     },
     "back_to_login": "لاگ ان پر واپس جائیں",
@@ -157,6 +165,7 @@
     "edit_role": "کردار میں ترمیم کریں",
     "edit_wardrobe_image": "وارڈروب تصویر میں ترمیم کریں",
     "email": "ای میل",
+    "email_address": "ای میل ایڈریس",
     "end_user_license_agreement": "آخری صارف لائسنس معاہدہ",
     "enter_your_email_address_and_well_send_you_a_link_to_reset_your_password": "اپنا ای میل ایڈریس درج کریں اور ہم آپ کو پاس ورڈ ری سیٹ کرنے کا لنک بھیجیں گے۔",
     "female": "عورت",
@@ -296,6 +305,7 @@
     "status": "حیثیت",
     "the_system_administrator_role_always_has_full_access_its_permissions_cannot_be_changed_you_can_still_adjust_permissions_for_other_system_roles_for_example_approver_or_standard_roles_and_for_custom_roles": "سسٹم کردار مقفل ہیں اور انہیں ترمیم یا حذف نہیں کیا جا سکتا۔ ان کی اجازتیں تبدیل نہیں کی جا سکتیں۔",
     "the_welcome_email_has_been_sent_again": "خوش آمدید ای میل دوبارہ بھیج دی گئی ہے۔",
+    "terms_of_use": "استعمال کی شرائط",
     "try_again": "دوبارہ کوشش کریں",
     "unsaved_changes": "غیر محفوظ تبدیلیاں",
     "update": "اپ ڈیٹ کریں",
@@ -356,6 +366,7 @@
     "wardrobe_save_changes": "تبدیلیاں محفوظ کریں",
     "wardrobe_item_name_required": "براہ کرم آئٹم کا نام درج کریں۔",
     "welcome": "خوش آمدید",
+    "welcome_back": "خوش آمدید واپسی پر",
     "welcome_email_sent": "خوش آمدید ای میل بھیجی گئی",
     "you_have_unsaved_changes_if_you_continue_those_changes_will_be_lost_do_you_want_to_discard_them": "آپ کے پاس غیر محفوظ تبدیلیاں ہیں۔ اگر آپ جاری رکھتے ہیں تو یہ تبدیلیاں ضائع ہو جائیں گی۔ کیا آپ انہیں ردّ کرنا چاہتے ہیں؟",
     "your_password_has_been_changed_successfully": "آپ کا پاس ورڈ کامیابی سے تبدیل ہو گیا",

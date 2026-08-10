@@ -51,114 +51,121 @@ function isLastAction(action) {
             :loading="loading"
             :rowClass="permissionMatrixRowClass"
         >
-        <Column field="entity" :header="$t('permission')">
-            <template #body="{ data }">
-                <div
-                    class="flex items-center min-h-[2.25rem]"
-                    :class="data.indent ? 'pl-4' : ''"
-                >
-                    <span
-                        v-if="data.isGroupHeader"
-                        class="font-semibold text-base shrink-0"
-                        >{{ data.groupTitle }}</span
+            <Column field="entity" :header="$t('permission')">
+                <template #body="{ data }">
+                    <div
+                        class="flex items-center min-h-[2.25rem]"
+                        :class="data.indent ? 'pl-4' : ''"
                     >
-                    <span
-                        v-else
-                        :class="
-                            data.isSectionLead || data.entity === 'receipts'
-                                ? 'font-bold text-base'
-                                : ''
-                        "
-                        >{{ permissionLabel(data.entity) }}</span
-                    >
-                </div>
-            </template>
-        </Column>
+                        <span
+                            v-if="data.isGroupHeader"
+                            class="font-semibold text-base shrink-0"
+                            >{{ data.groupTitle }}</span
+                        >
+                        <span
+                            v-else
+                            :class="
+                                data.isSectionLead || data.entity === 'receipts'
+                                    ? 'font-bold text-base'
+                                    : ''
+                            "
+                            >{{ permissionLabel(data.entity) }}</span
+                        >
+                    </div>
+                </template>
+            </Column>
 
-        <Column
-            v-for="a in actions"
-            :key="a"
-            :field="a"
-            :header="a.charAt(0).toUpperCase() + a.slice(1)"
-        >
-            <template #body="{ data }">
-                <div
-                    v-if="
-                        data.isGroupHeader &&
-                        showSectionPresetSwitches(data) &&
-                        isLastAction(a)
-                    "
-                    class="permission-matrix-section-presets"
-                    @click.stop
-                >
-                    <div class="flex items-center gap-2">
-                        <label
-                            :for="`sec-${data.presetSectionKey}-view`"
-                            class="cursor-pointer text-sm font-medium mb-0 whitespace-nowrap"
-                            >{{ $t('view_only') }}</label
-                        >
-                        <ToggleSwitch
-                            :inputId="`sec-${data.presetSectionKey}-view`"
-                            :modelValue="
-                                sectionPresets[data.presetSectionKey]?.viewOnly
+            <Column
+                v-for="a in actions"
+                :key="a"
+                :field="a"
+                :header="a.charAt(0).toUpperCase() + a.slice(1)"
+            >
+                <template #body="{ data }">
+                    <div
+                        v-if="
+                            data.isGroupHeader &&
+                            showSectionPresetSwitches(data) &&
+                            isLastAction(a)
+                        "
+                        class="permission-matrix-section-presets"
+                        @click.stop
+                    >
+                        <div class="flex items-center gap-2">
+                            <label
+                                :for="`sec-${data.presetSectionKey}-view`"
+                                class="cursor-pointer text-sm font-medium mb-0 whitespace-nowrap"
+                                >{{ $t('view_only') }}</label
+                            >
+                            <ToggleSwitch
+                                :inputId="`sec-${data.presetSectionKey}-view`"
+                                :modelValue="
+                                    sectionPresets[data.presetSectionKey]
+                                        ?.viewOnly
+                                "
+                                :disabled="disabled || busy"
+                                @update:modelValue="
+                                    (v) =>
+                                        onSectionPreset(
+                                            data.presetSectionKey,
+                                            'view',
+                                            v
+                                        )
+                                "
+                            />
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label
+                                :for="`sec-${data.presetSectionKey}-full`"
+                                class="cursor-pointer text-sm font-medium mb-0 whitespace-nowrap"
+                                >{{ $t('full_access') }}</label
+                            >
+                            <ToggleSwitch
+                                :inputId="`sec-${data.presetSectionKey}-full`"
+                                :modelValue="
+                                    sectionPresets[data.presetSectionKey]
+                                        ?.fullAdmin
+                                "
+                                :disabled="disabled || busy"
+                                @update:modelValue="
+                                    (v) =>
+                                        onSectionPreset(
+                                            data.presetSectionKey,
+                                            'full',
+                                            v
+                                        )
+                                "
+                            />
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="!data.isGroupHeader"
+                        class="permission-matrix-checkbox-cell"
+                    >
+                        <InputField
+                            v-if="data[a] !== null"
+                            :disabled="
+                                disabled ||
+                                busy ||
+                                (a === 'view' && data.viewLocked)
                             "
-                            :disabled="disabled || busy"
+                            variant="checkbox"
+                            binary
+                            :class="inputClass"
+                            :modelValue="data[a]"
                             @update:modelValue="
-                                (v) =>
-                                    onSectionPreset(
-                                        data.presetSectionKey,
-                                        'view',
-                                        v
+                                (val) =>
+                                    emit(
+                                        'togglePermission',
+                                        data.entity,
+                                        a,
+                                        val
                                     )
                             "
                         />
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label
-                            :for="`sec-${data.presetSectionKey}-full`"
-                            class="cursor-pointer text-sm font-medium mb-0 whitespace-nowrap"
-                            >{{ $t('full_access') }}</label
-                        >
-                        <ToggleSwitch
-                            :inputId="`sec-${data.presetSectionKey}-full`"
-                            :modelValue="
-                                sectionPresets[data.presetSectionKey]?.fullAdmin
-                            "
-                            :disabled="disabled || busy"
-                            @update:modelValue="
-                                (v) =>
-                                    onSectionPreset(
-                                        data.presetSectionKey,
-                                        'full',
-                                        v
-                                    )
-                            "
-                        />
-                    </div>
-                </div>
-                <div
-                    v-else-if="!data.isGroupHeader"
-                    class="permission-matrix-checkbox-cell"
-                >
-                    <InputField
-                        v-if="data[a] !== null"
-                        :disabled="
-                            disabled ||
-                            busy ||
-                            (a === 'view' && data.viewLocked)
-                        "
-                        variant="checkbox"
-                        binary
-                        :class="inputClass"
-                        :modelValue="data[a]"
-                        @update:modelValue="
-                            (val) =>
-                                emit('togglePermission', data.entity, a, val)
-                        "
-                    />
-                </div>
-            </template>
-        </Column>
+                </template>
+            </Column>
         </DataTable>
     </div>
 </template>

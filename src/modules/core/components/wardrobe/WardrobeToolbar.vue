@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue';
-import { WARDROBE_TYPES, formatWardrobeTypeLabel } from '@/config/wardrobeTypes';
+import {
+    WARDROBE_TYPES,
+    formatWardrobeTypeLabel
+} from '@/config/wardrobeTypes';
 
 const props = defineProps({
     searchQuery: { type: String, default: '' },
@@ -12,7 +15,11 @@ const props = defineProps({
     canDelete: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(['update:searchQuery', 'select-type', 'toggle-select']);
+const emit = defineEmits([
+    'update:searchQuery',
+    'select-type',
+    'toggle-select'
+]);
 
 const categoryPills = computed(() => {
     const pills = [
@@ -56,7 +63,9 @@ function onSearchInput(event) {
             <Button
                 v-if="canDelete"
                 type="button"
-                :label="selectMode ? $t('wardrobe_done') : $t('wardrobe_select')"
+                :label="
+                    selectMode ? $t('wardrobe_done') : $t('wardrobe_select')
+                "
                 :icon="selectMode ? 'pi pi-check' : 'pi pi-check-square'"
                 class="wardrobe-toolbar__select-btn"
                 @click="emit('toggle-select')"
@@ -74,7 +83,9 @@ function onSearchInput(event) {
                 :key="pill.value ?? 'all'"
                 type="button"
                 class="wardrobe-pill"
-                :class="{ 'wardrobe-pill--active': selectedType === pill.value }"
+                :class="{
+                    'wardrobe-pill--active': selectedType === pill.value
+                }"
                 role="tab"
                 :aria-selected="selectedType === pill.value"
                 @click="emit('select-type', pill.value)"
@@ -88,7 +99,9 @@ function onSearchInput(event) {
                     borderRadius="0.25rem"
                     aria-hidden="true"
                 />
-                <span v-else class="wardrobe-pill__count">{{ pill.count }}</span>
+                <span v-else class="wardrobe-pill__count">{{
+                    pill.count
+                }}</span>
             </button>
         </div>
     </div>

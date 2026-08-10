@@ -172,9 +172,7 @@ export function permissionLabel(entity) {
         return key;
     }
     if (entity.startsWith('core.')) {
-        return capitalizeWords(
-            entity.slice('core.'.length).replace(/-/g, ' ')
-        );
+        return capitalizeWords(entity.slice('core.'.length).replace(/-/g, ' '));
     }
     return capitalizeWords(
         entity.replace(/\./g, ' ').replace(/-/g, ' ').replace(/_/g, ' ')
@@ -359,9 +357,7 @@ export function buildPermissionMatrixRows(
     for (const section of PERMISSION_MATRIX_SECTIONS) {
         const sectionEntities = section.entities.filter(
             (e) =>
-                matrix[e] &&
-                !SKIP_ENTITIES.has(e) &&
-                !EXCLUDED_ENTITIES.has(e)
+                matrix[e] && !SKIP_ENTITIES.has(e) && !EXCLUDED_ENTITIES.has(e)
         );
         if (sectionEntities.length === 0) {
             continue;

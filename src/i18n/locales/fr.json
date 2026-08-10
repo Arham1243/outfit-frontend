@@ -18,12 +18,20 @@
     "at_least_one_number": "Au moins un chiffre",
     "at_least_one_symbol": "Au moins un symbole {'@'}$!%*#?&",
     "auth": {
+        "login": {
+            "subtitle": "Connectez-vous pour accéder à votre garde-robe et créer des tenues."
+        },
         "otp": {
             "verificationMessage": "Vous devriez avoir reçu un e-mail avec le code OTP à {email}"
         },
+        "passwordReset": {
+            "resetLinkInvalid": "Ce lien de réinitialisation de mot de passe est manquant, invalide ou a expiré. Demandez un nouveau lien depuis la page de connexion.",
+            "subtitle": "Choisissez un nouveau mot de passe pour votre compte."
+        },
         "passwordSetup": {
             "passwordAlreadySet": "Votre mot de passe est déjà défini. Vous pouvez vous connecter maintenant avec votre e-mail et votre mot de passe.",
-            "setupLinkInvalid": "Ce lien de configuration de mot de passe est manquant, invalide ou a expiré. Si vous avez déjà terminé la configuration, connectez-vous ci-dessous. Sinon, utilisez le lien de votre dernier e-mail ServiCore."
+            "setupLinkInvalid": "Ce lien de configuration de mot de passe est manquant, invalide ou a expiré. Si vous avez déjà terminé la configuration, connectez-vous ci-dessous. Sinon, utilisez le lien de votre dernier e-mail ServiCore.",
+            "subtitle": "Vous utiliserez ce mot de passe pour vous connecter à Outfit et aux produits associés."
         }
     },
     "back_to_login": "Retour à la connexion",
@@ -157,6 +165,7 @@
     "edit_role": "Modifier le rôle",
     "edit_wardrobe_image": "Modifier l'image de garde-robe",
     "email": "E-mail",
+    "email_address": "Adresse e-mail",
     "end_user_license_agreement": "Contrat de licence utilisateur final",
     "enter_your_email_address_and_well_send_you_a_link_to_reset_your_password": "Entrez votre adresse e-mail et nous vous envoyons un lien pour réinitialiser votre mot de passe.",
     "female": "Femme",
@@ -296,6 +305,7 @@
     "status": "Statut",
     "the_system_administrator_role_always_has_full_access_its_permissions_cannot_be_changed_you_can_still_adjust_permissions_for_other_system_roles_for_example_approver_or_standard_roles_and_for_custom_roles": "Les rôles système sont verrouillés et ne peuvent pas être modifiés ni supprimés. Leurs permissions ne peuvent pas être changées.",
     "the_welcome_email_has_been_sent_again": "L'e-mail de bienvenue a été renvoyé.",
+    "terms_of_use": "Conditions d'utilisation",
     "try_again": "Réessayer",
     "unsaved_changes": "Modifications non enregistrées",
     "update": "Mettre à jour",
@@ -356,6 +366,7 @@
     "wardrobe_save_changes": "Enregistrer",
     "wardrobe_item_name_required": "Veuillez saisir un nom d'article.",
     "welcome": "Bienvenue",
+    "welcome_back": "Bon retour",
     "welcome_email_sent": "E-mail de bienvenue envoyé",
     "you_have_unsaved_changes_if_you_continue_those_changes_will_be_lost_do_you_want_to_discard_them": "Vous avez des modifications non enregistrées. Si vous continuez, ces modifications seront perdues. Voulez-vous les annuler ?",
     "your_password_has_been_changed_successfully": "Votre mot de passe a été modifié avec succès",

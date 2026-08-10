@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
-import { resetLayoutState, initAppearancePreference } from '@/layout/composables/layout';
+import {
+    resetLayoutState,
+    initAppearancePreference,
+    applySidebarOpen
+} from '@/layout/composables/layout';
 import { updateAbility } from '@/plugins/ability';
 import { AuthService } from '@/services';
 import { resetLocale, syncLocaleFromUser } from '@/i18n';
@@ -82,6 +86,7 @@ export const useSessionStore = defineStore('SessionStore', () => {
         user.value = res.data;
         syncLocaleFromUser(user.value);
         initAppearancePreference(!!user.value?.dark_mode);
+        applySidebarOpen(user.value?.sidebar_open !== false);
         permissions.value = res.permissions ?? [];
         userRole.value = res.role ?? {};
         updateAbility(permissions.value);

@@ -24,9 +24,7 @@ const imageUrl = computed(
     () => getItemImageUrl(props.item) || PlaceholderImage
 );
 const displayName = computed(() =>
-    props.item
-        ? getItemDisplayName(props.item, $t('wardrobe_untitled'))
-        : ''
+    props.item ? getItemDisplayName(props.item, $t('wardrobe_untitled')) : ''
 );
 const typeLabel = computed(() =>
     props.item?.type
@@ -115,7 +113,9 @@ function closeDialog() {
                     <span class="wardrobe-view__meta-label">
                         {{ $t('wardrobe_added') }}
                     </span>
-                    <span class="wardrobe-view__meta-value">{{ addedLabel }}</span>
+                    <span class="wardrobe-view__meta-value">{{
+                        addedLabel
+                    }}</span>
                 </div>
             </div>
         </div>
