@@ -38,7 +38,6 @@ const statsText = computed(() => {
                 type="button"
                 :label="$t('wardrobe_bulk_upload')"
                 icon="pi pi-upload"
-                severity="secondary"
                 outlined
                 class="wardrobe-header__action"
                 @click="$emit('bulk-upload')"

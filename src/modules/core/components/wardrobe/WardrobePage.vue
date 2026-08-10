@@ -11,6 +11,7 @@ import WardrobeHeader from './WardrobeHeader.vue';
 import WardrobeToolbar from './WardrobeToolbar.vue';
 import WardrobeSelectionBar from './WardrobeSelectionBar.vue';
 import WardrobeGrid from './WardrobeGrid.vue';
+import WardrobePagination from './WardrobePagination.vue';
 import WardrobeAddDialog from './WardrobeAddDialog.vue';
 import WardrobeBulkUploadDialog from './WardrobeBulkUploadDialog.vue';
 import WardrobeEditDialog from './WardrobeEditDialog.vue';
@@ -28,7 +29,7 @@ const { formatDate } = helpers;
 const wardrobeStore = useWardrobeStore();
 const globalStore = useGlobalStore();
 
-const pagination = new PaginationOptions();
+const pagination = new PaginationOptions(1, 20);
 const sortFilters = new SortFilterOptions();
 
 const loading = ref(false);
@@ -361,7 +362,8 @@ function openDeleteFromView() {
 </script>
 
 <template>
-    <div class="wardrobe-page">
+    <div class="wardrobe-page-shell">
+        <div class="wardrobe-page">
         <WardrobeHeader
             :total="wardrobeTotal"
             :type-counts="typeCounts"
@@ -401,14 +403,12 @@ function openDeleteFromView() {
             @toggle-item="toggleItemSelection"
         />
 
-        <Paginator
+        <WardrobePagination
             v-if="totalRecords > pagination.limit"
-            class="wardrobe-page__paginator"
-            :rows="pagination.limit"
-            :totalRecords="totalRecords"
-            :rowsPerPageOptions="pagination.rowsPerPageOptions"
-            :first="(pagination.page - 1) * pagination.limit"
-            @page="onPageChange"
+            :page="pagination.page"
+            :total-records="totalRecords"
+            :page-size="pagination.limit"
+            @page-change="onPageChange"
         />
 
         <WardrobeAddDialog
@@ -451,5 +451,6 @@ function openDeleteFromView() {
             :is-bulk="isBulkDelete"
             @confirm="handleDeleteConfirm"
         />
+        </div>
     </div>
 </template>

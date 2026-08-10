@@ -56,7 +56,7 @@ function onSearchInput(event) {
                 v-if="canDelete"
                 type="button"
                 :label="selectMode ? $t('wardrobe_done') : $t('wardrobe_select')"
-                :icon="selectMode ? 'pi pi-check' : 'pi pi-list-check'"
+                :icon="selectMode ? 'pi pi-check' : 'pi pi-check-square'"
                 class="wardrobe-toolbar__select-btn"
                 @click="emit('toggle-select')"
             />
