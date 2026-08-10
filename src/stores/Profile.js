@@ -15,13 +15,18 @@ export const useProfileStore = defineStore('ProfileStore', () => {
         });
     };
 
-    const update = (id, payload) => {
+    const update = (id, payload, options = {}) => {
         return globalStore.actionWrapper(async () => {
             const res = await ProfileService.update(id, payload);
-            globalStore.showSuccess(
-                $t('profile_updated'),
-                $t('profile_updated_successfully')
-            );
+            if (res.data?.data) {
+                currentItem.value = res.data.data;
+            }
+            if (!options.silent) {
+                globalStore.showSuccess(
+                    $t('profile_updated'),
+                    $t('profile_updated_successfully')
+                );
+            }
             return res.data;
         });
     };
