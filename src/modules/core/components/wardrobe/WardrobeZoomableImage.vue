@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     src: { type: String, required: true },
@@ -24,7 +24,7 @@ function resetView() {
     scale.value = 1;
     translateX.value = 0;
     translateY.value = 0;
-    stopPanning();
+    isPanning.value = false;
 }
 
 watch(
@@ -34,8 +34,16 @@ watch(
 
 const zoomPercent = computed(() => Math.round(scale.value * 100));
 
+const isZoomed = computed(
+    () =>
+        scale.value > MIN_SCALE ||
+        translateX.value !== 0 ||
+        translateY.value !== 0
+);
+
 const imageStyle = computed(() => ({
-    transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${scale.value})`
+    transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${scale.value})`,
+    transformOrigin: 'center center'
 }));
 
 function onWheel(event) {
@@ -55,23 +63,10 @@ function onWheel(event) {
     scale.value = Number(next.toFixed(3));
 }
 
-function onMouseMove(event) {
-    if (!isPanning.value) return;
-
-    translateX.value = panOriginX + (event.clientX - panStartX);
-    translateY.value = panOriginY + (event.clientY - panStartY);
-}
-
-function stopPanning() {
-    if (!isPanning.value) return;
-
-    isPanning.value = false;
-    window.removeEventListener('mousemove', onMouseMove);
-    window.removeEventListener('mouseup', stopPanning);
-}
-
-function onMouseDown(event) {
-    if (event.button !== 2 || scale.value <= MIN_SCALE) return;
+function onPointerDown(event) {
+    if (scale.value <= MIN_SCALE) return;
+    if (event.button !== 0 && event.button !== 2) return;
+    if (event.target.closest('.wardrobe-zoom__toolbar')) return;
 
     event.preventDefault();
     isPanning.value = true;
@@ -79,17 +74,31 @@ function onMouseDown(event) {
     panStartY = event.clientY;
     panOriginX = translateX.value;
     panOriginY = translateY.value;
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', stopPanning);
+    event.currentTarget.setPointerCapture(event.pointerId);
+}
+
+function onPointerMove(event) {
+    if (!isPanning.value) return;
+
+    translateX.value = panOriginX + (event.clientX - panStartX);
+    translateY.value = panOriginY + (event.clientY - panStartY);
+}
+
+function stopPanning(event) {
+    if (!isPanning.value) return;
+
+    isPanning.value = false;
+
+    if (event?.currentTarget?.hasPointerCapture?.(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+    }
 }
 
 function onContextMenu(event) {
-    event.preventDefault();
+    if (scale.value > MIN_SCALE) {
+        event.preventDefault();
+    }
 }
-
-onBeforeUnmount(() => {
-    stopPanning();
-});
 </script>
 
 <template>
@@ -100,7 +109,10 @@ onBeforeUnmount(() => {
             'wardrobe-zoom--panning': isPanning
         }"
         @wheel="onWheel"
-        @mousedown="onMouseDown"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="stopPanning"
+        @pointercancel="stopPanning"
         @contextmenu="onContextMenu"
     >
         <div class="wardrobe-zoom__stage">
@@ -113,8 +125,22 @@ onBeforeUnmount(() => {
             />
         </div>
 
-        <div class="wardrobe-zoom__toolbar" aria-live="polite">
+        <div
+            class="wardrobe-zoom__toolbar"
+            aria-live="polite"
+            @pointerdown.stop
+            @mousedown.stop
+        >
             <span class="wardrobe-zoom__level">{{ zoomPercent }}%</span>
+            <button
+                v-if="isZoomed"
+                type="button"
+                class="wardrobe-zoom__reset"
+                :aria-label="$t('wardrobe_zoom_reset')"
+                @click.stop.prevent="resetView"
+            >
+                {{ $t('wardrobe_zoom_reset') }}
+            </button>
         </div>
     </div>
 </template>

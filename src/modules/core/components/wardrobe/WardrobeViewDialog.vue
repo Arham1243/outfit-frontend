@@ -81,33 +81,41 @@ function closeDialog() {
                 />
 
                 <span class="wardrobe-view__badge">{{ typeLabel }}</span>
-                <h2 class="wardrobe-view__title">{{ displayName }}</h2>
+
+                <div class="wardrobe-view__heading-row">
+                    <h2 class="wardrobe-view__title">{{ displayName }}</h2>
+
+                    <div
+                        v-if="canEdit || canDelete"
+                        class="wardrobe-view__actions"
+                    >
+                        <Button
+                            v-if="canEdit"
+                            type="button"
+                            text
+                            size="small"
+                            :label="$t('edit')"
+                            icon="pi pi-pencil"
+                            @click="emit('edit')"
+                        />
+                        <Button
+                            v-if="canDelete"
+                            type="button"
+                            size="small"
+                            text
+                            :label="$t('delete')"
+                            icon="pi pi-trash"
+                            severity="danger"
+                            @click="emit('delete')"
+                        />
+                    </div>
+                </div>
 
                 <div class="wardrobe-view__meta-row">
                     <span class="wardrobe-view__meta-label">
                         {{ $t('wardrobe_added') }}
                     </span>
                     <span class="wardrobe-view__meta-value">{{ addedLabel }}</span>
-                </div>
-
-                <div class="wardrobe-view__actions">
-                    <Button
-                        v-if="canEdit"
-                        type="button"
-                        :label="$t('edit')"
-                        icon="pi pi-pencil"
-                        outlined
-                        @click="emit('edit')"
-                    />
-                    <Button
-                        v-if="canDelete"
-                        type="button"
-                        :label="$t('delete')"
-                        icon="pi pi-trash"
-                        severity="danger"
-                        text
-                        @click="emit('delete')"
-                    />
                 </div>
             </div>
         </div>

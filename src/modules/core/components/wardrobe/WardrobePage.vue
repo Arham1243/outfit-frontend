@@ -404,7 +404,7 @@ function openDeleteFromView() {
         />
 
         <WardrobePagination
-            v-if="totalRecords > pagination.limit"
+            v-if="!loading && totalRecords > pagination.limit"
             :page="pagination.page"
             :total-records="totalRecords"
             :page-size="pagination.limit"
