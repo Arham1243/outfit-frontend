@@ -20,7 +20,7 @@ Ensure the following Dependencies are installed on your system:
 
     ```bash
     git clone https://github.com/Arham1243/outfit-frontend.git
-    cd chitchat-frontend
+    cd outfit-frontend
 
     ```
 
