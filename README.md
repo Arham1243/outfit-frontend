@@ -1,4 +1,4 @@
-# Outfit Studio Frontend
+# Outfit Studio App
 
 ## 🎥 Watch In Action
 [![](https://raw.githubusercontent.com/Arham1243/outfit-frontend/main/thumbnail.png)](https://vimeo.com/1223821844?fl=ip&fe=ec)
