@@ -1,29 +1,61 @@
-Apollo template should help get you started developing with Vue 3 in Vite.
+# Outfit Studio Frontend
 
-## Customize configuration
+## 🎥 Watch In Action
+[![](https://raw.githubusercontent.com/Arham1243/outfit-frontend/main/thumbnail.png)](https://vimeo.com/1223821844?fl=ip&fe=ec)
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## 🚀 Quick Start
 
-## Project Setup
+Follow these steps to set up and run the project locally.
 
-```sh
-npm install
-```
+### Dependencies
 
-### Compile and Hot-Reload for Development
+Ensure the following Dependencies are installed on your system:
 
-```sh
-npm run dev
-```
+- **[Node.js]** (v20.16+)
+- **[Git]**
 
-### Compile and Minify for Production
+### Installation
 
-```sh
-npm run build
-```
+1. **Clone the Repository**:
 
-### Lint with [ESLint](https://eslint.org/)
+    ```bash
+    git clone https://github.com/Arham1243/outfit-frontend.git
+    cd chitchat-frontend
 
-```sh
-npm run lint
-```
+    ```
+
+2. **Install Node.js Dependencies:**:
+
+    ```bash
+    npm install
+    ```
+
+3. **Configure Husky for Git Hooks:**:
+
+    ```bash
+    npm run configure-husky
+    ```
+
+4. **Set Up Environment Variables:**:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+5. **Run the Project:**:
+
+    ```bash
+    npm run dev
+    ```
+
+6. **Access the Application:**:
+
+    ```bash
+    http://localhost:3000
+    ```
+
+7. **Build the Project:**
+
+    ```bash
+    npm run build
+    ```
